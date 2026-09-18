@@ -113,7 +113,6 @@ export const getMyPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { id } = req.params;
-
     const { title, content, tags, coverImage, status } = req.body;
 
     // Find post
@@ -163,7 +162,13 @@ export const updatePost = async (req, res) => {
         .replace(/-+/g, "-");
     }
 
-    const updatedPost = await post.save();
+    // Save updated post
+    await post.save();
+
+    // Get updated post with populated fields
+    const updatedPost = await Post.findById(post._id)
+      .populate("author", "name avatarUrl")
+      .populate("tags", "name slug");
 
     res.status(200).json({
       message: "Post updated successfully",
