@@ -51,7 +51,9 @@ const PostEditor = () => {
 
         const response = await api.get("/posts/mine");
 
-        const existingPost = response.data.find((post) => post._id === id);
+        const existingPost = response.data.posts.find(
+          (post) => post._id === id,
+        );
 
         if (!existingPost) {
           setError("Post not found");

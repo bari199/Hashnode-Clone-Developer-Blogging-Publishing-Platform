@@ -1,32 +1,51 @@
 import Tag from "../models/Tag.js";
 
-const handlePostTags = async (tagNames = []) => {
+const handlePostTags = async (tags) => {
+  if (!tags) {
+    return [];
+  }
+
+  let tagList = tags;
+
+  // FormData থেকে tags string হিসেবে এলে
+  if (typeof tags === "string") {
+    try {
+      tagList = JSON.parse(tags);
+    } catch (error) {
+      tagList = tags.split(",");
+    }
+  }
+
+  if (!Array.isArray(tagList)) {
+    return [];
+  }
+
   const tagIds = [];
 
-  for (const tagName of tagNames) {
-    const normalizedName = tagName.trim().toLowerCase();
+  for (const tag of tagList) {
+    const tagName = tag?.name || tag;
 
-    if (!normalizedName) {
+    if (!tagName || !tagName.trim()) {
       continue;
     }
 
-    let tag = await Tag.findOne({
-      name: normalizedName,
-    });
+    const name = tagName.trim().toLowerCase();
 
-    if (!tag) {
-      const slug = normalizedName
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
+    const slug = name
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
 
-      tag = await Tag.create({
-        name: normalizedName,
+    let existingTag = await Tag.findOne({ slug });
+
+    if (!existingTag) {
+      existingTag = await Tag.create({
+        name,
         slug,
       });
     }
 
-    tagIds.push(tag._id);
+    tagIds.push(existingTag._id);
   }
 
   return tagIds;

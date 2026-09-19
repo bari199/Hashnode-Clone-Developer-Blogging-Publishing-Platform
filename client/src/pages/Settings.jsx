@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import useAuth from "../hooks/useAuth.js";
 import api from "../api/axios.js";
 
@@ -7,11 +8,18 @@ const Settings = () => {
 
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState("");
+
+  const [avatar, setAvatar] = useState(null);
+  const [avatarPreview, setAvatarPreview] = useState("");
 
   const [loading, setLoading] = useState(false);
+
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  // =====================================
+  // Load User
+  // =====================================
 
   useEffect(() => {
     if (!user) {
@@ -20,8 +28,56 @@ const Settings = () => {
 
     setName(user.name || "");
     setBio(user.bio || "");
-    setAvatarUrl(user.avatarUrl || "");
+    setAvatarPreview(user.avatarUrl || "");
   }, [user]);
+
+  // =====================================
+  // Select Avatar
+  // =====================================
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    console.log("Selected file:", file);
+    console.log("Is File:", file instanceof File);
+
+    // Allowed types
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      setError("Only JPG, JPEG, PNG and WEBP images are allowed");
+
+      return;
+    }
+
+    // 5MB
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size must be less than 5MB");
+
+      return;
+    }
+
+    setError("");
+    setMessage("");
+
+    // Save actual File
+
+    setAvatar(file);
+
+    // Preview
+
+    const previewUrl = URL.createObjectURL(file);
+
+    setAvatarPreview(previewUrl);
+  };
+
+  // =====================================
+  // Submit
+  // =====================================
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -31,26 +87,58 @@ const Settings = () => {
       setMessage("");
       setError("");
 
-      const token = localStorage.getItem("token");
+      // =================================
+      // FormData
+      // =================================
 
-      const response = await api.put(
-        "/users/me",
-        {
-          name,
-          bio,
-          avatarUrl,
-        },
-      );
+      const formData = new FormData();
+
+      formData.append("name", name);
+
+      formData.append("bio", bio);
+
+      if (avatar instanceof File) {
+        formData.append("avatar", avatar);
+      }
+
+      for (const [key, value] of formData.entries()) {
+        console.log("FormData:", key, value);
+      }
+      // =================================
+      // API
+      // =================================
+
+      const response = await api.put("/users/me", formData);
+
+      // =================================
+      // Update Context
+      // =================================
 
       updateUser(response.data.user);
 
+      // =================================
+      // Update Preview
+      // =================================
+
+      setAvatarPreview(response.data.user.avatarUrl || "");
+
+      setAvatar(null);
+
       setMessage(response.data.message || "Profile updated successfully");
     } catch (error) {
+      console.error("Update profile error:", error);
+
+      console.error("Response:", error.response?.data);
+
       setError(error.response?.data?.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
   };
+
+  // =====================================
+  // UI
+  // =====================================
 
   return (
     <main className="mx-auto max-w-3xl px-6 py-10">
@@ -63,6 +151,7 @@ const Settings = () => {
         className="mt-8 space-y-6 rounded-lg border bg-white p-6"
       >
         {/* Name */}
+
         <div>
           <label className="mb-2 block font-medium">Name</label>
 
@@ -76,6 +165,7 @@ const Settings = () => {
         </div>
 
         {/* Bio */}
+
         <div>
           <label className="mb-2 block font-medium">Bio</label>
 
@@ -93,30 +183,49 @@ const Settings = () => {
           </p>
         </div>
 
-        {/* Avatar URL */}
+        {/* Profile Image */}
+
         <div>
-          <label className="mb-2 block font-medium">Avatar URL</label>
+          <label className="mb-2 block font-medium">Profile Image</label>
 
           <input
-            type="url"
-            value={avatarUrl}
-            onChange={(event) => setAvatarUrl(event.target.value)}
-            placeholder="https://example.com/avatar.jpg"
-            className="w-full rounded-md border px-4 py-3 outline-none focus:ring-2 focus:ring-black"
+            type="file"
+            accept="image/jpeg,image/jpg,image/png,image/webp"
+            onChange={handleAvatarChange}
+            className="w-full rounded-md border px-4 py-3"
           />
+
+          <p className="mt-2 text-sm text-gray-500">
+            JPG, JPEG, PNG or WEBP — Maximum 5MB
+          </p>
+
+          {/* Preview */}
+
+          {avatarPreview && (
+            <div className="mt-4">
+              <img
+                src={avatarPreview}
+                alt="Profile Preview"
+                className="h-32 w-32 rounded-full border object-cover"
+              />
+            </div>
+          )}
         </div>
 
         {/* Success */}
+
         {message && (
           <p className="rounded-md bg-green-50 p-3 text-green-700">{message}</p>
         )}
 
         {/* Error */}
+
         {error && (
           <p className="rounded-md bg-red-50 p-3 text-red-600">{error}</p>
         )}
 
         {/* Submit */}
+
         <button
           type="submit"
           disabled={loading}

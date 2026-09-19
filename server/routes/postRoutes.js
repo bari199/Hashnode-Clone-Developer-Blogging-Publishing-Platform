@@ -7,6 +7,7 @@ import {
   updatePost,
   deletePost,
 } from "../controllers/postController.js";
+import upload from "../middleware/uploadMiddleware.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -19,8 +20,8 @@ router.get("/", getPublishedPosts);
 router.get("/mine", authMiddleware, getMyPosts);
 
 // Protected create/update
-router.post("/", authMiddleware, createPost);
-router.put("/:id", authMiddleware, updatePost);
+router.post("/", authMiddleware, upload.single("coverImage"), createPost);
+router.put("/:id", authMiddleware, upload.single("coverImage"), updatePost);
 router.delete("/:id", authMiddleware, deletePost);
 // Public dynamic route
 router.get("/:slug", getPostBySlug);

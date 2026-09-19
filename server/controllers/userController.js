@@ -1,8 +1,11 @@
 import User from "../models/User.js";
 import Post from "../models/Post.js";
 
+// =====================================
 // GET /api/users/:id
 // Public
+// =====================================
+
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select(
@@ -21,7 +24,9 @@ export const getUserProfile = async (req, res) => {
     })
       .populate("author", "name avatarUrl")
       .populate("tags", "name slug")
-      .sort({ createdAt: -1 });
+      .sort({
+        createdAt: -1,
+      });
 
     return res.status(200).json({
       user,
@@ -36,11 +41,17 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+// =====================================
 // PUT /api/users/me
 // Protected
+// =====================================
+
 export const updateMyProfile = async (req, res) => {
   try {
-    const { name, bio, avatarUrl } = req.body;
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
+
+    const { name, bio } = req.body;
 
     if (!name || !name.trim()) {
       return res.status(400).json({
@@ -58,7 +69,10 @@ export const updateMyProfile = async (req, res) => {
 
     user.name = name.trim();
     user.bio = bio?.trim() || "";
-    user.avatarUrl = avatarUrl?.trim() || "";
+
+    if (req.file) {
+      user.avatarUrl = req.file.path;
+    }
 
     await user.save();
 

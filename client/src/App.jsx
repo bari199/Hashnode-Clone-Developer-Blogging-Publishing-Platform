@@ -11,6 +11,7 @@ import Profile from "./pages/Profile.jsx";
 import PostDetail from "./pages/PostDetail.jsx";
 import PostEditor from "./pages/PostEditor.jsx";
 import Settings from "./pages/Settings.jsx";
+import NotFound from "./pages/NotFound.jsx";
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/editor/:id" element={<PostEditor />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

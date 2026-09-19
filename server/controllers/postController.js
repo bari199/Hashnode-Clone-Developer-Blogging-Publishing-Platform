@@ -4,7 +4,10 @@ import Tag from "../models/Tag.js";
 
 export const createPost = async (req, res) => {
   try {
-    const { title, content, tags, coverImage, status } = req.body;
+    const { title, content, tags, status } = req.body;
+
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
 
     if (!title || !content) {
       return res.status(400).json({
@@ -25,7 +28,7 @@ export const createPost = async (req, res) => {
       title,
       slug,
       content,
-      coverImage: coverImage || "",
+      coverImage: req.file?.path || "",
       status: status || "draft",
       author: req.user._id,
       tags: tagIds,
@@ -36,6 +39,8 @@ export const createPost = async (req, res) => {
       post,
     });
   } catch (error) {
+    console.error("Create post error:", error);
+
     res.status(500).json({
       message: "Failed to create post",
       error: error.message,

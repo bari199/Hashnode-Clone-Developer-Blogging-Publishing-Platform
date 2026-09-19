@@ -1,16 +1,24 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+
 import useAuth from "../hooks/useAuth.js";
 import api from "../api/axios.js";
 import PostList from "../components/post/PostList.jsx";
 
 const Profile = () => {
   const { id } = useParams();
+
   const { user: loggedInUser } = useAuth();
+
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // =====================================
+  // Fetch Profile
+  // =====================================
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -32,7 +40,15 @@ const Profile = () => {
     fetchProfile();
   }, [id]);
 
+  // =====================================
+  // Check Own Profile
+  // =====================================
+
   const isOwnProfile = loggedInUser?._id === profile?._id;
+
+  // =====================================
+  // Loading
+  // =====================================
 
   if (loading) {
     return (
@@ -42,6 +58,10 @@ const Profile = () => {
     );
   }
 
+  // =====================================
+  // Error
+  // =====================================
+
   if (error) {
     return (
       <main className="mx-auto max-w-6xl px-6 py-10">
@@ -50,16 +70,30 @@ const Profile = () => {
     );
   }
 
+  // =====================================
+  // No Profile
+  // =====================================
+
   if (!profile) {
     return null;
   }
 
+  // =====================================
+  // Profile
+  // =====================================
+
   return (
     <main className="mx-auto max-w-6xl px-6 py-10">
+      {/* ================================= */}
       {/* Profile Header */}
+      {/* ================================= */}
+
       <section className="rounded-lg border bg-white p-8">
         <div className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left">
+          {/* ================================= */}
           {/* Avatar */}
+          {/* ================================= */}
+
           {profile.avatarUrl ? (
             <img
               src={profile.avatarUrl}
@@ -72,7 +106,10 @@ const Profile = () => {
             </div>
           )}
 
+          {/* ================================= */}
           {/* Information */}
+          {/* ================================= */}
+
           <div className="mt-5 sm:ml-6 sm:mt-0">
             <h1 className="text-3xl font-bold">{profile.name}</h1>
 
@@ -82,6 +119,11 @@ const Profile = () => {
           </div>
         </div>
       </section>
+
+      {/* ================================= */}
+      {/* Edit Profile */}
+      {/* ================================= */}
+
       {isOwnProfile && (
         <Link
           to="/settings"
@@ -90,7 +132,11 @@ const Profile = () => {
           Edit Profile
         </Link>
       )}
+
+      {/* ================================= */}
       {/* Published Posts */}
+      {/* ================================= */}
+
       <section className="mt-10">
         <h2 className="mb-6 text-2xl font-bold">Published Posts</h2>
 
