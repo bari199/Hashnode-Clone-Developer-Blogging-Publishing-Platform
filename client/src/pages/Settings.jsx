@@ -141,99 +141,131 @@ const Settings = () => {
   // =====================================
 
   return (
-    <main className="mx-auto max-w-3xl px-6 py-10">
-      <h1 className="text-4xl font-bold">Settings</h1>
+    <main className="min-h-screen bg-[#0b0b0f] text-gray-200">
+      <div className="mx-auto max-w-4xl px-6 py-10">
+        <h1 className="text-lg font-bold text-white">Settings</h1>
 
-      <p className="mt-2 text-gray-600">Update your profile information.</p>
-
-      <form
-        onSubmit={handleSubmit}
-        className="mt-8 space-y-6 rounded-lg border bg-white p-6"
-      >
-        {/* Name */}
-
-        <div>
-          <label className="mb-2 block font-medium">Name</label>
-
-          <input
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-md border px-4 py-3 outline-none focus:ring-2 focus:ring-black"
-            required
-          />
+        {/* Tabs (visual only — no routing/logic added) */}
+        <div className="mt-6 flex rounded-lg bg-[#101014] p-1">
+          <span className="flex-1 cursor-default rounded-md bg-white/10 py-2 text-center text-sm font-medium text-white">
+            Profile
+          </span>
+          <span className="flex-1 cursor-default rounded-md py-2 text-center text-sm text-gray-500">
+            Email
+          </span>
+          <span className="flex-1 cursor-default rounded-md py-2 text-center text-sm text-gray-500">
+            Developer
+          </span>
+          <span className="flex-1 cursor-default rounded-md py-2 text-center text-sm text-gray-500">
+            Account
+          </span>
         </div>
 
-        {/* Bio */}
+        <form onSubmit={handleSubmit}>
+          <div className="mt-8 grid grid-cols-1 gap-8 rounded-lg border border-white/10 bg-[#101014] p-6 sm:grid-cols-[1fr_auto]">
+            <div className="space-y-6">
+              {/* Name */}
+              <div>
+                <label className="mb-1 block font-medium text-white">
+                  Full name
+                </label>
+                <p className="mb-2 text-sm text-gray-500">
+                  The name shown on your profile and posts.
+                </p>
 
-        <div>
-          <label className="mb-2 block font-medium">Bio</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  className="w-full rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-200 outline-none focus:ring-2 focus:ring-white/30"
+                  required
+                />
+              </div>
 
-          <textarea
-            value={bio}
-            onChange={(event) => setBio(event.target.value)}
-            maxLength={200}
-            rows={5}
-            placeholder="Tell readers about yourself..."
-            className="w-full resize-none rounded-md border px-4 py-3 outline-none focus:ring-2 focus:ring-black"
-          />
+              {/* Bio */}
+              <div>
+                <label className="mb-1 block font-medium text-white">
+                  About you
+                </label>
+                <p className="mb-2 text-sm text-gray-500">
+                  A short bio shown on your profile and author card.
+                </p>
 
-          <p className="mt-1 text-right text-sm text-gray-500">
-            {bio.length}/200
-          </p>
-        </div>
+                <textarea
+                  value={bio}
+                  onChange={(event) => setBio(event.target.value)}
+                  maxLength={200}
+                  rows={5}
+                  placeholder="Tell readers about the topics you write on."
+                  className="w-full resize-none rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-200 outline-none placeholder:text-gray-600 focus:ring-2 focus:ring-white/30"
+                />
 
-        {/* Profile Image */}
+                <p className="mt-1 text-right text-sm text-gray-600">
+                  {bio.length}/200
+                </p>
+              </div>
 
-        <div>
-          <label className="mb-2 block font-medium">Profile Image</label>
+              {/* Profile Image */}
+              <div>
+                <label className="mb-1 block font-medium text-white">
+                  Profile Image
+                </label>
 
-          <input
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            onChange={handleAvatarChange}
-            className="w-full rounded-md border px-4 py-3"
-          />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
+                  onChange={handleAvatarChange}
+                  className="w-full rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-400 file:mr-4 file:rounded file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-gray-200"
+                />
 
-          <p className="mt-2 text-sm text-gray-500">
-            JPG, JPEG, PNG or WEBP — Maximum 5MB
-          </p>
-
-          {/* Preview */}
-
-          {avatarPreview && (
-            <div className="mt-4">
-              <img
-                src={avatarPreview}
-                alt="Profile Preview"
-                className="h-32 w-32 rounded-full border object-cover"
-              />
+                <p className="mt-2 text-sm text-gray-500">
+                  JPG, JPEG, PNG or WEBP — Maximum 5MB
+                </p>
+              </div>
             </div>
+
+            {/* Avatar preview, positioned like the screenshot */}
+            <div className="flex justify-center sm:justify-start">
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt="Profile Preview"
+                  className="h-24 w-24 rounded-full border border-white/10 object-cover"
+                />
+              ) : (
+                <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/10 text-2xl font-bold text-white">
+                  {name?.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Success */}
+          {message && (
+            <p className="mt-6 rounded-md bg-green-500/10 p-3 text-green-400">
+              {message}
+            </p>
           )}
-        </div>
 
-        {/* Success */}
+          {/* Error */}
+          {error && (
+            <p className="mt-6 rounded-md bg-red-500/10 p-3 text-red-400">
+              {error}
+            </p>
+          )}
 
-        {message && (
-          <p className="rounded-md bg-green-50 p-3 text-green-700">{message}</p>
-        )}
-
-        {/* Error */}
-
-        {error && (
-          <p className="rounded-md bg-red-50 p-3 text-red-600">{error}</p>
-        )}
-
-        {/* Submit */}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded-md bg-black px-6 py-3 text-white disabled:opacity-50"
-        >
-          {loading ? "Saving..." : "Save Changes"}
-        </button>
-      </form>
+          {/* Submit */}
+          <div className="mt-6 flex justify-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-md bg-white px-6 py-2.5 font-medium text-black hover:bg-gray-200 disabled:opacity-50"
+            >
+              {loading ? "Saving..." : "Save changes"}
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
   );
 };

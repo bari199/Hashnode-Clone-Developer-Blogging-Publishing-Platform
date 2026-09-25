@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
-
+import unsplashRoutes from "./routes/unsplashRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import tagRoutes from "./routes/tagRoutes.js";
@@ -26,6 +26,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/tags", tagRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/unsplash", unsplashRoutes);
+
+
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 5000;

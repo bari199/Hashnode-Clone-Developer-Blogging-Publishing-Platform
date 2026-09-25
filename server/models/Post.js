@@ -29,6 +29,26 @@ const postSchema = new mongoose.Schema(
       default: "",
     },
 
+    coverImageUrl: {
+      type: String,
+      default: "",
+    },
+
+    coverImageAuthor: {
+      type: String,
+      default: "",
+    },
+
+    coverImageAuthorUrl: {
+      type: String,
+      default: "",
+    },
+
+    coverImageUnsplashUrl: {
+      type: String,
+      default: "",
+    },
+
     status: {
       type: String,
       enum: ["draft", "published"],

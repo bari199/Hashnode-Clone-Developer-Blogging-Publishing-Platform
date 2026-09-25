@@ -2,165 +2,267 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../api/axios.js";
 import useAuth from "../hooks/useAuth.js";
-
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 const Dashboard = () => {
   const { user } = useAuth();
-
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
   const fetchMyPosts = async () => {
     try {
       setLoading(true);
       setError("");
-
       const response = await api.get("/posts/mine");
-
       setPosts(response.data.posts);
     } catch (error) {
-      setError(error.response?.data?.message || "Failed to load your posts");
+      setError(error.response?.data?.message || "Failed to load your posts.");
     } finally {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchMyPosts();
   }, []);
-
   const handleDelete = async (postId) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this post?",
     );
-
     if (!confirmed) {
       return;
     }
-
     try {
       await api.delete(`/posts/${postId}`);
-
       setPosts((currentPosts) =>
         currentPosts.filter((post) => post._id !== postId),
       );
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to delete post");
+      alert(error.response?.data?.message || "Failed to delete post.");
     }
   };
-
-  if (loading) {
+  /* Loading */ if (loading) {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-center">Loading dashboard...</p>
+      <main className="min-h-screen bg-[#08090b] text-white">
+        {" "}
+        <div className="mx-auto flex min-h-screen max-w-6xl items-center justify-center px-6">
+          {" "}
+          <div className="text-center">
+            {" "}
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />{" "}
+            <p className="text-sm text-zinc-400"> Loading dashboard... </p>{" "}
+          </div>{" "}
+        </div>{" "}
       </main>
     );
   }
-
-  if (error) {
+  /* Error */ if (error) {
     return (
-      <main className="mx-auto max-w-6xl px-6 py-10">
-        <p className="text-center text-red-500">{error}</p>
+      <main className="min-h-screen bg-[#08090b] px-6 py-10 text-white">
+        {" "}
+        <div className="mx-auto max-w-6xl">
+          {" "}
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-300">
+            {" "}
+            {error}{" "}
+          </div>{" "}
+        </div>{" "}
       </main>
     );
   }
-
   return (
-    <main className="mx-auto max-w-6xl px-6 py-10">
-      {/* Header */}
-      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <div>
-          <h1 className="text-4xl font-bold">Dashboard</h1>
-
-          <p className="mt-2 text-gray-600">Manage your posts.</p>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link
-            to={`/profile/${user?._id}`}
-            className="rounded-md border px-5 py-3 text-center hover:bg-gray-50"
-          >
-            View Profile
-          </Link>
-
-          <Link
-            to="/editor/new"
-            className="rounded-md bg-black px-5 py-3 text-center text-white hover:bg-gray-800"
-          >
-            + New Post
-          </Link>
-        </div>
-      </div>
-
-      {/* Posts */}
-      <div className="mt-10 space-y-4">
-        {posts.length === 0 ? (
-          <div className="rounded-lg border p-10 text-center">
-            <p className="text-gray-500">You haven't created any posts yet.</p>
-
-            <Link
-              to="/editor/new"
-              className="mt-4 inline-block font-medium underline"
+    <main className="min-h-screen bg-[#08090b] text-white">
+      {" "}
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        {" "}
+        {/* Header */}{" "}
+        <div className="flex flex-col justify-between gap-6 border-b border-white/[0.08] pb-8 sm:flex-row sm:items-end">
+          {" "}
+          <div>
+            {" "}
+            <p className="mb-2 text-sm font-medium text-zinc-500">
+              {" "}
+              Dashboard{" "}
+            </p>{" "}
+            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              {" "}
+              Welcome back{user?.name ? `, ${user.name}` : ""}{" "}
+            </h1>{" "}
+            <p className="mt-2 text-sm text-zinc-400">
+              {" "}
+              Manage your posts and continue sharing your ideas.{" "}
+            </p>{" "}
+          </div>{" "}
+          <div className="flex flex-col gap-3 sm:flex-row">
+            {" "}
+            <Button
+              asChild
+              variant="outline"
+              className="border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.08] hover:text-white"
             >
-              Create your first post
-            </Link>
-          </div>
-        ) : (
-          posts.map((post) => (
-            <div key={post._id} className="rounded-lg border bg-white p-5">
-              <div className="flex flex-col justify-between gap-4 md:flex-row">
-                {/* Post Information */}
-                <div>
-                  <h2 className="text-xl font-bold">{post.title}</h2>
-
-                  <p className="mt-2 text-sm text-gray-500">
-                    {new Date(post.createdAt).toLocaleDateString()}
-                  </p>
-
-                  {/* Status */}
-                  <span
-                    className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-medium ${
-                      post.status === "published"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {post.status}
-                  </span>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-3">
-                  {post.status === "published" && (
-                    <Link
-                      to={`/post/${post.slug}`}
-                      className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
-                    >
-                      View
-                    </Link>
-                  )}
-
-                  <Link
-                    to={`/editor/${post._id}`}
-                    className="rounded-md bg-gray-100 px-4 py-2 text-sm hover:bg-gray-200"
-                  >
-                    Edit
-                  </Link>
-
-                  <button
-                    onClick={() => handleDelete(post._id)}
-                    className="rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
+              {" "}
+              <Link to={`/profile/${user?._id}`}> View Profile </Link>{" "}
+            </Button>{" "}
+            <Button
+              asChild
+              className="bg-white font-semibold text-black hover:bg-zinc-200"
+            >
+              {" "}
+              <Link to="/editor/new"> + New Post </Link>{" "}
+            </Button>{" "}
+          </div>{" "}
+        </div>{" "}
+        {/* Stats */}{" "}
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          {" "}
+          <Card className="border-white/[0.08] bg-[#0d0f12] text-white">
+            {" "}
+            <CardContent className="p-5">
+              {" "}
+              <p className="text-sm text-zinc-500"> Total Posts </p>{" "}
+              <p className="mt-2 text-3xl font-bold"> {posts.length} </p>{" "}
+            </CardContent>{" "}
+          </Card>{" "}
+          <Card className="border-white/[0.08] bg-[#0d0f12] text-white">
+            {" "}
+            <CardContent className="p-5">
+              {" "}
+              <p className="text-sm text-zinc-500"> Published </p>{" "}
+              <p className="mt-2 text-3xl font-bold">
+                {" "}
+                {
+                  posts.filter((post) => post.status === "published").length
+                }{" "}
+              </p>{" "}
+            </CardContent>{" "}
+          </Card>{" "}
+          <Card className="border-white/[0.08] bg-[#0d0f12] text-white">
+            {" "}
+            <CardContent className="p-5">
+              {" "}
+              <p className="text-sm text-zinc-500"> Drafts </p>{" "}
+              <p className="mt-2 text-3xl font-bold">
+                {" "}
+                {
+                  posts.filter((post) => post.status !== "published").length
+                }{" "}
+              </p>{" "}
+            </CardContent>{" "}
+          </Card>{" "}
+        </div>{" "}
+        {/* Posts */}{" "}
+        <div className="mt-10">
+          {" "}
+          <div className="mb-5 flex items-center justify-between">
+            {" "}
+            <div>
+              {" "}
+              <h2 className="text-xl font-semibold"> Your Posts </h2>{" "}
+              <p className="mt-1 text-sm text-zinc-500">
+                {" "}
+                Manage your published articles and drafts.{" "}
+              </p>{" "}
+            </div>{" "}
+          </div>{" "}
+          {posts.length === 0 ? (
+            <Card className="border-white/[0.08] bg-[#0d0f12] text-white">
+              {" "}
+              <CardContent className="flex flex-col items-center justify-center px-6 py-16 text-center">
+                {" "}
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-white/[0.05]">
+                  {" "}
+                  <span className="text-2xl text-zinc-400"> + </span>{" "}
+                </div>{" "}
+                <h3 className="text-lg font-semibold"> No posts yet </h3>{" "}
+                <p className="mt-2 max-w-sm text-sm text-zinc-500">
+                  {" "}
+                  You haven't created any posts yet. Start writing your first
+                  article and share it with the community.{" "}
+                </p>{" "}
+                <Button
+                  asChild
+                  className="mt-6 bg-white font-semibold text-black hover:bg-zinc-200"
+                >
+                  {" "}
+                  <Link to="/editor/new"> Create your first post </Link>{" "}
+                </Button>{" "}
+              </CardContent>{" "}
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {" "}
+              {posts.map((post) => (
+                <Card
+                  key={post._id}
+                  className="border-white/[0.08] bg-[#0d0f12] text-white transition-colors hover:border-white/[0.14]"
+                >
+                  {" "}
+                  <CardHeader className="pb-4">
+                    {" "}
+                    <div className="flex flex-col justify-between gap-5 md:flex-row md:items-start">
+                      {" "}
+                      {/* Post Info */}{" "}
+                      <div className="min-w-0">
+                        {" "}
+                        <CardTitle className="text-lg font-semibold leading-7">
+                          {" "}
+                          {post.title}{" "}
+                        </CardTitle>{" "}
+                        <p className="mt-2 text-xs text-zinc-500">
+                          {" "}
+                          Created{" "}
+                          {new Date(post.createdAt).toLocaleDateString()}{" "}
+                        </p>{" "}
+                        <Badge
+                          variant="outline"
+                          className={`mt-3 border-0 ${post.status === "published" ? "bg-emerald-500/10 text-emerald-400" : "bg-yellow-500/10 text-yellow-400"}`}
+                        >
+                          {" "}
+                          {post.status}{" "}
+                        </Badge>{" "}
+                      </div>{" "}
+                      {/* Actions */}{" "}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {" "}
+                        {post.status === "published" && (
+                          <Button
+                            asChild
+                            variant="outline"
+                            size="sm"
+                            className="border-white/10 bg-transparent text-white hover:bg-white/[0.08] hover:text-white"
+                          >
+                            {" "}
+                            <Link to={`/post/${post.slug}`}> View </Link>{" "}
+                          </Button>
+                        )}{" "}
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="border-white/10 bg-white/[0.03] text-zinc-300 hover:bg-white/[0.08] hover:text-white"
+                        >
+                          {" "}
+                          <Link to={`/editor/${post._id}`}> Edit </Link>{" "}
+                        </Button>{" "}
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleDelete(post._id)}
+                        >
+                          {" "}
+                          Delete{" "}
+                        </Button>{" "}
+                      </div>{" "}
+                    </div>{" "}
+                  </CardHeader>{" "}
+                </Card>
+              ))}{" "}
             </div>
-          ))
-        )}
-      </div>
+          )}{" "}
+        </div>{" "}
+      </div>{" "}
     </main>
   );
 };
-
 export default Dashboard;
