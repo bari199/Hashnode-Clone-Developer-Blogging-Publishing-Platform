@@ -1,4 +1,5 @@
 import express from "express";
+
 import {
   createPost,
   getPublishedPosts,
@@ -7,23 +8,35 @@ import {
   updatePost,
   deletePost,
 } from "../controllers/postController.js";
+
+import protect from "../middleware/authMiddleware.js";
+
 import upload from "../middleware/uploadMiddleware.js";
-import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Public
-// Public
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
 router.get("/", getPublishedPosts);
 
-// Protected specific route
-router.get("/mine", authMiddleware, getMyPosts);
-
-// Protected create/update
-router.post("/", authMiddleware, upload.single("coverImage"), createPost);
-router.put("/:id", authMiddleware, upload.single("coverImage"), updatePost);
-router.delete("/:id", authMiddleware, deletePost);
-// Public dynamic route
 router.get("/:slug", getPostBySlug);
+
+/*
+|--------------------------------------------------------------------------
+| Protected Routes
+|--------------------------------------------------------------------------
+*/
+
+router.post("/", protect, upload.single("coverImage"), createPost);
+
+router.get("/my/posts", protect, getMyPosts);
+
+router.put("/:id", protect, upload.single("coverImage"), updatePost);
+
+router.delete("/:id", protect, deletePost);
 
 export default router;

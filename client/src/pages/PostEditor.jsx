@@ -1,12 +1,21 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Image as ImageIcon, Search, X } from "lucide-react";
+
+import {
+  Image as ImageIcon,
+  Search,
+  Sparkles,
+  Upload,
+  X,
+  Loader2,
+} from "lucide-react";
 
 import api from "../api/axios.js";
 import MarkdownEditor from "../components/editor/MarkdownEditor.jsx";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 import {
@@ -14,6 +23,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 
 const PostEditor = () => {
@@ -22,36 +32,41 @@ const PostEditor = () => {
 
   const isEditMode = Boolean(id);
 
-  // ============================================
-  // Article States
-  // ============================================
+  // =========================================================
+  // BASIC POST STATES
+  // =========================================================
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [excerpt, setExcerpt] = useState("");
   const [tags, setTags] = useState("");
   const [status, setStatus] = useState("draft");
 
-  // ============================================
-  // Cover Image States
-  // ============================================
+  // =========================================================
+  // COVER IMAGE STATES
+  // =========================================================
 
-  // Local uploaded File
+  // local | unsplash | ai
+  const [coverImageSource, setCoverImageSource] = useState("");
+
+  // Local image
   const [coverImage, setCoverImage] = useState(null);
 
-  // Preview URL
+  // Preview
   const [coverPreview, setCoverPreview] = useState("");
 
-  // Unsplash image URL
+  // Unsplash
   const [coverImageUrl, setCoverImageUrl] = useState("");
-
-  // Unsplash attribution information
   const [coverImageAuthor, setCoverImageAuthor] = useState("");
   const [coverImageAuthorUrl, setCoverImageAuthorUrl] = useState("");
   const [coverImageUnsplashUrl, setCoverImageUnsplashUrl] = useState("");
 
-  // ============================================
-  // General States
-  // ============================================
+  // AI generated image
+  const [aiImageUrl, setAiImageUrl] = useState("");
+
+  // =========================================================
+  // GENERAL STATES
+  // =========================================================
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(isEditMode);
@@ -59,9 +74,9 @@ const PostEditor = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  // ============================================
-  // Unsplash States
-  // ============================================
+  // =========================================================
+  // UNSPLASH STATES
+  // =========================================================
 
   const [unsplashOpen, setUnsplashOpen] = useState(false);
   const [unsplashQuery, setUnsplashQuery] = useState("");
@@ -69,9 +84,37 @@ const PostEditor = () => {
   const [unsplashLoading, setUnsplashLoading] = useState(false);
   const [unsplashError, setUnsplashError] = useState("");
 
-  // ============================================
-  // Load Existing Post
-  // ============================================
+  // =========================================================
+  // AI IMAGE STATES
+  // =========================================================
+
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiError, setAiError] = useState("");
+
+  // =========================================================
+  // AI WRITING STATES
+  // =========================================================
+
+  const [aiLoading, setAiLoading] = useState({
+    title: false,
+    tags: false,
+    content: false,
+    excerpt: false,
+    cover: false,
+  });
+
+  const setAiLoadingState = (key, value) => {
+    setAiLoading((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  // =========================================================
+  // LOAD EXISTING POST
+  // =========================================================
 
   useEffect(() => {
     if (!isEditMode) {
@@ -85,32 +128,55 @@ const PostEditor = () => {
 
         const response = await api.get("/posts/mine");
 
-        const existingPost = response.data.posts.find(
+        const existingPost = response.data.posts?.find(
           (post) => post._id === id,
         );
 
         if (!existingPost) {
-          setError("Post not found");
+          setError("Post not found.");
           return;
         }
 
+        // Basic information
         setTitle(existingPost.title || "");
         setContent(existingPost.content || "");
+        setExcerpt(existingPost.excerpt || "");
         setStatus(existingPost.status || "draft");
 
+        // Tags
         if (existingPost.tags?.length > 0) {
-          setTags(existingPost.tags.map((tag) => tag.name).join(", "));
+          setTags(
+            existingPost.tags
+              .map((tag) => tag.name)
+              .filter(Boolean)
+              .join(", "),
+          );
         }
 
+        // Existing local cover image
         if (existingPost.coverImage) {
           setCoverPreview(existingPost.coverImage);
+          setCoverImageSource("local");
         }
 
-        // Unsplash metadata if available
-        setCoverImageUrl(existingPost.coverImageUrl || "");
-        setCoverImageAuthor(existingPost.coverImageAuthor || "");
-        setCoverImageAuthorUrl(existingPost.coverImageAuthorUrl || "");
-        setCoverImageUnsplashUrl(existingPost.coverImageUnsplashUrl || "");
+        // Existing Unsplash image
+        if (existingPost.coverImageUrl) {
+          setCoverImageUrl(existingPost.coverImageUrl);
+          setCoverPreview(existingPost.coverImageUrl);
+
+          if (existingPost.coverImageSource === "ai") {
+            setCoverImageSource("ai");
+            setAiImageUrl(existingPost.coverImageUrl);
+          } else {
+            setCoverImageSource("unsplash");
+
+            setCoverImageAuthor(existingPost.coverImageAuthor || "");
+
+            setCoverImageAuthorUrl(existingPost.coverImageAuthorUrl || "");
+
+            setCoverImageUnsplashUrl(existingPost.coverImageUnsplashUrl || "");
+          }
+        }
       } catch (error) {
         console.error("Load post error:", error);
 
@@ -123,9 +189,9 @@ const PostEditor = () => {
     loadPost();
   }, [id, isEditMode]);
 
-  // ============================================
-  // Local Image Upload
-  // ============================================
+  // =========================================================
+  // SELECT LOCAL IMAGE
+  // =========================================================
 
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
@@ -148,29 +214,80 @@ const PostEditor = () => {
 
     setError("");
 
-    // Local upload becomes the active cover image
+    setCoverImageSource("local");
     setCoverImage(file);
-    setCoverImageUrl("");
 
-    // Clear Unsplash metadata
+    // Clear Unsplash
+    setCoverImageUrl("");
     setCoverImageAuthor("");
     setCoverImageAuthorUrl("");
     setCoverImageUnsplashUrl("");
 
-    const previewUrl = URL.createObjectURL(file);
+    // Clear AI
+    setAiImageUrl("");
 
+    // Preview
+    const previewUrl = URL.createObjectURL(file);
     setCoverPreview(previewUrl);
   };
 
-  // ============================================
-  // Search Unsplash
-  // ============================================
+  // =========================================================
+  // REMOVE COVER IMAGE
+  // =========================================================
 
-  const handleUnsplashSearch = async () => {
-    const query = unsplashQuery.trim();
+  const handleRemoveImage = () => {
+    setCoverImage(null);
+    setCoverPreview("");
+    setCoverImageSource("");
 
-    if (!query) {
-      setUnsplashError("Please enter something to search.");
+    setCoverImageUrl("");
+    setCoverImageAuthor("");
+    setCoverImageAuthorUrl("");
+    setCoverImageUnsplashUrl("");
+
+    setAiImageUrl("");
+  };
+
+  // =========================================================
+  // SELECT LOCAL IMAGE MODE
+  // =========================================================
+
+  const handleSelectLocal = () => {
+    setCoverImageSource("local");
+
+    setCoverImageUrl("");
+    setCoverImageAuthor("");
+    setCoverImageAuthorUrl("");
+    setCoverImageUnsplashUrl("");
+
+    setAiImageUrl("");
+
+    if (!coverImage) {
+      setCoverPreview("");
+    }
+  };
+
+  // =========================================================
+  // OPEN UNSPLASH
+  // =========================================================
+
+  const handleOpenUnsplash = () => {
+    setUnsplashOpen(true);
+
+    setUnsplashError("");
+    setUnsplashQuery("");
+    setUnsplashPhotos([]);
+  };
+
+  // =========================================================
+  // SEARCH UNSPLASH
+  // =========================================================
+
+  const handleUnsplashSearch = async (event) => {
+    event?.preventDefault();
+
+    if (!unsplashQuery.trim()) {
+      setUnsplashError("Please enter a search term.");
       return;
     }
 
@@ -180,7 +297,7 @@ const PostEditor = () => {
 
       const response = await api.get("/unsplash/search", {
         params: {
-          query,
+          query: unsplashQuery.trim(),
           page: 1,
           perPage: 12,
         },
@@ -190,79 +307,262 @@ const PostEditor = () => {
     } catch (error) {
       console.error("Unsplash search error:", error);
 
-      setUnsplashPhotos([]);
-
       setUnsplashError(
-        error.response?.data?.message || "Failed to search Unsplash photos.",
+        error.response?.data?.message || "Failed to search Unsplash.",
       );
     } finally {
       setUnsplashLoading(false);
     }
   };
 
-  // ============================================
-  // Select Unsplash Image
-  // ============================================
+  // =========================================================
+  // SELECT UNSPLASH IMAGE
+  // =========================================================
 
-  const handleSelectUnsplashPhoto = async (photo) => {
-    if (!photo?.imageUrl) {
+  const handleSelectUnsplashImage = async (photo) => {
+    try {
+      setError("");
+
+      // Unsplash download tracking
+      if (photo.downloadLocation) {
+        try {
+          await api.get("/unsplash/download", {
+            params: {
+              url: photo.downloadLocation,
+            },
+          });
+        } catch (downloadError) {
+          console.error("Unsplash download tracking error:", downloadError);
+        }
+      }
+
+      // Set Unsplash as active source
+      setCoverImageSource("unsplash");
+
+      // Clear local image
+      setCoverImage(null);
+
+      // Clear AI image
+      setAiImageUrl("");
+
+      // Store Unsplash information
+      setCoverImageUrl(photo.imageUrl || "");
+      setCoverImageAuthor(photo.photographer || "");
+      setCoverImageAuthorUrl(photo.photographerUrl || "");
+      setCoverImageUnsplashUrl(photo.unsplashUrl || "");
+
+      // Preview
+      setCoverPreview(photo.imageUrl || "");
+
+      // Close dialog
+      setUnsplashOpen(false);
+    } catch (error) {
+      console.error("Select Unsplash image error:", error);
+
+      setError("Failed to select Unsplash image.");
+    }
+  };
+
+  // =========================================================
+  // OPEN AI IMAGE GENERATOR
+  // =========================================================
+
+  const handleOpenAI = () => {
+    setAiOpen(true);
+    setAiError("");
+
+    if (!aiPrompt.trim() && title.trim()) {
+      setAiPrompt(
+        `Create a professional developer blog cover image about ${title}`,
+      );
+    }
+  };
+
+  // =========================================================
+  // GENERATE AI IMAGE
+  // =========================================================
+
+  const handleGenerateAIImage = async () => {
+    if (!aiPrompt.trim()) {
+      setAiError("Please describe the image you want.");
       return;
     }
 
-    /*
-     * Unsplash requires the download_location endpoint
-     * to be triggered when a user chooses a photo to
-     * include in a blog post.
-     *
-     * We intentionally don't block the UI if tracking fails.
-     */
-    if (photo.downloadLocation) {
-      api
-        .get("/unsplash/download", {
-          params: {
-            url: photo.downloadLocation,
-          },
-        })
-        .catch((error) => {
-          console.error("Unsplash download tracking error:", error);
-        });
+    try {
+      setAiGenerating(true);
+      setAiError("");
+
+      const response = await api.post("/ai/generate-cover", {
+        prompt: aiPrompt.trim(),
+      });
+
+      const imageUrl = response.data?.image?.url;
+
+      if (!imageUrl) {
+        throw new Error("AI image URL was not returned.");
+      }
+
+      // AI becomes active source
+      setCoverImageSource("ai");
+
+      // Clear local
+      setCoverImage(null);
+
+      // Clear Unsplash
+      setCoverImageUrl("");
+      setCoverImageAuthor("");
+      setCoverImageAuthorUrl("");
+      setCoverImageUnsplashUrl("");
+
+      // Store AI image
+      setAiImageUrl(imageUrl);
+
+      // Preview
+      setCoverPreview(imageUrl);
+
+      // Close dialog
+      setAiOpen(false);
+    } catch (error) {
+      console.error("AI image generation error:", error);
+
+      setAiError(
+        error.response?.data?.message || "Failed to generate AI image.",
+      );
+    } finally {
+      setAiGenerating(false);
+    }
+  };
+
+  // =========================================================
+  // AI GENERATE TITLE
+  // =========================================================
+
+  const handleGenerateTitle = async () => {
+    if (!title.trim()) {
+      setError("Please enter a topic first.");
+      return;
     }
 
-    // Unsplash becomes the active cover image
-    setCoverImage(null);
-    setCoverImageUrl(photo.imageUrl);
-    setCoverPreview(photo.imageUrl);
+    try {
+      setAiLoadingState("title", true);
+      setError("");
 
-    // Attribution data
-    setCoverImageAuthor(photo.photographer || "");
+      const response = await api.post("/ai/generate-title", {
+        topic: title.trim(),
+      });
 
-    setCoverImageAuthorUrl(photo.photographerUrl || "");
+      setTitle(response.data.title || "");
+    } catch (error) {
+      console.error("Generate title error:", error);
 
-    setCoverImageUnsplashUrl(photo.unsplashUrl || "");
-
-    setError("");
-    setUnsplashError("");
-    setUnsplashOpen(false);
+      setError(error.response?.data?.message || "Failed to generate title.");
+    } finally {
+      setAiLoadingState("title", false);
+    }
   };
 
-  // ============================================
-  // Remove Cover Image
-  // ============================================
+  // =========================================================
+  // AI GENERATE TAGS
+  // =========================================================
 
-  const handleRemoveImage = () => {
-    setCoverImage(null);
-    setCoverPreview("");
+  const handleGenerateTags = async () => {
+    if (!title.trim()) {
+      setError("Please enter a title first.");
+      return;
+    }
 
-    setCoverImageUrl("");
+    try {
+      setAiLoadingState("tags", true);
+      setError("");
 
-    setCoverImageAuthor("");
-    setCoverImageAuthorUrl("");
-    setCoverImageUnsplashUrl("");
+      const response = await api.post("/ai/generate-tags", {
+        title: title.trim(),
+        content: content.trim(),
+      });
+
+      const generatedTags = response.data.tags;
+
+      if (Array.isArray(generatedTags)) {
+        setTags(generatedTags.join(", "));
+      } else {
+        setTags(generatedTags || "");
+      }
+    } catch (error) {
+      console.error("Generate tags error:", error);
+
+      setError(error.response?.data?.message || "Failed to generate tags.");
+    } finally {
+      setAiLoadingState("tags", false);
+    }
   };
 
-  // ============================================
-  // Submit Post
-  // ============================================
+  // =========================================================
+  // AI GENERATE CONTENT
+  // =========================================================
+
+  const handleGenerateContent = async () => {
+    if (!title.trim()) {
+      setError("Please enter a title first.");
+      return;
+    }
+
+    try {
+      setAiLoadingState("content", true);
+      setError("");
+
+      const response = await api.post("/ai/generate-content", {
+        title: title.trim(),
+        tags: tags.trim(),
+        topic: title.trim(),
+      });
+
+      setContent(response.data.content || "");
+    } catch (error) {
+      console.error("Generate content error:", error);
+
+      setError(error.response?.data?.message || "Failed to generate content.");
+    } finally {
+      setAiLoadingState("content", false);
+    }
+  };
+
+  // =========================================================
+  // AI GENERATE EXCERPT
+  // =========================================================
+
+  const handleGenerateExcerpt = async () => {
+    if (!title.trim()) {
+      setError("Please enter a title first.");
+      return;
+    }
+
+    if (!content.trim()) {
+      setError("Please generate or write content first.");
+      return;
+    }
+
+    try {
+      setAiLoadingState("excerpt", true);
+      setError("");
+
+      const response = await api.post("/ai/generate-excerpt", {
+        title: title.trim(),
+        content: content.trim(),
+      });
+
+      setExcerpt(response.data.excerpt || "");
+    } catch (error) {
+      console.error("Generate excerpt error:", error);
+
+      setError(error.response?.data?.message || "Failed to generate excerpt.");
+    } finally {
+      setAiLoadingState("excerpt", false);
+    }
+  };
+
+  // =========================================================
+  // SUBMIT POST
+  // =========================================================
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -270,6 +570,7 @@ const PostEditor = () => {
     setError("");
     setMessage("");
 
+    // Validation
     if (!title.trim()) {
       setError("Title is required.");
       return;
@@ -285,34 +586,33 @@ const PostEditor = () => {
 
       const formData = new FormData();
 
-      formData.append("title", title);
+      // Basic post data
+      formData.append("title", title.trim());
       formData.append("content", content);
+      formData.append("excerpt", excerpt.trim());
       formData.append("status", status);
 
-      // ==========================================
       // Tags
-      // ==========================================
-
       const tagArray = tags
         .split(",")
         .map((tag) => tag.trim())
-        .filter((tag) => tag);
+        .filter(Boolean);
 
       formData.append("tags", JSON.stringify(tagArray));
 
-      // ==========================================
-      // Local Uploaded Image
-      // ==========================================
+      // =====================================================
+      // LOCAL COVER IMAGE
+      // =====================================================
 
-      if (coverImage) {
+      if (coverImageSource === "local" && coverImage) {
         formData.append("coverImage", coverImage);
       }
 
-      // ==========================================
-      // Unsplash Image
-      // ==========================================
+      // =====================================================
+      // UNSPLASH COVER IMAGE
+      // =====================================================
 
-      if (!coverImage && coverImageUrl) {
+      if (coverImageSource === "unsplash" && coverImageUrl) {
         formData.append("coverImageUrl", coverImageUrl);
 
         formData.append("coverImageAuthor", coverImageAuthor);
@@ -322,9 +622,19 @@ const PostEditor = () => {
         formData.append("coverImageUnsplashUrl", coverImageUnsplashUrl);
       }
 
-      // ==========================================
-      // Edit Existing Post
-      // ==========================================
+      // =====================================================
+      // AI COVER IMAGE
+      // =====================================================
+
+      if (coverImageSource === "ai" && aiImageUrl) {
+        formData.append("coverImageUrl", aiImageUrl);
+
+        formData.append("coverImageSource", "ai");
+      }
+
+      // =====================================================
+      // UPDATE POST
+      // =====================================================
 
       if (isEditMode) {
         const response = await api.put(`/posts/${id}`, formData);
@@ -340,9 +650,9 @@ const PostEditor = () => {
         return;
       }
 
-      // ==========================================
-      // Create New Post
-      // ==========================================
+      // =====================================================
+      // CREATE POST
+      // =====================================================
 
       const response = await api.post("/posts", formData);
 
@@ -362,9 +672,9 @@ const PostEditor = () => {
     }
   };
 
-  // ============================================
-  // Loading
-  // ============================================
+  // =========================================================
+  // LOADING SCREEN
+  // =========================================================
 
   if (fetching) {
     return (
@@ -380,16 +690,16 @@ const PostEditor = () => {
     );
   }
 
-  // ============================================
-  // UI
-  // ============================================
+  // =========================================================
+  // MAIN UI
+  // =========================================================
 
   return (
     <main className="min-h-screen bg-[#08090b] text-white">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        {/* ====================================== */}
-        {/* Header */}
-        {/* ====================================== */}
+        {/* =================================================
+            HEADER
+        ================================================= */}
 
         <div className="mb-8">
           <p className="mb-2 text-sm font-medium text-zinc-500">
@@ -407,19 +717,27 @@ const PostEditor = () => {
           </p>
         </div>
 
-        {/* ====================================== */}
-        {/* Error */}
-        {/* ====================================== */}
+        {/* =================================================
+            ERROR
+        ================================================= */}
 
         {error && (
-          <div className="mb-6 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-            {error}
+          <div className="mb-6 flex items-start justify-between gap-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <p>{error}</p>
+
+            <button
+              type="button"
+              onClick={() => setError("")}
+              className="text-red-300/70 hover:text-red-200"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
         )}
 
-        {/* ====================================== */}
-        {/* Success */}
-        {/* ====================================== */}
+        {/* =================================================
+            SUCCESS
+        ================================================= */}
 
         {message && (
           <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
@@ -427,15 +745,15 @@ const PostEditor = () => {
           </div>
         )}
 
-        {/* ====================================== */}
-        {/* Form */}
-        {/* ====================================== */}
+        {/* =================================================
+            FORM
+        ================================================= */}
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
-            {/* ================================== */}
-            {/* Article Details */}
-            {/* ================================== */}
+            {/* =================================================
+                ARTICLE DETAILS
+            ================================================= */}
 
             <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
               <CardHeader>
@@ -443,7 +761,8 @@ const PostEditor = () => {
               </CardHeader>
 
               <CardContent className="space-y-6">
-                {/* Title */}
+                {/* TITLE */}
+
                 <div className="space-y-2">
                   <label
                     htmlFor="title"
@@ -463,7 +782,8 @@ const PostEditor = () => {
                   />
                 </div>
 
-                {/* Tags */}
+                {/* TAGS */}
+
                 <div className="space-y-2">
                   <label
                     htmlFor="tags"
@@ -486,41 +806,119 @@ const PostEditor = () => {
                   </p>
                 </div>
 
-                {/* ================================= */}
-                {/* Cover Image */}
-                {/* ================================= */}
+                {/* EXCERPT */}
+
+                <div className="space-y-2">
+                  <label
+                    htmlFor="excerpt"
+                    className="text-sm font-medium text-zinc-200"
+                  >
+                    Excerpt
+                  </label>
+
+                  <textarea
+                    id="excerpt"
+                    value={excerpt}
+                    onChange={(event) => setExcerpt(event.target.value)}
+                    placeholder="Write a short description of your article..."
+                    rows={3}
+                    className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                  />
+
+                  <p className="text-xs text-zinc-500">
+                    A short summary of your article.
+                  </p>
+                </div>
+
+                {/* =================================================
+                    COVER IMAGE
+                ================================================= */}
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-zinc-200">
+                    <p className="text-sm font-medium text-zinc-200">
                       Cover Image
-                    </label>
+                    </p>
 
                     <p className="mt-1 text-xs text-zinc-500">
-                      Upload your own image or choose one from Unsplash.
+                      Choose an image source for your article.
                     </p>
                   </div>
 
-                  {/* Image Options */}
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {/* Local Upload */}
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
-                      <div className="mb-3 flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06]">
-                          <ImageIcon className="h-4 w-4 text-zinc-300" />
-                        </div>
+                  {/* IMAGE OPTIONS */}
 
-                        <div>
-                          <p className="text-sm font-medium text-zinc-200">
-                            Upload image
-                          </p>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                    {/* LOCAL */}
 
-                          <p className="text-xs text-zinc-500">
-                            JPG, PNG or WEBP
-                          </p>
-                        </div>
+                    <button
+                      type="button"
+                      onClick={handleSelectLocal}
+                      className={`group rounded-xl border p-4 text-left transition ${
+                        coverImageSource === "local"
+                          ? "border-white/30 bg-white/[0.08]"
+                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]"
+                      }`}
+                    >
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]">
+                        <Upload className="h-5 w-5 text-zinc-200" />
                       </div>
 
+                      <p className="text-sm font-semibold">Local Image</p>
+
+                      <p className="mt-1 text-xs text-zinc-500">
+                        Upload from your computer.
+                      </p>
+                    </button>
+
+                    {/* UNSPLASH */}
+
+                    <button
+                      type="button"
+                      onClick={handleOpenUnsplash}
+                      className={`group rounded-xl border p-4 text-left transition ${
+                        coverImageSource === "unsplash"
+                          ? "border-white/30 bg-white/[0.08]"
+                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]"
+                      }`}
+                    >
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]">
+                        <ImageIcon className="h-5 w-5 text-zinc-200" />
+                      </div>
+
+                      <p className="text-sm font-semibold">Unsplash</p>
+
+                      <p className="mt-1 text-xs text-zinc-500">
+                        Search free photos.
+                      </p>
+                    </button>
+
+                    {/* AI */}
+
+                    <button
+                      type="button"
+                      onClick={handleOpenAI}
+                      className={`group rounded-xl border p-4 text-left transition ${
+                        coverImageSource === "ai"
+                          ? "border-white/30 bg-white/[0.08]"
+                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]"
+                      }`}
+                    >
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]">
+                        <Sparkles className="h-5 w-5 text-zinc-200" />
+                      </div>
+
+                      <p className="text-sm font-semibold">AI Generate</p>
+
+                      <p className="mt-1 text-xs text-zinc-500">
+                        Create a custom cover with AI.
+                      </p>
+                    </button>
+                  </div>
+
+                  {/* LOCAL UPLOAD */}
+
+                  {coverImageSource === "local" && (
+                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
                       <Input
                         id="coverImage"
                         type="file"
@@ -528,107 +926,175 @@ const PostEditor = () => {
                         onChange={handleImageChange}
                         className="h-auto cursor-pointer border-white/10 bg-white/[0.04] py-3 text-zinc-300 file:mr-4 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-black hover:bg-white/[0.06]"
                       />
+
+                      <p className="mt-2 text-xs text-zinc-500">
+                        JPG, JPEG, PNG or WEBP · Maximum 5MB
+                      </p>
                     </div>
+                  )}
 
-                    {/* Unsplash */}
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
-                      <div className="mb-3 flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06]">
-                          <Search className="h-4 w-4 text-zinc-300" />
-                        </div>
+                  {/* COVER PREVIEW */}
 
-                        <div>
-                          <p className="text-sm font-medium text-zinc-200">
-                            Unsplash
-                          </p>
+                  {coverPreview && (
+                    <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-black">
+                      <img
+                        src={coverPreview}
+                        alt="Cover Preview"
+                        className="h-72 w-full object-cover"
+                      />
 
-                          <p className="text-xs text-zinc-500">
-                            Choose a beautiful photo
-                          </p>
-                        </div>
+                      <div className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 text-xs font-medium backdrop-blur">
+                        {coverImageSource === "local" && "Local Image"}
+
+                        {coverImageSource === "unsplash" && "Unsplash"}
+
+                        {coverImageSource === "ai" && "✨ AI Generated"}
                       </div>
 
                       <Button
                         type="button"
-                        variant="outline"
-                        onClick={() => {
-                          setUnsplashOpen(true);
-                          setUnsplashError("");
-                        }}
-                        className="w-full border-white/10 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+                        variant="destructive"
+                        size="sm"
+                        onClick={handleRemoveImage}
+                        className="absolute right-3 top-3"
                       >
-                        <Search className="mr-2 h-4 w-4" />
-                        Choose from Unsplash
+                        <X className="mr-1 h-4 w-4" />
+                        Remove
                       </Button>
                     </div>
-                  </div>
+                  )}
 
-                  {/* Current Preview */}
-                  {coverPreview && (
-                    <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-black">
-                      <div className="relative">
-                        <img
-                          src={coverPreview}
-                          alt="Cover Preview"
-                          className="h-64 w-full object-cover"
-                        />
+                  {/* UNSPLASH ATTRIBUTION */}
 
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={handleRemoveImage}
-                          className="absolute right-3 top-3"
-                        >
-                          <X className="mr-1 h-4 w-4" />
-                          Remove
-                        </Button>
-                      </div>
-
-                      {/* Unsplash Attribution */}
-                      {coverImageUrl && coverImageAuthor && (
-                        <div className="border-t border-white/[0.08] px-4 py-3">
-                          <p className="text-xs text-zinc-500">
-                            Photo by{" "}
-                            {coverImageAuthorUrl ? (
-                              <a
-                                href={`${coverImageAuthorUrl}?utm_source=coderbari&utm_medium=referral`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-zinc-300 underline underline-offset-2 hover:text-white"
-                              >
-                                {coverImageAuthor}
-                              </a>
-                            ) : (
-                              <span className="text-zinc-300">
-                                {coverImageAuthor}
-                              </span>
-                            )}{" "}
-                            on{" "}
-                            <a
-                              href={
-                                coverImageUnsplashUrl
-                                  ? `${coverImageUnsplashUrl}?utm_source=coderbari&utm_medium=referral`
-                                  : "https://unsplash.com/?utm_source=coderbari&utm_medium=referral"
-                              }
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-zinc-300 underline underline-offset-2 hover:text-white"
-                            >
-                              Unsplash
-                            </a>
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                  {coverImageSource === "unsplash" && coverImageAuthor && (
+                    <p className="text-xs text-zinc-500">
+                      Photo by{" "}
+                      <a
+                        href={coverImageAuthorUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-zinc-300 underline underline-offset-2 hover:text-white"
+                      >
+                        {coverImageAuthor}
+                      </a>{" "}
+                      on{" "}
+                      <a
+                        href={coverImageUnsplashUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-zinc-300 underline underline-offset-2 hover:text-white"
+                      >
+                        Unsplash
+                      </a>
+                    </p>
                   )}
                 </div>
               </CardContent>
             </Card>
 
-            {/* ================================== */}
-            {/* Content */}
-            {/* ================================== */}
+            {/* =================================================
+                AI WRITING ASSISTANT
+            ================================================= */}
+
+            <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <Sparkles className="h-5 w-5" />
+                  AI Writing Assistant
+                </CardTitle>
+
+                <p className="text-sm text-zinc-500">
+                  Generate and improve your blog content with AI.
+                </p>
+              </CardHeader>
+
+              <CardContent>
+                <div className="flex flex-wrap gap-2">
+                  {/* TITLE */}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleGenerateTitle}
+                    disabled={aiLoading.title}
+                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                  >
+                    {aiLoading.title ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Title
+                      </>
+                    )}
+                  </Button>
+
+                  {/* TAGS */}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleGenerateTags}
+                    disabled={aiLoading.tags}
+                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                  >
+                    {aiLoading.tags ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      "🏷️ Tags"
+                    )}
+                  </Button>
+
+                  {/* CONTENT */}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleGenerateContent}
+                    disabled={aiLoading.content}
+                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                  >
+                    {aiLoading.content ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      "✍️ Content"
+                    )}
+                  </Button>
+
+                  {/* EXCERPT */}
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleGenerateExcerpt}
+                    disabled={aiLoading.excerpt}
+                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                  >
+                    {aiLoading.excerpt ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      "📝 Excerpt"
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* =================================================
+                CONTENT
+            ================================================= */}
 
             <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
               <CardHeader>
@@ -642,9 +1108,9 @@ const PostEditor = () => {
               </CardContent>
             </Card>
 
-            {/* ================================== */}
-            {/* Publishing */}
-            {/* ================================== */}
+            {/* =================================================
+                PUBLISHING
+            ================================================= */}
 
             <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
               <CardHeader>
@@ -682,9 +1148,9 @@ const PostEditor = () => {
               </CardContent>
             </Card>
 
-            {/* ================================== */}
-            {/* Actions */}
-            {/* ================================== */}
+            {/* =================================================
+                ACTIONS
+            ================================================= */}
 
             <div className="flex flex-col-reverse gap-3 border-t border-white/[0.08] pt-6 sm:flex-row sm:justify-end">
               <Button
@@ -712,123 +1178,185 @@ const PostEditor = () => {
         </form>
       </div>
 
-      {/* ======================================== */}
-      {/* Unsplash Dialog */}
-      {/* ======================================== */}
+      {/* =======================================================
+          UNSPLASH DIALOG
+      ======================================================= */}
 
       <Dialog open={unsplashOpen} onOpenChange={setUnsplashOpen}>
-        <DialogContent className="max-w-5xl border-white/10 bg-[#0d0f12] text-white">
+        <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden border-white/10 bg-[#0d0f12] text-white">
           <DialogHeader>
-            <DialogTitle className="text-xl">Choose a cover image</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <ImageIcon className="h-5 w-5" />
+              Search Unsplash
+            </DialogTitle>
+
+            <DialogDescription className="text-zinc-500">
+              Search for a cover image for your article.
+            </DialogDescription>
           </DialogHeader>
 
-          {/* Search */}
-          <div className="flex gap-2">
-            <Input
-              value={unsplashQuery}
-              onChange={(event) => setUnsplashQuery(event.target.value)}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleUnsplashSearch();
-                }
-              }}
-              placeholder="Search React, JavaScript, MongoDB..."
-              className="border-white/10 bg-white/[0.04] text-white placeholder:text-zinc-600"
-            />
+          {/* SEARCH */}
+
+          <form onSubmit={handleUnsplashSearch} className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-500" />
+
+              <Input
+                value={unsplashQuery}
+                onChange={(event) => setUnsplashQuery(event.target.value)}
+                placeholder="Search developer, coding, technology..."
+                className="h-11 border-white/10 bg-white/[0.04] pl-9 text-white placeholder:text-zinc-600"
+              />
+            </div>
 
             <Button
-              type="button"
-              onClick={handleUnsplashSearch}
+              type="submit"
               disabled={unsplashLoading}
-              className="shrink-0"
+              className="bg-white text-black hover:bg-zinc-200"
             >
-              <Search className="mr-2 h-4 w-4" />
-
-              {unsplashLoading ? "Searching..." : "Search"}
+              {unsplashLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Search"
+              )}
             </Button>
-          </div>
+          </form>
 
-          {/* Error */}
+          {/* ERROR */}
+
           {unsplashError && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
               {unsplashError}
             </div>
           )}
 
-          {/* Photo Grid */}
-          <div className="max-h-[60vh] overflow-y-auto pr-1">
-            {/* Loading */}
-            {unsplashLoading && (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-                {Array.from({ length: 8 }).map((_, index) => (
-                  <div
-                    key={index}
-                    className="aspect-[4/3] animate-pulse rounded-xl bg-white/[0.05]"
-                  />
-                ))}
-              </div>
-            )}
+          {/* RESULTS */}
 
-            {/* Photos */}
-            {!unsplashLoading && unsplashPhotos.length > 0 && (
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
+          <div className="max-h-[55vh] overflow-y-auto pr-2">
+            {unsplashPhotos.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                 {unsplashPhotos.map((photo) => (
-                  <div
+                  <button
+                    type="button"
                     key={photo.id}
-                    className="group overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.03]"
+                    onClick={() => handleSelectUnsplashImage(photo)}
+                    className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-white/[0.08] bg-black"
                   >
-                    <div className="overflow-hidden">
-                      <img
-                        src={photo.thumbnailUrl}
-                        alt={photo.photographer || "Unsplash photo"}
-                        className="aspect-[4/3] w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
-                    </div>
+                    <img
+                      src={photo.thumbnailUrl || photo.imageUrl}
+                      alt={photo.photographer || "Unsplash photo"}
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                    />
 
-                    <div className="p-3">
-                      <p className="truncate text-xs text-zinc-400">
-                        Photo by {photo.photographer}
+                    <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-3 pt-8 text-left opacity-0 transition group-hover:opacity-100">
+                      <p className="truncate text-xs text-white">
+                        {photo.photographer}
                       </p>
 
-                      <Button
-                        type="button"
-                        size="sm"
-                        onClick={() => handleSelectUnsplashPhoto(photo)}
-                        className="mt-3 w-full"
-                      >
-                        Use this image
-                      </Button>
+                      <p className="mt-1 text-[10px] text-zinc-400">
+                        Select image
+                      </p>
                     </div>
-                  </div>
+                  </button>
                 ))}
+              </div>
+            ) : (
+              <div className="flex min-h-48 items-center justify-center text-center">
+                <div>
+                  <Search className="mx-auto mb-3 h-8 w-8 text-zinc-700" />
+
+                  <p className="text-sm text-zinc-400">Search for an image</p>
+
+                  <p className="mt-1 text-xs text-zinc-600">
+                    Try: coding, programming, technology, developer
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* =======================================================
+          AI IMAGE DIALOG
+      ======================================================= */}
+
+      <Dialog open={aiOpen} onOpenChange={setAiOpen}>
+        <DialogContent className="max-w-xl border-white/10 bg-[#0d0f12] text-white">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5" />
+              Generate AI Cover
+            </DialogTitle>
+
+            <DialogDescription className="text-zinc-500">
+              Describe the image you want and AI will create a cover for your
+              article.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            {/* PROMPT */}
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-zinc-200">
+                Image description
+              </label>
+
+              <textarea
+                value={aiPrompt}
+                onChange={(event) => setAiPrompt(event.target.value)}
+                placeholder="A modern developer working with React and Node.js in a futuristic workspace, dark cinematic lighting, professional technology blog cover..."
+                rows={6}
+                className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+              />
+
+              <p className="text-xs text-zinc-600">
+                Describe the subject, style, mood and visual elements you want.
+              </p>
+            </div>
+
+            {/* ERROR */}
+
+            {aiError && (
+              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+                {aiError}
               </div>
             )}
 
-            {/* Empty */}
-            {!unsplashLoading &&
-              unsplashPhotos.length === 0 &&
-              !unsplashError && (
-                <div className="py-16 text-center">
-                  <Search className="mx-auto mb-3 h-8 w-8 text-zinc-600" />
+            {/* BUTTONS */}
 
-                  <p className="text-sm text-zinc-400">
-                    Search Unsplash for a cover image
-                  </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAiOpen(false)}
+                disabled={aiGenerating}
+                className="border-white/10 bg-transparent text-white hover:bg-white/[0.08] hover:text-white"
+              >
+                Cancel
+              </Button>
 
-                  <p className="mt-1 text-xs text-zinc-600">
-                    Try searching for React, coding, technology, JavaScript,
-                    etc.
-                  </p>
-                </div>
-              )}
+              <Button
+                type="button"
+                onClick={handleGenerateAIImage}
+                disabled={aiGenerating}
+                className="bg-white text-black hover:bg-zinc-200"
+              >
+                {aiGenerating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    Generate Image
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-
-          {/* Attribution note */}
-          <p className="text-xs text-zinc-600">
-            Images provided by Unsplash. Photographer attribution is shown when
-            an image is selected.
-          </p>
         </DialogContent>
       </Dialog>
     </main>
@@ -836,3 +1364,4 @@ const PostEditor = () => {
 };
 
 export default PostEditor;
+ 

@@ -6,6 +6,7 @@ import {
   Users,
   MessageSquare,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import SidebarItem from "./SidebarItem.jsx";
 const LeftSidebar = ({ activeItem = "Feed" }) => {
@@ -15,11 +16,13 @@ const LeftSidebar = ({ activeItem = "Feed" }) => {
       {/* ===================================================== MAIN NAVIGATION ===================================================== */}{" "}
       <nav className="space-y-1">
         {" "}
-        <SidebarItem
-          icon={<Home className="h-4 w-4" />}
-          label="Feed"
-          active={activeItem === "Feed"}
-        />{" "}
+        <Link to="/">
+          <SidebarItem
+            icon={<Home className="h-4 w-4" />}
+            label="Feed"
+            active={activeItem === "Feed"}
+          />
+        </Link>{" "}
         <SidebarItem
           icon={<Sparkles className="h-4 w-4" />}
           label="Explore"

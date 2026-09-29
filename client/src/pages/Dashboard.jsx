@@ -14,7 +14,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       setError("");
-      const response = await api.get("/posts/mine");
+      const response = await api.get("/posts/my/posts");
       setPosts(response.data.posts);
     } catch (error) {
       setError(error.response?.data?.message || "Failed to load your posts.");

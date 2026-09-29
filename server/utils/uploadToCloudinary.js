@@ -1,23 +1,27 @@
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import cloudinary from "../config/cloudinary.js";
 
-const uploadToCloudinary = (buffer, folder = "hashnode/avatars") => {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder,
-        resource_type: "image",
-      },
-      (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(result);
-        }
-      },
-    );
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "hashnode",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
+});
 
-    uploadStream.end(buffer);
-  });
-};
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 5 * 1024 * 1024,
+  },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Only image files are allowed"));
+    }
 
-export default uploadToCloudinary;
+    cb(null, true);
+  },
+});
+
+export default upload;

@@ -4,10 +4,11 @@ import {
   getUserProfile,
   updateMyProfile,
   getTrendingAuthors,
+  searchUsers,
 } from "../controllers/userController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
-import upload from "../middleware/uploadmiddleware.js";
+import upload from "../middleware/uploadMiddleware.js";
 
 const router = express.Router();
 
@@ -16,6 +17,8 @@ const router = express.Router();
 // =====================================
 
 router.get("/authors/trending", getTrendingAuthors);
+
+router.get("/search", searchUsers);
 
 router.get("/:id", getUserProfile);
 

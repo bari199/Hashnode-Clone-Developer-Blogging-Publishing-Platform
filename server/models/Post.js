@@ -49,6 +49,12 @@ const postSchema = new mongoose.Schema(
       default: "",
     },
 
+    coverImageSource: {
+      type: String,
+      enum: ["local", "unsplash", "ai", ""],
+      default: "",
+    },
+
     status: {
       type: String,
       enum: ["draft", "published"],

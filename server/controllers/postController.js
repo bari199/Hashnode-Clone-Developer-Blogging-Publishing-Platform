@@ -1,12 +1,12 @@
 import handlePostTags from "../utils/handlePostTags.js";
 import Post from "../models/Post.js";
-import Tag from "../models/Tag.js";
+import cloudinary from "../config/cloudinary.js";
+import TagFollow from "../models/TagFollow.js";
+import { createNotification } from "../services/notification/notificationService.js";
 
-/*
-|--------------------------------------------------------------------------
-| Helper: Generate Slug
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   HELPER: GENERATE SLUG
+========================================================= */
 
 const generateSlug = (title) => {
   return title
@@ -17,11 +17,33 @@ const generateSlug = (title) => {
     .replace(/-+/g, "-");
 };
 
-/*
-|--------------------------------------------------------------------------
-| Create Post
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   HELPER: UPLOAD BUFFER TO CLOUDINARY
+========================================================= */
+
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "hashnode/posts",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      },
+    );
+
+    uploadStream.end(buffer);
+  });
+};
+
+/* =========================================================
+   CREATE POST
+========================================================= */
 
 export const createPost = async (req, res) => {
   try {
@@ -30,130 +52,138 @@ export const createPost = async (req, res) => {
       content,
       tags,
       status,
-
-      // Unsplash fields
+      coverImageSource,
       coverImageUrl,
       coverImageAuthor,
       coverImageAuthorUrl,
       coverImageUnsplashUrl,
     } = req.body;
 
-    console.log("BODY:", req.body);
-    console.log("FILE:", req.file);
+    /* Validate input */
 
-    /*
-    |--------------------------------------------------------------------------
-    | Validation
-    |--------------------------------------------------------------------------
-    */
-
-    if (!title || !content) {
+    if (
+      typeof title !== "string" ||
+      !title.trim() ||
+      typeof content !== "string" ||
+      !content.trim()
+    ) {
       return res.status(400).json({
         message: "Title and content are required",
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Generate Slug
-    |--------------------------------------------------------------------------
-    */
+    /* Validate status */
+
+    const postStatus = status || "draft";
+
+    if (!["draft", "published"].includes(postStatus)) {
+      return res.status(400).json({
+        message: "Status must be draft or published",
+      });
+    }
+
+    /* Generate slug */
 
     const slug = generateSlug(title);
 
-    /*
-    |--------------------------------------------------------------------------
-    | Handle Tags
-    |--------------------------------------------------------------------------
-    */
+    if (!slug) {
+      return res.status(400).json({
+        message: "Please provide a valid title",
+      });
+    }
+
+    /* Handle tags */
 
     const tagIds = await handlePostTags(tags);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Determine Cover Image
-    |--------------------------------------------------------------------------
-    |
-    | Priority:
-    |
-    | 1. Uploaded local image
-    | 2. Unsplash image URL
-    | 3. Empty
-    |
-    */
+    console.log("RAW TAGS:", tags);
+    console.log("TAG IDS:", tagIds);
+    /* Cover image variables */
 
     let finalCoverImage = "";
-
     let finalCoverImageUrl = "";
     let finalCoverImageAuthor = "";
     let finalCoverImageAuthorUrl = "";
     let finalCoverImageUnsplashUrl = "";
+    let finalCoverImageSource = "";
 
-    /*
-    |--------------------------------------------------------------------------
-    | Local Uploaded Image
-    |--------------------------------------------------------------------------
-    */
+    /* 1. Local uploaded image */
 
-    if (req.file) {
-      finalCoverImage = req.file.path;
-    } else if (coverImageUrl) {
-      /*
-    |--------------------------------------------------------------------------
-    | Unsplash Image
-    |--------------------------------------------------------------------------
-    */
+    if (req.file?.buffer) {
+      const uploadResult = await uploadToCloudinary(req.file.buffer);
+
+      finalCoverImage = uploadResult.secure_url;
+      finalCoverImageSource = "local";
+    } else if (coverImageSource === "ai" && coverImageUrl) {
+      /* 2. AI-generated image */
       finalCoverImage = coverImageUrl;
-
+      finalCoverImageSource = "ai";
+    } else if (coverImageUrl) {
+      /* 3. Unsplash image */
+      finalCoverImage = coverImageUrl;
       finalCoverImageUrl = coverImageUrl;
 
       finalCoverImageAuthor = coverImageAuthor || "";
-
       finalCoverImageAuthorUrl = coverImageAuthorUrl || "";
-
       finalCoverImageUnsplashUrl = coverImageUnsplashUrl || "";
+
+      finalCoverImageSource = "unsplash";
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Create Post
-    |--------------------------------------------------------------------------
-    */
+    /* Create post */
 
     const post = await Post.create({
-      title,
-
+      title: title.trim(),
       slug,
-
       content,
 
       coverImage: finalCoverImage,
-
-      // Unsplash metadata
       coverImageUrl: finalCoverImageUrl,
-
       coverImageAuthor: finalCoverImageAuthor,
-
       coverImageAuthorUrl: finalCoverImageAuthorUrl,
-
       coverImageUnsplashUrl: finalCoverImageUnsplashUrl,
+      coverImageSource: finalCoverImageSource,
 
-      status: status || "draft",
-
+      status: postStatus,
       author: req.user._id,
-
       tags: tagIds,
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
+    /* Notify users who follow these tags */
+    console.log("TAG IDS:", tagIds);
+    if (post.status === "published" && tagIds.length > 0) {
+      const tagFollows = await TagFollow.find({
+        tag: { $in: tagIds },
+        user: { $ne: req.user._id },
+      }).select("user tag");
+      console.log("TAG FOLLOWERS:", tagFollows);
+      /* Avoid notifying the same user multiple times */
+
+      const uniqueRecipients = new Map();
+
+      for (const follow of tagFollows) {
+        const userId = follow.user.toString();
+
+        if (!uniqueRecipients.has(userId)) {
+          uniqueRecipients.set(userId, follow.tag);
+        }
+      }
+      console.log("UNIQUE RECIPIENTS:", uniqueRecipients);
+      for (const [recipientId, tagId] of uniqueRecipients) {
+        await createNotification({
+          recipient: recipientId,
+          sender: req.user._id,
+          type: "follow_tag",
+          post: post._id,
+          tag: tagId,
+          message: "published a new post in a tag you follow",
+        });
+      }
+    }
+
+    /* Return response */
 
     return res.status(201).json({
       message: "Post created successfully",
-
       post,
     });
   } catch (error) {
@@ -161,28 +191,23 @@ export const createPost = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to create post",
-
       error: error.message,
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get Published Posts
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   GET PUBLISHED POSTS
+========================================================= */
 
 export const getPublishedPosts = async (req, res) => {
   try {
     const posts = await Post.find({
       status: "published",
     })
-      .populate("author", "name avatarUrl")
+      .populate("author", "name username avatarUrl")
       .populate("tags", "name slug")
-      .sort({
-        createdAt: -1,
-      });
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       posts,
@@ -192,17 +217,14 @@ export const getPublishedPosts = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to fetch posts",
-
       error: error.message,
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get Post By Slug
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   GET POST BY SLUG
+========================================================= */
 
 export const getPostBySlug = async (req, res) => {
   try {
@@ -210,29 +232,16 @@ export const getPostBySlug = async (req, res) => {
 
     const post = await Post.findOne({
       slug,
-
       status: "published",
     })
-      .populate("author", "name bio avatarUrl")
+      .populate("author", "name username bio avatarUrl")
       .populate("tags", "name slug");
-
-    /*
-    |--------------------------------------------------------------------------
-    | Post Not Found
-    |--------------------------------------------------------------------------
-    */
 
     if (!post) {
       return res.status(404).json({
         message: "Post not found",
       });
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
 
     return res.status(200).json({
       post,
@@ -242,27 +251,23 @@ export const getPostBySlug = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to fetch post",
-
       error: error.message,
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Get My Posts
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   GET MY POSTS
+========================================================= */
 
 export const getMyPosts = async (req, res) => {
   try {
     const posts = await Post.find({
       author: req.user._id,
     })
+      .populate("author", "name username avatarUrl")
       .populate("tags", "name slug")
-      .sort({
-        createdAt: -1,
-      });
+      .sort({ createdAt: -1 });
 
     return res.status(200).json({
       posts,
@@ -272,17 +277,14 @@ export const getMyPosts = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to fetch your posts",
-
       error: error.message,
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Update Post
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   UPDATE POST
+========================================================= */
 
 export const updatePost = async (req, res) => {
   try {
@@ -293,22 +295,14 @@ export const updatePost = async (req, res) => {
       content,
       tags,
       status,
-
-      // Unsplash fields
+      coverImageSource,
       coverImageUrl,
       coverImageAuthor,
       coverImageAuthorUrl,
       coverImageUnsplashUrl,
     } = req.body;
 
-    console.log("UPDATE BODY:", req.body);
-    console.log("UPDATE FILE:", req.file);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Find Post
-    |--------------------------------------------------------------------------
-    */
+    /* Find post */
 
     const post = await Post.findById(id);
 
@@ -318,11 +312,7 @@ export const updatePost = async (req, res) => {
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Ownership Check
-    |--------------------------------------------------------------------------
-    */
+    /* Ownership check */
 
     if (post.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({
@@ -330,133 +320,99 @@ export const updatePost = async (req, res) => {
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Title
-    |--------------------------------------------------------------------------
-    */
+    /* Update title and slug */
 
     if (title !== undefined) {
-      post.title = title;
+      if (typeof title !== "string" || !title.trim()) {
+        return res.status(400).json({
+          message: "Title cannot be empty",
+        });
+      }
 
-      /*
-      |--------------------------------------------------------------------------
-      | Update Slug
-      |--------------------------------------------------------------------------
-      */
-
+      post.title = title.trim();
       post.slug = generateSlug(title);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Content
-    |--------------------------------------------------------------------------
-    */
+    /* Update content */
 
     if (content !== undefined) {
+      if (typeof content !== "string" || !content.trim()) {
+        return res.status(400).json({
+          message: "Content cannot be empty",
+        });
+      }
+
       post.content = content;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Tags
-    |--------------------------------------------------------------------------
-    */
+    /* Update tags */
 
     if (tags !== undefined) {
       post.tags = await handlePostTags(tags);
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Update Status
-    |--------------------------------------------------------------------------
-    */
+    /* Update status */
 
     if (status !== undefined) {
+      if (!["draft", "published"].includes(status)) {
+        return res.status(400).json({
+          message: "Status must be draft or published",
+        });
+      }
+
       post.status = status;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Cover Image
-    |--------------------------------------------------------------------------
-    |
-    | Priority:
-    |
-    | 1. New uploaded local image
-    | 2. New Unsplash image
-    | 3. Existing image remains unchanged
-    |
-    */
+    /* Update cover image */
 
-    /*
-    |--------------------------------------------------------------------------
-    | New Local Upload
-    |--------------------------------------------------------------------------
-    */
+    if (req.file?.buffer) {
+      /* 1. Local uploaded image */
 
-    if (req.file) {
-      post.coverImage = req.file.path;
+      const uploadResult = await uploadToCloudinary(req.file.buffer);
 
-      /*
-      |--------------------------------------------------------------------------
-      | Clear Unsplash Metadata
-      |--------------------------------------------------------------------------
-      */
+      post.coverImage = uploadResult.secure_url;
+      post.coverImageSource = "local";
+
+      /* Clear Unsplash metadata */
 
       post.coverImageUrl = "";
-
       post.coverImageAuthor = "";
-
       post.coverImageAuthorUrl = "";
-
       post.coverImageUnsplashUrl = "";
-    } else if (coverImageUrl) {
-      /*
-    |--------------------------------------------------------------------------
-    | New Unsplash Image
-    |--------------------------------------------------------------------------
-    */
-      post.coverImage = coverImageUrl;
+    } else if (coverImageSource === "ai" && coverImageUrl) {
+      /* 2. AI-generated image */
 
+      post.coverImage = coverImageUrl;
+      post.coverImageSource = "ai";
+
+      post.coverImageUrl = "";
+      post.coverImageAuthor = "";
+      post.coverImageAuthorUrl = "";
+      post.coverImageUnsplashUrl = "";
+    } else if (coverImageUrl && coverImageSource === "unsplash") {
+      /* 3. Unsplash image */
+
+      post.coverImage = coverImageUrl;
+      post.coverImageSource = "unsplash";
       post.coverImageUrl = coverImageUrl;
 
       post.coverImageAuthor = coverImageAuthor || "";
-
       post.coverImageAuthorUrl = coverImageAuthorUrl || "";
-
       post.coverImageUnsplashUrl = coverImageUnsplashUrl || "";
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Save Post
-    |--------------------------------------------------------------------------
-    */
+    /* Save updated post */
 
     await post.save();
 
-    /*
-    |--------------------------------------------------------------------------
-    | Get Updated Post With Populated Fields
-    |--------------------------------------------------------------------------
-    */
+    /* Get updated post */
 
     const updatedPost = await Post.findById(post._id)
-      .populate("author", "name avatarUrl")
+      .populate("author", "name username avatarUrl")
       .populate("tags", "name slug");
-
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
 
     return res.status(200).json({
       message: "Post updated successfully",
-
       post: updatedPost,
     });
   } catch (error) {
@@ -464,27 +420,20 @@ export const updatePost = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to update post",
-
       error: error.message,
     });
   }
 };
 
-/*
-|--------------------------------------------------------------------------
-| Delete Post
-|--------------------------------------------------------------------------
-*/
+/* =========================================================
+   DELETE POST
+========================================================= */
 
 export const deletePost = async (req, res) => {
   try {
     const { id } = req.params;
 
-    /*
-    |--------------------------------------------------------------------------
-    | Find Post
-    |--------------------------------------------------------------------------
-    */
+    /* Find post */
 
     const post = await Post.findById(id);
 
@@ -494,11 +443,7 @@ export const deletePost = async (req, res) => {
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Ownership Check
-    |--------------------------------------------------------------------------
-    */
+    /* Ownership check */
 
     if (post.author.toString() !== req.user._id.toString()) {
       return res.status(403).json({
@@ -506,19 +451,9 @@ export const deletePost = async (req, res) => {
       });
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | Delete Post
-    |--------------------------------------------------------------------------
-    */
+    /* Delete post */
 
     await Post.findByIdAndDelete(id);
-
-    /*
-    |--------------------------------------------------------------------------
-    | Response
-    |--------------------------------------------------------------------------
-    */
 
     return res.status(200).json({
       message: "Post deleted successfully",
@@ -528,7 +463,6 @@ export const deletePost = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to delete post",
-
       error: error.message,
     });
   }

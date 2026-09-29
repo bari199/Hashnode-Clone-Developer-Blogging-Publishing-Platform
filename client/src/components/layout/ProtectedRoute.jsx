@@ -4,7 +4,7 @@ import useAuth from "../../hooks/useAuth.js";
 const ProtectedRoute = () => {
   const { status } = useAuth();
 
-  // Authentication যাচাই হচ্ছে
+  // Authentication
   if (status === "loading") {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -13,12 +13,12 @@ const ProtectedRoute = () => {
     );
   }
 
-  // User logged in না থাকলে login page-এ পাঠাবে
+  // User logged in
   if (status !== "authenticated") {
     return <Navigate to="/login" replace />;
   }
 
-  // Authenticated হলে child route render করবে
+  // Authenticated
   return <Outlet />;
 };
 

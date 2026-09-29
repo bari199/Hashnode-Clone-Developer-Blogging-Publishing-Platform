@@ -1,5 +1,30 @@
 import User from "../models/User.js";
 import Post from "../models/Post.js";
+import cloudinary from "../config/cloudinary.js";
+
+// =====================================
+// Upload image buffer to Cloudinary
+// =====================================
+
+const uploadToCloudinary = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      {
+        folder: "hashnode/avatars",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result);
+        }
+      },
+    );
+
+    uploadStream.end(buffer);
+  });
+};
 
 // =====================================
 // GET /api/users/:id
@@ -41,14 +66,17 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
+// =====================================
+// GET /api/users/authors/trending
+// Public
+// =====================================
+
 export const getTrendingAuthors = async (req, res) => {
   try {
     const now = new Date();
 
-    // First day of current month
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    // Next month
     const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
     const authors = await Post.aggregate([
@@ -143,17 +171,29 @@ export const updateMyProfile = async (req, res) => {
       });
     }
 
+    // Update basic information
     user.name = name.trim();
     user.bio = bio?.trim() || "";
 
-    if (req.file) {
-      user.avatarUrl = req.file.path;
+    // =====================================
+    // Upload avatar to Cloudinary
+    // =====================================
+
+    if (req.file?.buffer) {
+      console.log("Uploading avatar to Cloudinary...");
+
+      const uploadResult = await uploadToCloudinary(req.file.buffer);
+
+      console.log("Avatar uploaded successfully:", uploadResult.secure_url);
+
+      user.avatarUrl = uploadResult.secure_url;
     }
 
     await user.save();
 
     return res.status(200).json({
       message: "Profile updated successfully",
+
       user: {
         _id: user._id,
         name: user.name,
@@ -163,10 +203,51 @@ export const updateMyProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Update profile error:", error.message);
+    console.error("Update profile error:", error);
 
     return res.status(500).json({
       message: "Failed to update profile",
+    });
+  }
+};
+
+
+// =====================================
+// GET /api/users/search?q=
+// Public
+// =====================================
+
+export const searchUsers = async (req, res) => {
+  try {
+    const query = req.query.q?.trim();
+
+    if (!query) {
+      return res.status(200).json({
+        users: [],
+      });
+    }
+
+    const users = await User.find({
+      name: {
+        $regex: query,
+        $options: "i",
+      },
+    })
+      .select("_id name bio avatarUrl")
+      .sort({
+        name: 1,
+      })
+      .limit(10)
+      .lean();
+
+    return res.status(200).json({
+      users,
+    });
+  } catch (error) {
+    console.error("Search users error:", error);
+
+    return res.status(500).json({
+      message: "Failed to search users",
     });
   }
 };

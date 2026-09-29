@@ -3,31 +3,62 @@ import Post from "../models/Post.js";
 
 export const getAllTags = async (req, res) => {
   try {
-    const tags = await Tag.find().sort({ name: 1 });
+    const tags = await Tag.find().lean();
 
-    const tagsWithPostCount = await Promise.all(
+    const tagsWithAuthors = await Promise.all(
       tags.map(async (tag) => {
-        const postCount = await Post.countDocuments({
+        const posts = await Post.find({
           tags: tag._id,
           status: "published",
-        });
+        })
+          .populate("author", "name avatarUrl")
+          .select("author")
+          .lean();
+
+        const uniqueAuthors = [];
+
+        const authorIds = new Set();
+
+        for (const post of posts) {
+          const author = post.author;
+
+          if (!author) continue;
+
+          const authorId = author._id.toString();
+
+          if (!authorIds.has(authorId)) {
+            authorIds.add(authorId);
+
+            uniqueAuthors.push({
+              _id: author._id,
+              name: author.name,
+              avatarUrl: author.avatarUrl || "",
+            });
+          }
+
+          if (uniqueAuthors.length === 3) {
+            break;
+          }
+        }
 
         return {
           _id: tag._id,
           name: tag.name,
           slug: tag.slug,
-          postCount,
+          postCount: posts.length,
+          authors: uniqueAuthors,
         };
       }),
     );
 
-    res.status(200).json({
-      tags: tagsWithPostCount,
+    return res.status(200).json({
+      tags: tagsWithAuthors,
     });
   } catch (error) {
-    res.status(500).json({
+    console.error("Get all tags error:", error);
+
+    return res.status(500).json({
       message: "Failed to fetch tags",
-      error: error.message,
     });
   }
 };
@@ -52,15 +83,16 @@ export const getPostsByTag = async (req, res) => {
       .populate("tags", "name slug")
       .sort({ createdAt: -1 });
 
-    res.status(200).json({
+    return res.status(200).json({
       tag: {
+        _id: tag._id,
         name: tag.name,
         slug: tag.slug,
       },
       posts,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       message: "Failed to fetch posts by tag",
       error: error.message,
     });

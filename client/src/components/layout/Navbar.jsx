@@ -1,7 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
-
+import { useEffect, useRef, useState } from "react";
+import UserSearch from "../user/UserSearch.jsx";
+import NotificationBell from "../notification/NotificationBell.jsx";
+import NotificationDropdown from "../notification/NotificationDropdown.jsx";
 import {
-  Search,
   PenLine,
   Moon,
   Menu,
@@ -13,8 +15,6 @@ import {
 import useAuth from "../../hooks/useAuth.js";
 
 import { Button } from "../ui/button.jsx";
-import { Input } from "../ui/input.jsx";
-
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar.jsx";
 
 import {
@@ -28,11 +28,49 @@ import {
 const Navbar = () => {
   const { user, status, logout } = useAuth();
   const navigate = useNavigate();
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const notificationRef = useRef(null);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [showNotifications]);
+
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener("keydown", handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [showNotifications]);
 
   return (
     <nav
@@ -64,78 +102,32 @@ const Navbar = () => {
         {/* =====================================================
             LOGO
         ===================================================== */}
+
         <div className="flex shrink-0 items-center">
           <Link to="/" className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-black">
-              <span className="text-sm font-bold">C</span>
+              <span className="text-sm font-bold">H</span>
             </div>
 
             <span className="text-lg font-bold tracking-tight">
-              Dev
-              <span className="text-zinc-400">Blog</span>
+              Node
+              <span className="text-zinc-400">Clone</span>
             </span>
           </Link>
         </div>
 
         {/* =====================================================
-            SEARCH
+            USER SEARCH
         ===================================================== */}
+
         <div className="hidden max-w-xl flex-1 md:block">
-          <div className="relative">
-            <Search
-              className="
-                absolute
-                left-3
-                top-1/2
-                h-4
-                w-4
-                -translate-y-1/2
-                text-zinc-500
-              "
-            />
-
-            <Input
-              placeholder="Search posts, topics, authors..."
-              className="
-                h-10
-                border-white/[0.08]
-                bg-white/[0.04]
-                pl-10
-                pr-16
-                text-sm
-                text-white
-                placeholder:text-zinc-500
-                focus-visible:ring-1
-                focus-visible:ring-white/20
-              "
-            />
-
-            <kbd
-              className="
-                absolute
-                right-3
-                top-1/2
-                hidden
-                -translate-y-1/2
-                rounded
-                border
-                border-white/10
-                bg-white/[0.05]
-                px-1.5
-                py-0.5
-                text-[10px]
-                text-zinc-500
-                lg:block
-              "
-            >
-              Ctrl K
-            </kbd>
-          </div>
+          <UserSearch />
         </div>
 
         {/* =====================================================
             RIGHT SIDE
         ===================================================== */}
+
         <div className="ml-auto flex shrink-0 items-center gap-1">
           {/* Mobile Search */}
           <Button
@@ -148,9 +140,32 @@ const Navbar = () => {
               md:hidden
             "
           >
-            <Search className="h-5 w-5" />
-          </Button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+          </Button>{" "}
+          <div ref={notificationRef} className="relative">
+            <NotificationBell
+              onClick={() => setShowNotifications((current) => !current)}
+            />
 
+            {showNotifications && (
+              <NotificationDropdown
+                onClose={() => setShowNotifications(false)}
+              />
+            )}
+          </div>
           {/* Tags */}
           <Link to="/tags">
             <Button
@@ -168,25 +183,23 @@ const Navbar = () => {
               Tags
             </Button>
           </Link>
-
           {/* Write */}
-          <Link to="editor/new">
+          <Link to="/editor/new">
             <Button
               variant="ghost"
               className="
-              hidden
-              gap-2
-              text-zinc-300
-              hover:bg-white/[0.05]
-              hover:text-white
-              sm:flex
-            "
+                hidden
+                gap-2
+                text-zinc-300
+                hover:bg-white/[0.05]
+                hover:text-white
+                sm:flex
+              "
             >
               <PenLine className="h-4 w-4" />
               Write
             </Button>
           </Link>
-
           {/* Theme */}
           <Button
             variant="ghost"
@@ -199,7 +212,6 @@ const Navbar = () => {
           >
             <Moon className="h-4 w-4" />
           </Button>
-
           {/* =================================================
               AUTHENTICATED USER
           ================================================= */}
@@ -218,7 +230,7 @@ const Navbar = () => {
                 >
                   <Avatar className="h-8 w-8 border border-white/10">
                     <AvatarImage
-                      src={user?.avatar || ""}
+                      src={user?.avatarUrl || ""}
                       alt={user?.name || "User"}
                     />
 
@@ -239,6 +251,7 @@ const Navbar = () => {
                 "
               >
                 {/* User Information */}
+
                 <div className="px-3 py-3">
                   <p className="truncate text-sm font-medium">{user?.name}</p>
 
@@ -250,6 +263,7 @@ const Navbar = () => {
                 <DropdownMenuSeparator className="bg-white/[0.08]" />
 
                 {/* Dashboard */}
+
                 <DropdownMenuItem
                   onClick={() => navigate("/dashboard")}
                   className="
@@ -264,6 +278,7 @@ const Navbar = () => {
                 </DropdownMenuItem>
 
                 {/* Profile */}
+
                 <DropdownMenuItem
                   onClick={() => navigate(`/profile/${user?._id}`)}
                   className="
@@ -274,6 +289,11 @@ const Navbar = () => {
                   "
                 >
                   <Avatar className="mr-2 h-5 w-5">
+                    <AvatarImage
+                      src={user?.avatarUrl || ""}
+                      alt={user?.name || "User"}
+                    />
+
                     <AvatarFallback className="bg-zinc-700 text-[9px]">
                       {user?.name?.charAt(0)?.toUpperCase() || "U"}
                     </AvatarFallback>
@@ -284,6 +304,7 @@ const Navbar = () => {
                 <DropdownMenuSeparator className="bg-white/[0.08]" />
 
                 {/* Logout */}
+
                 <DropdownMenuItem
                   onClick={handleLogout}
                   className="
@@ -302,6 +323,7 @@ const Navbar = () => {
             /* =================================================
                GUEST USER
             ================================================= */
+
             <div className="ml-2 flex items-center gap-1">
               <Link to="/login">
                 <Button
@@ -329,7 +351,6 @@ const Navbar = () => {
               </Link>
             </div>
           )}
-
           {/* Mobile Menu */}
           <Button
             variant="ghost"

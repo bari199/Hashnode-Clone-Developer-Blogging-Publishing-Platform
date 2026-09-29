@@ -125,9 +125,33 @@ const RightSidebar = () => {
                     #{tag.name}
                   </span>
 
-                  <span className="ml-2 shrink-0 text-[10px] text-zinc-600">
-                    {tag.postCount}
-                  </span>
+                  <div className="ml-2 flex shrink-0 items-center">
+                    {/* Author Avatars */}
+                    {tag.authors?.length > 0 && (
+                      <div className="flex -space-x-2">
+                        {tag.authors.slice(0, 3).map((author) => (
+                          <Avatar
+                            key={author._id}
+                            className="h-5 w-5 border-2 border-[#16171c]"
+                          >
+                            <AvatarImage
+                              src={author.avatarUrl || ""}
+                              alt={author.name || "Author"}
+                            />
+
+                            <AvatarFallback className="bg-zinc-700 text-[7px] text-zinc-200">
+                              {getInitials(author.name)}
+                            </AvatarFallback>
+                          </Avatar>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Post Count */}
+                    <span className="ml-2 text-[10px] text-zinc-500">
+                      {tag.postCount}
+                    </span>
+                  </div>
                 </div>
               ))}
 
