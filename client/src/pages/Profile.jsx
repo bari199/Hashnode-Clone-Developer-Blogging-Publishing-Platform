@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+
 import {
-  Bookmark,
-  FileText,
-  Hash,
-  MapPin,
-  MessageCircle,
-  Users,
-  UserRound,
-} from "lucide-react";
+  FaBookmark,
+  FaFileAlt,
+  FaGithub,
+  FaHashtag,
+  FaLinkedin,
+  FaMapMarkerAlt,
+  FaRegCommentDots,
+  FaUsers,
+  FaUser,
+  FaGlobe,
+} from "react-icons/fa";
 
 import useFollow from "../hooks/useFollow.js";
 import api from "../api/axios.js";
@@ -46,13 +50,13 @@ const Profile = () => {
   } = useFollow(id);
 
   // =========================================
-  // Follow Modal State
+  // Follow Modal
   // =========================================
 
   const [followListType, setFollowListType] = useState(null);
 
   // =========================================
-  // Followed Tags State
+  // Followed Tags
   // =========================================
 
   const [followedTags, setFollowedTags] = useState([]);
@@ -80,13 +84,13 @@ const Profile = () => {
   const [userComments, setUserComments] = useState([]);
 
   // =========================================
-  // Content Tab State
+  // Content Tab
   // =========================================
 
   const [activeTab, setActiveTab] = useState("articles");
 
   // =========================================
-  // Fetch Profile And Published Posts
+  // Fetch Profile
   // =========================================
 
   useEffect(() => {
@@ -223,7 +227,6 @@ const Profile = () => {
 
   // =========================================
   // Fetch Bookmarked Posts
-  // Only For Own Profile
   // =========================================
 
   useEffect(() => {
@@ -289,6 +292,7 @@ const Profile = () => {
         if (ignore) return;
 
         setUserComments(response.data?.comments || []);
+
         setCommentCount(response.data?.totalComments || 0);
       } catch (err) {
         if (ignore) return;
@@ -325,7 +329,7 @@ const Profile = () => {
   }, [id]);
 
   // =========================================
-  // Loading State
+  // Loading
   // =========================================
 
   if (loading) {
@@ -341,7 +345,7 @@ const Profile = () => {
   }
 
   // =========================================
-  // Error State
+  // Error
   // =========================================
 
   if (error) {
@@ -371,14 +375,14 @@ const Profile = () => {
   }
 
   // =========================================
-  // Main Profile Page
+  // Main Profile
   // =========================================
 
   return (
     <main className="min-h-screen bg-[#0b0b0f] text-gray-200">
-      {/* ===================================== */}
-      {/* Profile Header */}
-      {/* ===================================== */}
+      {/* =====================================
+          Profile Header
+      ===================================== */}
 
       <section className="border-b border-white/10 bg-[#0e0e12] px-5 py-12 sm:px-6">
         <div className="mx-auto flex max-w-6xl flex-col items-center text-center">
@@ -402,34 +406,27 @@ const Profile = () => {
             {profile.name || "Anonymous User"}
           </h1>
 
-          {/* Username, Location And Join Date */}
+          {/* Location / Joined */}
 
           <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-sm text-gray-500">
-            {profile.username && <span>@{profile.username}</span>}
-
             {profile.location && (
-              <>
-                {(profile.username || profile.createdAt) && <span>·</span>}
+              <span className="inline-flex items-center gap-1">
+                <FaMapMarkerAlt className="h-3.5 w-3.5" />
 
-                <span className="inline-flex items-center gap-1">
-                  <MapPin className="h-3.5 w-3.5" />
-                  {profile.location}
-                </span>
-              </>
+                {profile.location}
+              </span>
             )}
 
-            {profile.createdAt && (
-              <>
-                <span>·</span>
+            {profile.location && profile.createdAt && <span>·</span>}
 
-                <span>
-                  Joined{" "}
-                  {new Date(profile.createdAt).toLocaleDateString(undefined, {
-                    year: "numeric",
-                    month: "long",
-                  })}
-                </span>
-              </>
+            {profile.createdAt && (
+              <span>
+                Joined{" "}
+                {new Date(profile.createdAt).toLocaleDateString(undefined, {
+                  year: "numeric",
+                  month: "long",
+                })}
+              </span>
             )}
           </div>
 
@@ -447,7 +444,124 @@ const Profile = () => {
             )
           )}
 
-          {/* Profile Actions */}
+          {/* =====================================
+              Statistics
+          ===================================== */}
+
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-5 sm:gap-x-10">
+            {/* Followers */}
+
+            <button
+              type="button"
+              onClick={() => setFollowListType("followers")}
+              className="min-w-[60px] text-center transition hover:opacity-75"
+            >
+              <p className="text-xl font-bold text-white">{followerCount}</p>
+
+              <p className="mt-1 text-xs text-gray-500 sm:text-sm">Followers</p>
+            </button>
+
+            {/* Following */}
+
+            <button
+              type="button"
+              onClick={() => setFollowListType("following")}
+              className="min-w-[60px] text-center transition hover:opacity-75"
+            >
+              <p className="text-xl font-bold text-white">{followingCount}</p>
+
+              <p className="mt-1 text-xs text-gray-500 sm:text-sm">Following</p>
+            </button>
+
+            {/* Tags */}
+
+            <button
+              type="button"
+              onClick={() => setShowTagsModal(true)}
+              disabled={tagsLoading}
+              className="min-w-[60px] text-center transition hover:opacity-75 disabled:cursor-default"
+            >
+              <p className="text-xl font-bold text-white">
+                {tagsLoading ? "—" : followedTags.length}
+              </p>
+
+              <p className="mt-1 flex items-center justify-center gap-1 text-xs text-gray-500 sm:text-sm">
+                <FaHashtag className="h-3.5 w-3.5" />
+                Tags
+              </p>
+            </button>
+          </div>
+          {/* =====================================
+              Social Links
+          ===================================== */}
+
+          {profile.socialLinks &&
+            (profile.socialLinks.x ||
+              profile.socialLinks.linkedin ||
+              profile.socialLinks.github ||
+              profile.socialLinks.website) && (
+              <div className="mt-5 flex items-center justify-center gap-2">
+                {/* X */}
+
+                {profile.socialLinks.x && (
+                  <a
+                    href={profile.socialLinks.x}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="X"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition hover:bg-white/10 hover:text-white"
+                  >
+                    <span className="text-sm font-medium">𝕏</span>
+                  </a>
+                )}
+
+                {/* LinkedIn */}
+
+                {profile.socialLinks.linkedin && (
+                  <a
+                    href={profile.socialLinks.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="LinkedIn"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition hover:bg-white/10 hover:text-white"
+                  >
+                    <FaLinkedin className="h-4 w-4" />
+                  </a>
+                )}
+
+                {/* GitHub */}
+
+                {profile.socialLinks.github && (
+                  <a
+                    href={profile.socialLinks.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="GitHub"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition hover:bg-white/10 hover:text-white"
+                  >
+                    <FaGithub className="h-4 w-4" />
+                  </a>
+                )}
+
+                {/* Website */}
+
+                {profile.socialLinks.website && (
+                  <a
+                    href={profile.socialLinks.website}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="Website"
+                    className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.03] text-gray-400 transition hover:bg-white/10 hover:text-white"
+                  >
+                    <FaGlobe className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
+            )}
+
+          {/* =====================================
+              Actions
+          ===================================== */}
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             {isOwnProfile && (
@@ -478,72 +592,22 @@ const Profile = () => {
               </button>
             )}
           </div>
-
-          {/* ===================================== */}
-          {/* Profile Statistics */}
-          {/* ===================================== */}
-
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-x-7 gap-y-5 sm:gap-x-10">
-            {/* Followers */}
-
-            <button
-              type="button"
-              onClick={() => setFollowListType("followers")}
-              className="min-w-[60px] text-center transition hover:opacity-75"
-            >
-              <p className="text-xl font-bold text-white">{followerCount}</p>
-
-              <p className="mt-1 text-xs text-gray-500 sm:text-sm">Followers</p>
-            </button>
-
-            {/* Following */}
-
-            <button
-              type="button"
-              onClick={() => setFollowListType("following")}
-              className="min-w-[60px] text-center transition hover:opacity-75"
-            >
-              <p className="text-xl font-bold text-white">{followingCount}</p>
-
-              <p className="mt-1 text-xs text-gray-500 sm:text-sm">Following</p>
-            </button>
-
-            {/* Followed Tags */}
-
-            <button
-              type="button"
-              onClick={() => setShowTagsModal(true)}
-              disabled={tagsLoading}
-              className="min-w-[60px] text-center transition hover:opacity-75 disabled:cursor-default"
-            >
-              <p className="text-xl font-bold text-white">
-                {tagsLoading ? "—" : followedTags.length}
-              </p>
-
-              <p className="mt-1 flex items-center justify-center gap-1 text-xs text-gray-500 sm:text-sm">
-                <Hash className="h-3.5 w-3.5" />
-                Tags
-              </p>
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* ===================================== */}
-      {/* Profile Content */}
-      {/* ===================================== */}
+      {/* =====================================
+          Profile Content
+      ===================================== */}
 
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-5 py-8 sm:px-6 md:grid-cols-[260px_minmax(0,1fr)] md:gap-10 md:py-10">
-        {/* =================================== */}
-        {/* Left Sidebar */}
-        {/* =================================== */}
+        {/* Left */}
 
         <aside className="space-y-5">
-          {/* About Card */}
+          {/* About */}
 
           <section className="rounded-xl border border-white/10 bg-[#101014] p-5 sm:p-6">
             <div className="flex items-center gap-2">
-              <UserRound className="h-4 w-4 text-gray-400" />
+              <FaUser className="h-4 w-4 text-gray-400" />
 
               <h2 className="text-base font-semibold text-white">About</h2>
             </div>
@@ -570,11 +634,11 @@ const Profile = () => {
             )}
           </section>
 
-          {/* Available For Card */}
+          {/* Available For */}
 
           <section className="rounded-xl border border-white/10 bg-[#101014] p-5 sm:p-6">
             <div className="flex items-center gap-2">
-              <Users className="h-4 w-4 text-gray-400" />
+              <FaUsers className="h-4 w-4 text-gray-400" />
 
               <h2 className="text-base font-semibold text-white">
                 Available for
@@ -596,21 +660,15 @@ const Profile = () => {
           </section>
         </aside>
 
-        {/* =================================== */}
         {/* Right Content */}
-        {/* =================================== */}
 
         <div className="min-w-0">
-          {/* ================================= */}
-          {/* Profile Content Tabs */}
-          {/* ================================= */}
+          {/* Tabs */}
 
           <section>
-            {/* Tabs Header */}
-
             <div className="mb-6 border-b border-white/10">
               <div className="flex items-center gap-6 overflow-x-auto">
-                {/* Articles Tab */}
+                {/* Articles */}
 
                 <button
                   type="button"
@@ -621,12 +679,12 @@ const Profile = () => {
                       : "border-transparent text-gray-500 hover:text-gray-300"
                   }`}
                 >
-                  <FileText className="h-4 w-4" />
+                  <FaFileAlt className="h-4 w-4" />
                   Articles
                   <span className="text-xs text-gray-600">{posts.length}</span>
                 </button>
 
-                {/* Comments Tab */}
+                {/* Comments */}
 
                 <button
                   type="button"
@@ -637,14 +695,14 @@ const Profile = () => {
                       : "border-transparent text-gray-500 hover:text-gray-300"
                   }`}
                 >
-                  <MessageCircle className="h-4 w-4" />
+                  <FaRegCommentDots className="h-4 w-4" />
                   Comments
                   <span className="text-xs text-gray-600">
                     {commentsLoading ? "—" : commentCount}
                   </span>
                 </button>
 
-                {/* Bookmarks Tab */}
+                {/* Bookmarks */}
 
                 {isOwnProfile && (
                   <button
@@ -656,7 +714,7 @@ const Profile = () => {
                         : "border-transparent text-gray-500 hover:text-gray-300"
                     }`}
                   >
-                    <Bookmark className="h-4 w-4" />
+                    <FaBookmark className="h-4 w-4" />
                     Bookmarks
                     <span className="text-xs text-gray-600">
                       {bookmarkLoading ? "—" : bookmarkCount}
@@ -666,16 +724,14 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* ================================= */}
-            {/* ARTICLES */}
-            {/* ================================= */}
+            {/* Articles */}
 
             {activeTab === "articles" && (
               <div>
                 {posts.length === 0 ? (
                   <div className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] px-5 py-14 text-center">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-gray-500">
-                      <FileText className="h-6 w-6" />
+                      <FaFileAlt className="h-6 w-6" />
                     </div>
 
                     <h3 className="mt-4 font-semibold text-white">
@@ -694,9 +750,7 @@ const Profile = () => {
               </div>
             )}
 
-            {/* ================================= */}
-            {/* COMMENTS */}
-            {/* ================================= */}
+            {/* Comments */}
 
             {activeTab === "comments" && (
               <div>
@@ -713,7 +767,7 @@ const Profile = () => {
                 ) : userComments.length === 0 ? (
                   <div className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] px-5 py-14 text-center">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-gray-500">
-                      <MessageCircle className="h-6 w-6" />
+                      <FaRegCommentDots className="h-6 w-6" />
                     </div>
 
                     <h3 className="mt-4 font-semibold text-white">
@@ -734,24 +788,18 @@ const Profile = () => {
                         className="rounded-xl border border-white/10 bg-[#101014] p-5 transition hover:border-white/15"
                       >
                         <div className="flex items-start gap-3">
-                          <MessageCircle className="mt-1 h-4 w-4 shrink-0 text-gray-500" />
+                          <FaRegCommentDots className="mt-1 h-4 w-4 shrink-0 text-gray-500" />
 
                           <div className="min-w-0 flex-1">
-                            {/* Comment Content */}
-
                             <p className="whitespace-pre-wrap break-words text-sm leading-6 text-gray-300">
                               {comment.content}
                             </p>
-
-                            {/* Parent Reply Indicator */}
 
                             {comment.parentComment && (
                               <p className="mt-2 text-xs text-gray-600">
                                 Reply
                               </p>
                             )}
-
-                            {/* Post */}
 
                             {comment.post && (
                               <Link
@@ -767,8 +815,6 @@ const Profile = () => {
                                 </p>
                               </Link>
                             )}
-
-                            {/* Date */}
 
                             {comment.createdAt && (
                               <p className="mt-3 text-xs text-gray-600">
@@ -791,9 +837,7 @@ const Profile = () => {
               </div>
             )}
 
-            {/* ================================= */}
-            {/* BOOKMARKS */}
-            {/* ================================= */}
+            {/* Bookmarks */}
 
             {activeTab === "bookmarks" && isOwnProfile && (
               <div>
@@ -812,7 +856,7 @@ const Profile = () => {
                 ) : bookmarkedPosts.length === 0 ? (
                   <div className="flex flex-col items-center rounded-xl border border-white/5 bg-white/[0.02] px-5 py-14 text-center">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-white/5 text-gray-500">
-                      <Bookmark className="h-6 w-6" />
+                      <FaBookmark className="h-6 w-6" />
                     </div>
 
                     <h3 className="mt-4 font-semibold text-white">
@@ -832,9 +876,9 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* ===================================== */}
-      {/* Followers / Following Modal */}
-      {/* ===================================== */}
+      {/* =====================================
+          Followers / Following Modal
+      ===================================== */}
 
       {followListType && (
         <FollowListModal
@@ -844,9 +888,9 @@ const Profile = () => {
         />
       )}
 
-      {/* ===================================== */}
-      {/* Followed Tags Modal */}
-      {/* ===================================== */}
+      {/* =====================================
+          Followed Tags Modal
+      ===================================== */}
 
       {showTagsModal && (
         <FollowedTagsModal

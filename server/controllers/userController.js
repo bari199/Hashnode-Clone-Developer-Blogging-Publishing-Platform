@@ -34,7 +34,7 @@ const uploadToCloudinary = (buffer) => {
 export const getUserProfile = async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select(
-      "name bio avatarUrl",
+      "name bio avatarUrl location socialLinks createdAt",
     );
 
     if (!user) {
@@ -150,18 +150,21 @@ export const getTrendingAuthors = async (req, res) => {
 // Protected
 // =====================================
 
+// =====================================
+// PUT /api/users/me
+// Protected
+// =====================================
+
 export const updateMyProfile = async (req, res) => {
   try {
     console.log("BODY:", req.body);
     console.log("FILE:", req.file);
 
-    const { name, bio } = req.body;
+    const { name, email, bio, location, socialLinks } = req.body;
 
-    if (!name || !name.trim()) {
-      return res.status(400).json({
-        message: "Name is required",
-      });
-    }
+    // =====================================
+    // Find User
+    // =====================================
 
     const user = await User.findById(req.user._id);
 
@@ -171,12 +174,93 @@ export const updateMyProfile = async (req, res) => {
       });
     }
 
-    // Update basic information
-    user.name = name.trim();
-    user.bio = bio?.trim() || "";
+    // =====================================
+    // Update Name
+    // =====================================
+
+    if (name !== undefined) {
+      const trimmedName = name.trim();
+
+      if (!trimmedName) {
+        return res.status(400).json({
+          message: "Name cannot be empty",
+        });
+      }
+
+      user.name = trimmedName;
+    }
 
     // =====================================
-    // Upload avatar to Cloudinary
+    // Update Email
+    // =====================================
+
+    if (email !== undefined) {
+      const normalizedEmail = email.trim().toLowerCase();
+
+      if (!normalizedEmail) {
+        return res.status(400).json({
+          message: "Email cannot be empty",
+        });
+      }
+
+      const existingUser = await User.findOne({
+        email: normalizedEmail,
+        _id: {
+          $ne: req.user._id,
+        },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({
+          message: "Email is already in use",
+        });
+      }
+
+      user.email = normalizedEmail;
+    }
+
+    // =====================================
+    // Update Bio
+    // =====================================
+
+    if (bio !== undefined) {
+      user.bio = bio.trim();
+    }
+
+    // =====================================
+    // Update Location
+    // =====================================
+
+    if (location !== undefined) {
+      user.location = location.trim();
+    }
+
+    // =====================================
+    // Update Social Links
+    // =====================================
+
+    if (socialLinks !== undefined) {
+      try {
+        const parsedSocialLinks =
+          typeof socialLinks === "string"
+            ? JSON.parse(socialLinks)
+            : socialLinks;
+
+        user.socialLinks = {
+          x: parsedSocialLinks?.x?.trim() || "",
+          linkedin: parsedSocialLinks?.linkedin?.trim() || "",
+          github: parsedSocialLinks?.github?.trim() || "",
+          website: parsedSocialLinks?.website?.trim() || "",
+        };
+      } catch (error) {
+        return res.status(400).json({
+          message: "Invalid social links format",
+        });
+      }
+    }
+
+    // =====================================
+    // Upload Avatar
     // =====================================
 
     if (req.file?.buffer) {
@@ -189,7 +273,15 @@ export const updateMyProfile = async (req, res) => {
       user.avatarUrl = uploadResult.secure_url;
     }
 
+    // =====================================
+    // Save User
+    // =====================================
+
     await user.save();
+
+    // =====================================
+    // Response
+    // =====================================
 
     return res.status(200).json({
       message: "Profile updated successfully",
@@ -199,19 +291,26 @@ export const updateMyProfile = async (req, res) => {
         name: user.name,
         email: user.email,
         bio: user.bio,
+        location: user.location,
+        socialLinks: user.socialLinks,
         avatarUrl: user.avatarUrl,
       },
     });
   } catch (error) {
     console.error("Update profile error:", error);
 
+    // MongoDB duplicate key fallback
+    if (error.code === 11000 && error.keyPattern?.email) {
+      return res.status(409).json({
+        message: "Email is already in use",
+      });
+    }
+
     return res.status(500).json({
       message: "Failed to update profile",
     });
   }
 };
-
-
 // =====================================
 // GET /api/users/search?q=
 // Public
@@ -248,6 +347,36 @@ export const searchUsers = async (req, res) => {
 
     return res.status(500).json({
       message: "Failed to search users",
+    });
+  }
+};
+
+export const deleteMyAccount = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    // =====================================
+    // Delete User
+    // =====================================
+
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      message: "Account deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete account error:", error);
+
+    return res.status(500).json({
+      message: "Failed to delete account",
     });
   }
 };

@@ -1,5 +1,13 @@
-import { useEffect, useState } from "react";
-import { MoreHorizontal, ChevronRight } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { MoreHorizontal, ChevronRight, X } from "lucide-react";
+import {
+  FaGithub,
+  FaGlobe,
+  FaLinkedinIn,
+  FaMapMarkerAlt,
+  FaUser,
+} from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 import api from "../../api/axios.js";
 
@@ -9,20 +17,289 @@ import { Button } from "@/components/ui/button";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const RightSidebar = () => {
-  // =====================================
-  // State
-  // =====================================
+/* =========================================================
+   AUTHOR POPUP
+========================================================= */
 
+const AuthorPopup = ({ author, loading, position, onClose }) => {
+  const popupRef = useRef(null);
+
+  const getInitials = (name = "") => {
+    return name
+      .trim()
+      .split(/\s+/)
+      .map((word) => word[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  };
+
+  /* Close when clicking outside */
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [onClose]);
+
+  /* Close with Escape */
+  useEffect(() => {
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [onClose]);
+
+  if (!position || !author) {
+    return null;
+  }
+
+  const popupWidth = 290;
+
+  let left = position.left;
+  let top = position.top;
+
+  /* Keep popup inside viewport */
+  if (left + popupWidth > window.innerWidth - 16) {
+    left = window.innerWidth - popupWidth - 16;
+  }
+
+  if (left < 16) {
+    left = 16;
+  }
+
+  /* Open above avatar if there isn't enough space below */
+  if (top + 330 > window.innerHeight - 16) {
+    top = Math.max(16, position.top - 345);
+  }
+
+  return (
+    <div
+      ref={popupRef}
+      className="
+        fixed
+        z-[9999]
+        w-[290px]
+        overflow-hidden
+        rounded-xl
+        border
+        border-white/[0.08]
+        bg-[#1b1d21]
+        p-4
+        shadow-2xl
+        shadow-black/60
+      "
+      style={{
+        left,
+        top,
+      }}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {/* Close button */}
+
+      <button
+        type="button"
+        onClick={onClose}
+        className="
+          absolute
+          right-2
+          top-2
+          flex
+          h-6
+          w-6
+          items-center
+          justify-center
+          rounded-md
+          text-zinc-600
+          transition
+          hover:bg-white/[0.06]
+          hover:text-zinc-300
+        "
+        aria-label="Close"
+      >
+        <X className="h-3.5 w-3.5" />
+      </button>
+
+      {loading ? (
+        <div className="py-8 text-center">
+          <div className="mx-auto mb-3 h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
+
+          <p className="text-xs text-zinc-500">Loading profile...</p>
+        </div>
+      ) : (
+        <>
+          {/* User */}
+
+          <div className="flex items-center gap-3 pr-5">
+            <Avatar className="h-12 w-12 shrink-0 border border-white/20">
+              <AvatarImage
+                src={author?.avatarUrl || ""}
+                alt={author?.name || "Author"}
+              />
+
+              <AvatarFallback className="bg-zinc-700 text-sm font-semibold text-white">
+                {getInitials(author?.name)}
+              </AvatarFallback>
+            </Avatar>
+
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-white">
+                {author?.name || "Unknown author"}
+              </p>
+
+              {author?.email && (
+                <p className="truncate text-xs text-zinc-500">{author.email}</p>
+              )}
+
+              {author?.bio && (
+                <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-zinc-500">
+                  {author.bio}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Location + Social */}
+
+          <div className="mt-4 flex min-h-5 items-center gap-3">
+            {author?.location && (
+              <div className="flex min-w-0 items-center gap-1.5 text-zinc-500">
+                <FaMapMarkerAlt className="h-3.5 w-3.5 shrink-0" />
+
+                <span className="truncate text-xs">{author.location}</span>
+              </div>
+            )}
+
+            <div className="ml-auto flex shrink-0 items-center gap-3">
+              {author?.socialLinks?.x && (
+                <a
+                  href={author.socialLinks.x}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="X"
+                  onClick={(event) => event.stopPropagation()}
+                  className="text-zinc-500 transition hover:text-white"
+                >
+                  <FaXTwitter className="h-4 w-4" />
+                </a>
+              )}
+
+              {author?.socialLinks?.github && (
+                <a
+                  href={author.socialLinks.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub"
+                  onClick={(event) => event.stopPropagation()}
+                  className="text-zinc-500 transition hover:text-white"
+                >
+                  <FaGithub className="h-4 w-4" />
+                </a>
+              )}
+
+              {author?.socialLinks?.linkedin && (
+                <a
+                  href={author.socialLinks.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn"
+                  onClick={(event) => event.stopPropagation()}
+                  className="text-zinc-500 transition hover:text-white"
+                >
+                  <FaLinkedinIn className="h-4 w-4" />
+                </a>
+              )}
+
+              {author?.socialLinks?.website && (
+                <a
+                  href={author.socialLinks.website}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Website"
+                  onClick={(event) => event.stopPropagation()}
+                  className="text-zinc-500 transition hover:text-white"
+                >
+                  <FaGlobe className="h-4 w-4" />
+                </a>
+              )}
+            </div>
+          </div>
+
+          {/* View Profile */}
+
+          {author?._id && (
+            <a
+              href={`/profile/${author._id}`}
+              onClick={onClose}
+              className="
+                mt-4
+                flex
+                h-8
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-md
+                bg-[#e4e5e7]
+                text-sm
+                font-medium
+                text-[#16181c]
+                transition
+                hover:bg-white
+              "
+            >
+              <FaUser className="h-3.5 w-3.5" />
+              View full profile
+            </a>
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
+/* =========================================================
+   RIGHT SIDEBAR
+========================================================= */
+
+const RightSidebar = () => {
   const [trendingTags, setTrendingTags] = useState([]);
   const [authors, setAuthors] = useState([]);
 
   const [tagsLoading, setTagsLoading] = useState(true);
   const [authorsLoading, setAuthorsLoading] = useState(true);
 
-  // =====================================
-  // Fetch Sidebar Data
-  // =====================================
+  /*
+    IMPORTANT:
+
+    We store a unique popup key instead of only author._id.
+
+    This prevents the same author appearing in multiple tags
+    from opening multiple popups.
+  */
+  const [activePopupKey, setActivePopupKey] = useState(null);
+
+  const [selectedAuthor, setSelectedAuthor] = useState(null);
+  const [authorLoading, setAuthorLoading] = useState(false);
+  const [popupPosition, setPopupPosition] = useState(null);
+
+  /* =====================================================
+     FETCH SIDEBAR DATA
+  ===================================================== */
 
   useEffect(() => {
     const fetchSidebarData = async () => {
@@ -35,21 +312,17 @@ const RightSidebar = () => {
           api.get("/users/authors/trending"),
         ]);
 
-        // =====================================
-        // Trending Tags
-        // =====================================
+        /* Trending Tags */
 
         const tags = tagsResponse?.data?.tags || [];
 
         const sortedTags = [...tags]
-          .sort((a, b) => (b.postCount || 0) - (a.postCount || 0))
+          .sort((a, b) => (b?.postCount || 0) - (a?.postCount || 0))
           .slice(0, 9);
 
         setTrendingTags(sortedTags);
 
-        // =====================================
-        // Trending Authors
-        // =====================================
+        /* Trending Authors */
 
         const authorsData = authorsResponse?.data?.authors || [];
 
@@ -68,9 +341,9 @@ const RightSidebar = () => {
     fetchSidebarData();
   }, []);
 
-  // =====================================
-  // Helper: Generate Initials
-  // =====================================
+  /* =====================================================
+     HELPERS
+  ===================================================== */
 
   const getInitials = (name = "") => {
     return name
@@ -82,17 +355,119 @@ const RightSidebar = () => {
       .toUpperCase();
   };
 
+  /* =====================================================
+     CLOSE POPUP
+  ===================================================== */
+
+  const closeAuthorPopup = () => {
+    setActivePopupKey(null);
+    setSelectedAuthor(null);
+    setAuthorLoading(false);
+    setPopupPosition(null);
+  };
+
+  /* =====================================================
+     OPEN AUTHOR POPUP
+  ===================================================== */
+
+  const handleAuthorOpen = async (author, popupKey, element) => {
+    if (!author?._id) {
+      return;
+    }
+
+    /* Click same avatar -> close */
+
+    if (activePopupKey === popupKey) {
+      closeAuthorPopup();
+      return;
+    }
+
+    const rect = element.getBoundingClientRect();
+
+    /*
+      Fixed popup position.
+
+      The popup is positioned relative to viewport,
+      not relative to avatar wrapper.
+    */
+
+    setPopupPosition({
+      left: rect.right - 290,
+      top: rect.bottom + 10,
+    });
+
+    setActivePopupKey(popupKey);
+
+    /*
+      Show existing author information immediately.
+    */
+
+    setSelectedAuthor({
+      _id: author._id,
+      name: author.name,
+      avatarUrl: author.avatarUrl,
+      bio: author.bio,
+      email: author.email,
+      location: author.location,
+      socialLinks: author.socialLinks,
+    });
+
+    setAuthorLoading(true);
+
+    try {
+      const response = await api.get(`/users/${author._id}`);
+
+      const fetchedUser = response?.data?.user || null;
+
+      if (fetchedUser) {
+        setSelectedAuthor(fetchedUser);
+      }
+    } catch (error) {
+      console.error("Failed to load author profile:", error);
+
+      /*
+        Keep the existing author data if API fails.
+      */
+    } finally {
+      setAuthorLoading(false);
+    }
+  };
+
+  /* =====================================================
+     CLOSE ON RESIZE
+  ===================================================== */
+
+  useEffect(() => {
+    if (!activePopupKey) {
+      return;
+    }
+
+    const handleResize = () => {
+      closeAuthorPopup();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [activePopupKey]);
+
+  /* =====================================================
+     RENDER
+  ===================================================== */
+
   return (
     <aside className="hidden border-l border-white/[0.06] xl:block">
       <div className="sticky top-16 space-y-5 p-5">
-        {/* =====================================================
+        {/* =================================================
             TRENDING TAGS
-        ===================================================== */}
+        ================================================= */}
 
         <Card className="border-white/[0.07] bg-white/[0.025]">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm text-amber-50">
+              <CardTitle className="text-sm font-semibold text-amber-50">
                 Trending tags
               </CardTitle>
 
@@ -102,60 +477,121 @@ const RightSidebar = () => {
 
           <CardContent className="space-y-1">
             {/* Loading */}
+
             {tagsLoading &&
               [1, 2, 3, 4, 5].map((item) => (
                 <div
                   key={item}
                   className="flex items-center justify-between px-2 py-2.5"
                 >
-                  <div className="h-3 w-28 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-3.5 w-28 animate-pulse rounded bg-white/[0.06]" />
 
-                  <div className="h-3 w-6 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-3.5 w-6 animate-pulse rounded bg-white/[0.06]" />
                 </div>
               ))}
 
             {/* Tags */}
+
             {!tagsLoading &&
               trendingTags.map((tag) => (
                 <div
                   key={tag._id}
-                  className="group flex cursor-pointer items-center justify-between rounded-lg px-2 py-2.5 transition hover:bg-white/[0.05]"
+                  className="
+                    group
+                    flex
+                    cursor-pointer
+                    items-center
+                    justify-between
+                    rounded-lg
+                    px-2
+                    py-2.5
+                    transition
+                    hover:bg-white/[0.05]
+                  "
                 >
-                  <span className="truncate text-xs text-zinc-400 transition group-hover:text-white">
+                  <span className="truncate text-xs font-medium text-zinc-400 transition group-hover:text-white">
                     #{tag.name}
                   </span>
 
                   <div className="ml-2 flex shrink-0 items-center">
-                    {/* Author Avatars */}
                     {tag.authors?.length > 0 && (
                       <div className="flex -space-x-2">
-                        {tag.authors.slice(0, 3).map((author) => (
-                          <Avatar
-                            key={author._id}
-                            className="h-5 w-5 border-2 border-[#16171c]"
-                          >
-                            <AvatarImage
-                              src={author.avatarUrl || ""}
-                              alt={author.name || "Author"}
-                            />
+                        {tag.authors.slice(0, 3).map((author) => {
+                          /*
+                              UNIQUE KEY FOR EACH AVATAR
 
-                            <AvatarFallback className="bg-zinc-700 text-[7px] text-zinc-200">
-                              {getInitials(author.name)}
-                            </AvatarFallback>
-                          </Avatar>
-                        ))}
+                              Same author in different tags
+                              will have different popup keys.
+                            */
+
+                          const popupKey = `tag-${tag._id}-author-${author._id}`;
+
+                          const isActive = activePopupKey === popupKey;
+
+                          return (
+                            <div key={author._id} className="relative">
+                              <button
+                                type="button"
+                                onMouseEnter={(event) => {
+                                  handleAuthorOpen(
+                                    author,
+                                    popupKey,
+                                    event.currentTarget,
+                                  );
+                                }}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+
+                                  handleAuthorOpen(
+                                    author,
+                                    popupKey,
+                                    event.currentTarget,
+                                  );
+                                }}
+                                className="relative rounded-full outline-none"
+                                aria-label={`View ${
+                                  author.name || "author"
+                                } profile`}
+                              >
+                                <Avatar
+                                  className={`
+                                      h-6
+                                      w-6
+                                      border-2
+                                      border-[#16171c]
+                                      transition
+                                      ${
+                                        isActive
+                                          ? "scale-110 ring-2 ring-white/20"
+                                          : "hover:scale-110"
+                                      }
+                                    `}
+                                >
+                                  <AvatarImage
+                                    src={author.avatarUrl || ""}
+                                    alt={author.name || "Author"}
+                                  />
+
+                                  <AvatarFallback className="bg-zinc-700 text-[8px] font-medium text-zinc-200">
+                                    {getInitials(author.name)}
+                                  </AvatarFallback>
+                                </Avatar>
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
 
-                    {/* Post Count */}
-                    <span className="ml-2 text-[10px] text-zinc-500">
-                      {tag.postCount}
+                    <span className="ml-2 text-[11px] text-zinc-500">
+                      {tag.postCount || 0}
                     </span>
                   </div>
                 </div>
               ))}
 
             {/* Empty State */}
+
             {!tagsLoading && trendingTags.length === 0 && (
               <p className="px-2 py-3 text-xs text-zinc-600">
                 No trending tags yet.
@@ -164,13 +600,13 @@ const RightSidebar = () => {
           </CardContent>
         </Card>
 
-        {/* =====================================================
+        {/* =================================================
             THE FOREWORD
-        ===================================================== */}
+        ================================================= */}
 
         <Card className="border-white/[0.07] bg-white/[0.025]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm text-amber-50">
+            <CardTitle className="text-sm font-semibold text-amber-50">
               The foreword
             </CardTitle>
 
@@ -180,7 +616,6 @@ const RightSidebar = () => {
           </CardHeader>
 
           <CardContent>
-            {/* Visual */}
             <div className="overflow-hidden rounded-lg border border-white/[0.06] bg-black/30">
               <div className="flex h-20 items-center justify-center gap-2 px-3">
                 <div className="h-8 w-8 rounded bg-white/[0.05]" />
@@ -191,7 +626,6 @@ const RightSidebar = () => {
               </div>
             </div>
 
-            {/* Description */}
             <p className="mt-3 text-xs font-medium leading-5 text-zinc-300">
               Engineering, AI and modern web development.
             </p>
@@ -200,37 +634,35 @@ const RightSidebar = () => {
               Practical guides and thoughts for developers.
             </p>
 
-            {/* View Posts */}
             <Button
               variant="link"
               className="mt-2 h-auto px-0 text-xs text-zinc-300"
             >
               View all posts
-              <ChevronRight className="ml-1 h-3 w-3" />
+              <ChevronRight className="ml-1 h-3.5 w-3.5" />
             </Button>
           </CardContent>
         </Card>
 
-        {/* =====================================================
+        {/* =================================================
             AUTHORS WORTH FOLLOWING
-        ===================================================== */}
+        ================================================= */}
 
         <Card className="border-white/[0.07] bg-white/[0.025]">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm text-amber-50">
+            <CardTitle className="text-sm font-semibold text-amber-50">
               Authors worth following
             </CardTitle>
           </CardHeader>
 
           <CardContent className="space-y-4">
             {/* Loading */}
+
             {authorsLoading &&
               [1, 2, 3, 4, 5].map((item) => (
                 <div key={item} className="flex items-center gap-3">
-                  {/* Avatar Skeleton */}
-                  <div className="h-8 w-8 animate-pulse rounded-full bg-white/[0.06]" />
+                  <div className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-white/[0.06]" />
 
-                  {/* Text Skeleton */}
                   <div className="min-w-0 flex-1 space-y-1.5">
                     <div className="h-3 w-24 animate-pulse rounded bg-white/[0.06]" />
 
@@ -240,43 +672,81 @@ const RightSidebar = () => {
               ))}
 
             {/* Authors */}
+
             {!authorsLoading &&
-              authors.map((author) => (
-                <div
-                  key={author._id}
-                  className="group flex cursor-pointer items-center gap-3"
-                >
-                  {/* Avatar */}
-                  <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage
-                      src={author.avatarUrl || ""}
-                      alt={author.name || "Author"}
-                    />
+              authors.map((author) => {
+                const popupKey = `authors-author-${author._id}`;
 
-                    <AvatarFallback className="bg-zinc-800 text-[10px] text-zinc-300">
-                      {getInitials(author.name)}
-                    </AvatarFallback>
-                  </Avatar>
+                const isActive = activePopupKey === popupKey;
 
-                  {/* Author Info */}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-medium text-zinc-300 transition group-hover:text-white">
-                      {author.name}
-                    </p>
-                    {author.bio && (
-                      <p className="mt-0.5 truncate text-[10px] text-zinc-500">
-                        {author.bio}
+                return (
+                  <div
+                    key={author._id}
+                    className="group relative flex items-center gap-3"
+                  >
+                    {/* Avatar */}
+
+                    <button
+                      type="button"
+                      onMouseEnter={(event) => {
+                        handleAuthorOpen(author, popupKey, event.currentTarget);
+                      }}
+                      onClick={(event) => {
+                        event.stopPropagation();
+
+                        handleAuthorOpen(author, popupKey, event.currentTarget);
+                      }}
+                      className="shrink-0 rounded-full outline-none"
+                      aria-label={`View ${author.name || "author"} profile`}
+                    >
+                      <Avatar
+                        className={`
+                          h-9
+                          w-9
+                          shrink-0
+                          transition
+                          ${
+                            isActive
+                              ? "scale-105 ring-2 ring-white/20"
+                              : "hover:scale-105"
+                          }
+                        `}
+                      >
+                        <AvatarImage
+                          src={author.avatarUrl || ""}
+                          alt={author.name || "Author"}
+                        />
+
+                        <AvatarFallback className="bg-zinc-800 text-[10px] font-medium text-zinc-300">
+                          {getInitials(author.name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </button>
+
+                    {/* Author Info */}
+
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-xs font-semibold text-zinc-300 transition group-hover:text-white">
+                        {author.name}
                       </p>
-                    )}
-                    <p className="text-[10px] text-zinc-600">
-                      {author.postCount}{" "}
-                      {author.postCount === 1 ? "post" : "posts"} this month
-                    </p>
+
+                      {author.bio && (
+                        <p className="mt-0.5 truncate text-[11px] text-zinc-500">
+                          {author.bio}
+                        </p>
+                      )}
+
+                      <p className="text-[11px] text-zinc-600">
+                        {author.postCount || 0}{" "}
+                        {author.postCount === 1 ? "post" : "posts"} this month
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
             {/* Empty State */}
+
             {!authorsLoading && authors.length === 0 && (
               <p className="py-2 text-xs text-zinc-600">
                 No active authors this month.
@@ -285,12 +755,12 @@ const RightSidebar = () => {
           </CardContent>
         </Card>
 
-        {/* =====================================================
+        {/* =================================================
             FOOTER
-        ===================================================== */}
+        ================================================= */}
 
         <div className="px-2 py-3">
-          <div className="flex flex-wrap gap-x-3 gap-y-2 text-[10px] text-zinc-600">
+          <div className="flex flex-wrap gap-x-3 gap-y-2 text-[11px] text-zinc-600">
             <span className="cursor-pointer transition hover:text-zinc-300">
               About
             </span>
@@ -308,9 +778,24 @@ const RightSidebar = () => {
             </span>
           </div>
 
-          <p className="mt-4 text-[10px] text-zinc-700">© 2026 CoderBari</p>
+          <p className="mt-4 text-[11px] text-zinc-700">© 2026 CoderBari</p>
         </div>
       </div>
+
+      {/* =================================================
+          SINGLE GLOBAL POPUP
+
+          Only ONE popup is rendered at a time.
+      ================================================= */}
+
+      {activePopupKey && selectedAuthor && popupPosition && (
+        <AuthorPopup
+          author={selectedAuthor}
+          loading={authorLoading}
+          position={popupPosition}
+          onClose={closeAuthorPopup}
+        />
+      )}
     </aside>
   );
 };

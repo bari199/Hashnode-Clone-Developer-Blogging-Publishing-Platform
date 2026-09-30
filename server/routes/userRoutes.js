@@ -4,6 +4,7 @@ import {
   getUserProfile,
   updateMyProfile,
   getTrendingAuthors,
+  deleteMyAccount,
   searchUsers,
 } from "../controllers/userController.js";
 
@@ -27,5 +28,9 @@ router.get("/:id", getUserProfile);
 // =====================================
 
 router.put("/me", authMiddleware, upload.single("avatar"), updateMyProfile);
+
+// Delete Account
+
+router.delete("/me", authMiddleware, deleteMyAccount);
 
 export default router;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useTagFollow from "../hooks/useTagFollow.js";
 import api from "../api/axios.js";
+import RightSidebar from "../components/layout/RightSidebar.jsx";
 
 const TagPage = () => {
   const { slug } = useParams();
@@ -18,11 +19,6 @@ const TagPage = () => {
     submitting: followSubmitting,
     toggleFollow,
   } = useTagFollow(tag?._id);
-
-  console.log("TAG:", tag);
-  console.log("TAG ID:", tag?._id);
-  console.log("FOLLOWING:", following);
-  console.log("FOLLOWER COUNT:", followerCount);
 
   useEffect(() => {
     const fetchTagPosts = async () => {
@@ -44,7 +40,7 @@ const TagPage = () => {
     fetchTagPosts();
   }, [slug]);
 
-  /* ========================= FORMAT DATE ========================== */
+  // ========================= FORMAT DATE ==========================
 
   const formatDate = (date) => {
     if (!date) return "";
@@ -74,7 +70,7 @@ const TagPage = () => {
     });
   };
 
-  /* ========================= READ TIME ========================== */
+  // ========================= READ TIME ==========================
 
   const getReadTime = (post) => {
     if (post?.readTime) {
@@ -86,7 +82,19 @@ const TagPage = () => {
     return Math.max(1, Math.ceil(contentLength / 1000));
   };
 
-  /* ========================= LOADING ========================== */
+  // ========================= AUTHOR NAME ==========================
+
+  const getAuthorName = (post) => {
+    return post?.author?.name || post?.author?.username || "Unknown author";
+  };
+
+  // ========================= AUTHOR INITIAL ==========================
+
+  const getAuthorInitial = (post) => {
+    return getAuthorName(post).charAt(0).toUpperCase();
+  };
+
+  // ========================= LOADING ==========================
 
   if (loading) {
     return (
@@ -102,7 +110,7 @@ const TagPage = () => {
     );
   }
 
-  /* ========================= ERROR ========================== */
+  // ========================= ERROR ==========================
 
   if (error) {
     return (
@@ -126,7 +134,17 @@ const TagPage = () => {
               CENTER FEED
           ================================================= */}
 
-          <section className="min-w-0 px-5 py-5 sm:px-8 lg:border-r lg:border-white/[0.05] lg:px-6">
+          <section
+            className="
+              min-w-0
+              px-5
+              py-5
+              sm:px-8
+              lg:border-r
+              lg:border-white/[0.05]
+              lg:px-6
+            "
+          >
             {/* ========================= PAGE HEADER ========================== */}
 
             <div className="border-b border-white/[0.07] pb-5">
@@ -163,7 +181,7 @@ const TagPage = () => {
                   </div>
                 </div>
 
-                {/* ========================= RIGHT SIDE FOLLOW BUTTON ========================== */}
+                {/* ========================= FOLLOW BUTTON ========================== */}
 
                 <button
                   type="button"
@@ -211,59 +229,115 @@ const TagPage = () => {
                       {/* ========================= ARTICLE CONTENT ========================== */}
 
                       <div className="min-w-0 flex-1">
-                        {/* Author Meta */}
+                        {/* ========================= AUTHOR META ========================== */}
 
-                        <div className="flex items-center gap-1.5 text-[10px] text-zinc-500">
-                          <div className="flex h-5 w-5 shrink-0 items-center justify-center overflow-hidden rounded-full bg-zinc-700">
-                            {post.author?.avatarUrl ? (
+                        <div className="flex items-center gap-2.5 text-[10px] text-zinc-500">
+                          {/* Author Avatar */}
+
+                          <Link
+                            to={`/profile/${post?.author?._id}`}
+                            className="shrink-0"
+                            aria-label={`View ${getAuthorName(post)} profile`}
+                          >
+                            {post?.author?.avatarUrl ? (
                               <img
                                 src={post.author.avatarUrl}
-                                alt=""
-                                className="h-full w-full object-cover"
+                                alt={getAuthorName(post)}
+                                className="
+                                  h-7
+                                  w-7
+                                  rounded-full
+                                  border
+                                  border-white/[0.08]
+                                  object-cover
+                                  transition
+                                  hover:opacity-80
+                                "
                               />
                             ) : (
-                              <span className="text-[8px] text-zinc-300">
-                                {(post.author?.name || "U")
-                                  .charAt(0)
-                                  .toUpperCase()}
-                              </span>
+                              <div
+                                className="
+                                  flex
+                                  h-7
+                                  w-7
+                                  items-center
+                                  justify-center
+                                  rounded-full
+                                  border
+                                  border-white/[0.08]
+                                  bg-zinc-800
+                                  text-[10px]
+                                  font-semibold
+                                  text-zinc-300
+                                  transition
+                                  hover:bg-zinc-700
+                                "
+                              >
+                                {getAuthorInitial(post)}
+                              </div>
                             )}
+                          </Link>
+
+                          {/* Author Info */}
+
+                          <div className="flex min-w-0 flex-wrap items-center gap-1.5">
+                            <Link
+                              to={`/profile/${post?.author?._id}`}
+                              className="font-medium text-zinc-300 transition hover:text-white"
+                            >
+                              {getAuthorName(post)}
+                            </Link>
+
+                            {post?.author?.username && (
+                              <>
+                                <span>in</span>
+
+                                <span className="text-zinc-500">
+                                  {post.author.username}
+                                </span>
+                              </>
+                            )}
+
+                            <span>·</span>
+
+                            <span>{formatDate(post.createdAt)}</span>
+
+                            <span>·</span>
+
+                            <span>{getReadTime(post)} min read</span>
                           </div>
-
-                          <span className="font-medium text-zinc-300">
-                            {post.author?.name ||
-                              post.author?.username ||
-                              "Unknown author"}
-                          </span>
-
-                          {post.author?.username && (
-                            <>
-                              <span>in</span>
-
-                              <span>{post.author.username}</span>
-                            </>
-                          )}
-
-                          <span>·</span>
-
-                          <span>{formatDate(post.createdAt)}</span>
-
-                          <span>·</span>
-
-                          <span>{getReadTime(post)} min read</span>
                         </div>
 
-                        {/* Title */}
+                        {/* ========================= TITLE ========================== */}
 
                         <Link to={`/post/${post.slug}`} className="mt-2 block">
-                          <h2 className="text-sm font-bold leading-5 text-white transition hover:text-zinc-300 sm:text-base">
+                          <h2
+                            className="
+                              text-sm
+                              font-bold
+                              leading-5
+                              text-white
+                              transition
+                              hover:text-zinc-300
+                              sm:text-base
+                            "
+                          >
                             {post.title}
                           </h2>
                         </Link>
 
-                        {/* Excerpt */}
+                        {/* ========================= EXCERPT ========================== */}
 
-                        <p className="mt-1.5 line-clamp-2 text-[11px] leading-4 text-zinc-500 sm:text-xs">
+                        <p
+                          className="
+                            mt-1.5
+                            line-clamp-2
+                            text-[11px]
+                            leading-4
+                            text-zinc-500
+                            sm:text-xs
+                          "
+                        >
                           {post.excerpt ||
                             post.description ||
                             post.content
@@ -273,7 +347,7 @@ const TagPage = () => {
                           ...
                         </p>
 
-                        {/* Bottom Actions */}
+                        {/* ========================= BOTTOM ACTIONS ========================== */}
 
                         <div className="mt-4 flex items-center justify-between">
                           <div className="flex items-center gap-4 text-[10px] text-zinc-600">
@@ -285,13 +359,46 @@ const TagPage = () => {
                           </div>
 
                           <div className="flex items-center gap-3">
-                            {post.author?.avatarUrl && (
-                              <img
-                                src={post.author.avatarUrl}
-                                alt=""
-                                className="h-5 w-5 rounded-full object-cover"
-                              />
-                            )}
+                            {/* Small Author Avatar */}
+
+                            <Link
+                              to={`/profile/${post?.author?._id}`}
+                              className="shrink-0"
+                            >
+                              {post?.author?.avatarUrl ? (
+                                <img
+                                  src={post.author.avatarUrl}
+                                  alt={getAuthorName(post)}
+                                  className="
+                                    h-5
+                                    w-5
+                                    rounded-full
+                                    border
+                                    border-white/[0.08]
+                                    object-cover
+                                    transition
+                                    hover:opacity-80
+                                  "
+                                />
+                              ) : (
+                                <div
+                                  className="
+                                    flex
+                                    h-5
+                                    w-5
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-zinc-800
+                                    text-[7px]
+                                    font-semibold
+                                    text-zinc-400
+                                  "
+                                >
+                                  {getAuthorInitial(post)}
+                                </div>
+                              )}
+                            </Link>
 
                             <button
                               type="button"
@@ -314,7 +421,14 @@ const TagPage = () => {
                           <img
                             src={post.coverImage}
                             alt={post.title}
-                            className="h-[78px] w-[120px] rounded-lg border border-white/[0.08] object-cover"
+                            className="
+                              h-[78px]
+                              w-[120px]
+                              rounded-lg
+                              border
+                              border-white/[0.08]
+                              object-cover
+                            "
                           />
                         </Link>
                       )}
@@ -330,7 +444,13 @@ const TagPage = () => {
               <div className="py-8 text-center">
                 <button
                   type="button"
-                  className="text-xs font-medium text-zinc-500 transition hover:text-white"
+                  className="
+                    text-xs
+                    font-medium
+                    text-zinc-500
+                    transition
+                    hover:text-white
+                  "
                 >
                   Load more ↓
                 </button>
@@ -342,42 +462,7 @@ const TagPage = () => {
               RIGHT SIDEBAR
           ================================================= */}
 
-          <aside className="hidden px-5 py-8 lg:block">
-            <div className="sticky top-8 rounded-xl border border-white/[0.07] bg-[#111317] p-5">
-              <h2 className="text-sm font-semibold text-white">
-                Trending tags this week
-              </h2>
-
-              <div className="mt-5 space-y-4">
-                {[
-                  ["#ai", 245],
-                  ["#artificial-intelligence", 94],
-                  ["#devops", 92],
-                  ["#machine-learning", 86],
-                  ["#security", 79],
-                  ["#python", 67],
-                  ["#web-development", 65],
-                  ["#automation", 64],
-                  ["#llm", 59],
-                  ["#ai-agents", 55],
-                  ["#webdev", 51],
-                  ["#javascript", 51],
-                  ["#api", 50],
-                  ["#backend", 48],
-                ].map(([name, count]) => (
-                  <Link
-                    key={name}
-                    to={`/tag/${name.slice(1)}`}
-                    className="flex items-center justify-between gap-3 text-[10px] text-zinc-400 transition hover:text-white"
-                  >
-                    <span className="truncate">{name}</span>
-
-                    <span className="shrink-0 text-zinc-600">{count}</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </aside>
+          <RightSidebar />
         </div>
       </div>
     </main>

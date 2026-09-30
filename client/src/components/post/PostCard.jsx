@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { Bookmark, Heart, MessageCircle, Triangle } from "lucide-react";
+import { Heart, MessageCircle, Triangle } from "lucide-react";
+
 import usePostInteraction from "../../hooks/usePostInteraction.js";
-import useBookmark from "../../hooks/useBookmark.js";
 
 const PostCard = ({ post }) => {
   const {
@@ -12,13 +12,8 @@ const PostCard = ({ post }) => {
     loading,
     toggleLike,
     toggleUpvote,
-  } = usePostInteraction(post._id);
-  const {
-    bookmarked,
-    bookmarkCount,
-    loading: bookmarkLoading,
-    toggleBookmark,
-  } = useBookmark(post._id);
+  } = usePostInteraction(post?._id);
+
   const authorName = post?.author?.name || "Unknown author";
 
   const timeAgo = (date) => {
@@ -62,7 +57,7 @@ const PostCard = ({ post }) => {
           {post?.coverImage ? (
             <img
               src={post.coverImage}
-              alt={post.title}
+              alt={post?.title}
               className="
                 h-[68px]
                 w-[128px]
@@ -128,34 +123,24 @@ const PostCard = ({ post }) => {
 
           {/* Stats */}
           <div className="mt-2 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={toggleBookmark}
-              disabled={bookmarkLoading}
-              className={`flex h-8 min-w-[58px] items-center justify-center gap-1.5 rounded-md px-2.5 text-xs transition ${
-                bookmarked
-                  ? "bg-white/[0.12] text-white"
-                  : "bg-white/[0.07] text-zinc-400 hover:bg-white/[0.12] hover:text-zinc-200"
-              } disabled:cursor-not-allowed disabled:opacity-60`}
-            >
-              <Bookmark
-                className={`h-3.5 w-3.5 ${bookmarked ? "fill-current" : ""}`}
-              />
-
-              <span>{bookmarkCount}</span>
-            </button>
+            {/* Like */}
             <button
               type="button"
               onClick={toggleLike}
               disabled={loading}
-              className={`flex items-center gap-2 transition ${
-                liked ? "text-red-500" : "text-gray-500 hover:text-red-500"
-              }`}
+              className={`
+                flex
+                items-center
+                gap-2
+                transition
+                ${liked ? "text-red-500" : "text-gray-500 hover:text-red-500"}
+              `}
             >
               <Heart size={18} fill={liked ? "currentColor" : "none"} />
 
               <span>{likeCount}</span>
-            </button>{" "}
+            </button>
+
             {/* Upvote */}
             <button
               type="button"
@@ -184,6 +169,7 @@ const PostCard = ({ post }) => {
 
               <span>{upvoteCount}</span>
             </button>
+
             {/* Comments */}
             <button
               type="button"

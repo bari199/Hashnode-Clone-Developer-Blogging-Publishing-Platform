@@ -5,7 +5,7 @@ import ProtectedRoute from "./components/layout/ProtectedRoute.jsx";
 import MainLayout from "./components/layout/MainLayout.jsx";
 import Navbar from "./components/layout/Navbar.jsx";
 import Dashboard from "./pages/Dashboard.jsx";
-import Feed from "./pages/Feed.jsx";
+import Home from "./pages/home.jsx";
 import Tags from "./pages/Tags.jsx";
 import TagPage from "./pages/TagPage.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -13,6 +13,8 @@ import PostDetail from "./pages/PostDetail.jsx";
 import PostEditor from "./pages/PostEditor.jsx";
 import Settings from "./pages/Settings.jsx";
 import NotFound from "./pages/NotFound.jsx";
+import Feeds from "./pages/Feeds.jsx";
+
 const App = () => {
   return (
     <BrowserRouter>
@@ -26,7 +28,8 @@ const App = () => {
         {/* ========================= MAIN APP LAYOUT Sidebar is added ONCE ========================== */}{" "}
         <Route element={<MainLayout />}>
           {" "}
-          <Route path="/" element={<Feed />} />{" "}
+          <Route path="/" element={<Home />} />{" "}
+          <Route path="/feeds" element={<Feeds />} />{" "}
           <Route path="/tags" element={<Tags />} />{" "}
           <Route path="/tag/:slug" element={<TagPage />} />{" "}
           <Route path="/post/:slug" element={<PostDetail />} />{" "}

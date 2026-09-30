@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu.jsx";
 
-const Navbar = () => {
+const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
   const { user, status, logout } = useAuth();
   const navigate = useNavigate();
   const [showNotifications, setShowNotifications] = useState(false);
@@ -74,25 +74,14 @@ const Navbar = () => {
 
   return (
     <nav
-      className="
-        fixed
-        inset-x-0
-        top-0
-        z-[100]
-        h-16
-        border-b
-        border-white/[0.07]
-        bg-[#08090b]/95
-        text-white
-        backdrop-blur-xl
-      "
+      className={`fixed inset-x-0 top-0 z-[100] h-16 border-b border-white/[0.07] bg-[#08090b]/95 text-white backdrop-blur-xl ${className}`}
     >
       <div
         className="
           mx-auto
           flex
           h-16
-          max-w-[1500px]
+          max-w-none
           items-center
           gap-4
           px-5
@@ -103,7 +92,9 @@ const Navbar = () => {
             LOGO
         ===================================================== */}
 
-        <div className="flex shrink-0 items-center">
+        <div
+          className={`flex shrink-0 items-center ${showLogo ? "" : "lg:hidden"}`}
+        >
           <Link to="/" className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-black">
               <span className="text-sm font-bold">H</span>
@@ -167,39 +158,6 @@ const Navbar = () => {
             )}
           </div>
           {/* Tags */}
-          <Link to="/tags">
-            <Button
-              variant="ghost"
-              className="
-                hidden
-                gap-2
-                text-zinc-400
-                hover:bg-white/[0.05]
-                hover:text-white
-                sm:flex
-              "
-            >
-              <Tags className="h-4 w-4" />
-              Tags
-            </Button>
-          </Link>
-          {/* Write */}
-          <Link to="/editor/new">
-            <Button
-              variant="ghost"
-              className="
-                hidden
-                gap-2
-                text-zinc-300
-                hover:bg-white/[0.05]
-                hover:text-white
-                sm:flex
-              "
-            >
-              <PenLine className="h-4 w-4" />
-              Write
-            </Button>
-          </Link>
           {/* Theme */}
           <Button
             variant="ghost"
@@ -355,6 +313,7 @@ const Navbar = () => {
           <Button
             variant="ghost"
             size="icon"
+            onClick={onMenuClick}
             className="
               ml-1
               text-zinc-400

@@ -22,16 +22,23 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 
-const Feed = () => {
+const INITIAL_POST_COUNT = 6;
+
+const home = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+  const [showAll, setShowAll] = useState(false);
+
+  const visiblePosts = showAll ? posts : posts.slice(0, INITIAL_POST_COUNT);
+  const hasMore = posts.length > INITIAL_POST_COUNT;
 
   const fetchPosts = async (searchTerm = "") => {
     try {
       setLoading(true);
       setError("");
+      setShowAll(false);
 
       const response = await api.get("/posts", {
         params: searchTerm ? { search: searchTerm } : {},
@@ -142,13 +149,16 @@ const Feed = () => {
               </h2>
             </div>
 
-            <Button
-              variant="ghost"
-              className="hidden text-zinc-400 hover:bg-white/[0.05] hover:text-white sm:flex"
-            >
-              View all
-              <ArrowUpRight className="ml-2 h-4 w-4" />
-            </Button>
+            {hasMore && (
+              <Button
+                variant="ghost"
+                onClick={() => setShowAll((prev) => !prev)}
+                className="text-zinc-400 hover:bg-white/[0.05] hover:text-white"
+              >
+                {showAll ? "Show less" : "View all"}
+                <ArrowUpRight className="ml-2 h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           {/* Mobile Search */}
@@ -202,7 +212,23 @@ const Feed = () => {
           )}
 
           {/* Posts */}
-          {!loading && !error && posts.length > 0 && <PostList posts={posts} />}
+          {!loading && !error && posts.length > 0 && (
+            <>
+              <PostList posts={visiblePosts} />
+
+              {hasMore && !showAll && (
+                <div className="mt-6 text-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAll(true)}
+                    className="border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.08]"
+                  >
+                    View all {posts.length} posts
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
 
           {/* Empty */}
           {!loading && !error && posts.length === 0 && (
@@ -227,4 +253,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default home;

@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+    // =====================================
+    // Basic Information
+    // =====================================
+
     name: {
       type: String,
       required: true,
@@ -13,6 +17,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
+      trim: true,
     },
 
     password: {
@@ -20,15 +25,56 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
+    // =====================================
+    // Profile
+    // =====================================
+
     bio: {
       type: String,
       maxlength: 200,
       default: "",
     },
 
+    location: {
+      type: String,
+      maxlength: 100,
+      default: "",
+      trim: true,
+    },
+
     avatarUrl: {
       type: String,
       default: "",
+    },
+
+    // =====================================
+    // Social Links
+    // =====================================
+
+    socialLinks: {
+      x: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      linkedin: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      github: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      website: {
+        type: String,
+        default: "",
+        trim: true,
+      },
     },
   },
   {
