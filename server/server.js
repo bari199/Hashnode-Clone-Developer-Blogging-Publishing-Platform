@@ -29,7 +29,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://hashnode-clone-developer-blogging-p-snowy.vercel.app",
+      "https://hashnode-clone-developer-blogging-p.vercel.app",
     ],
     credentials: true,
   }),
@@ -81,7 +81,7 @@ const startServer = async () => {
       console.log("Socket.IO server initialized");
     });
   } catch (error) {
-    console.error("Server startup failed:", error);
+    console.error("Server startup failed to connect to database:", error);
     process.exit(1);
   }
 };
