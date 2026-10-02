@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MoreHorizontal, ChevronRight, X } from "lucide-react";
+
 import {
   FaGithub,
   FaGlobe,
@@ -7,6 +8,7 @@ import {
   FaMapMarkerAlt,
   FaUser,
 } from "react-icons/fa";
+
 import { FaXTwitter } from "react-icons/fa6";
 
 import api from "../../api/axios.js";
@@ -24,6 +26,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const AuthorPopup = ({ author, loading, position, onClose }) => {
   const popupRef = useRef(null);
 
+  // =====================================
+  // Get Initials
+  // =====================================
+
   const getInitials = (name = "") => {
     return name
       .trim()
@@ -34,7 +40,10 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
       .toUpperCase();
   };
 
-  /* Close when clicking outside */
+  // =====================================
+  // Close Outside Click
+  // =====================================
+
   useEffect(() => {
     const handleOutsideClick = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -49,7 +58,10 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
     };
   }, [onClose]);
 
-  /* Close with Escape */
+  // =====================================
+  // Close Escape
+  // =====================================
+
   useEffect(() => {
     const handleEscape = (event) => {
       if (event.key === "Escape") {
@@ -68,24 +80,40 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
     return null;
   }
 
-  const popupWidth = 290;
+  // =====================================
+  // Responsive Popup Position
+  // =====================================
+
+  const viewportPadding = 12;
+
+  const popupWidth = Math.min(290, window.innerWidth - viewportPadding * 2);
 
   let left = position.left;
   let top = position.top;
 
-  /* Keep popup inside viewport */
-  if (left + popupWidth > window.innerWidth - 16) {
-    left = window.innerWidth - popupWidth - 16;
+  // Keep popup inside horizontal viewport
+
+  if (left + popupWidth > window.innerWidth - viewportPadding) {
+    left = window.innerWidth - popupWidth - viewportPadding;
   }
 
-  if (left < 16) {
-    left = 16;
+  if (left < viewportPadding) {
+    left = viewportPadding;
   }
 
-  /* Open above avatar if there isn't enough space below */
-  if (top + 330 > window.innerHeight - 16) {
-    top = Math.max(16, position.top - 345);
+  // Estimate popup height
+
+  const estimatedPopupHeight = 300;
+
+  // Open above if insufficient bottom space
+
+  if (top + estimatedPopupHeight > window.innerHeight - viewportPadding) {
+    top = Math.max(viewportPadding, position.top - estimatedPopupHeight - 10);
   }
+
+  // =====================================
+  // UI
+  // =====================================
 
   return (
     <div
@@ -93,7 +121,7 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
       className="
         fixed
         z-[9999]
-        w-[290px]
+        max-w-[calc(100vw-24px)]
         overflow-hidden
         rounded-xl
         border
@@ -104,12 +132,15 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
         shadow-black/60
       "
       style={{
-        left,
-        top,
+        width: `${popupWidth}px`,
+        left: `${left}px`,
+        top: `${top}px`,
       }}
       onClick={(event) => event.stopPropagation()}
     >
-      {/* Close button */}
+      {/* =====================================
+          Close
+      ===================================== */}
 
       <button
         type="button"
@@ -134,18 +165,36 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
         <X className="h-3.5 w-3.5" />
       </button>
 
+      {/* =====================================
+          Loading
+      ===================================== */}
+
       {loading ? (
         <div className="py-8 text-center">
-          <div className="mx-auto mb-3 h-5 w-5 animate-spin rounded-full border-2 border-zinc-700 border-t-zinc-300" />
+          <div
+            className="
+              mx-auto
+              mb-3
+              h-5
+              w-5
+              animate-spin
+              rounded-full
+              border-2
+              border-zinc-700
+              border-t-zinc-300
+            "
+          />
 
           <p className="text-xs text-zinc-500">Loading profile...</p>
         </div>
       ) : (
         <>
-          {/* User */}
+          {/* =====================================
+              User
+          ===================================== */}
 
           <div className="flex items-center gap-3 pr-5">
-            <Avatar className="h-12 w-12 shrink-0 border border-white/20">
+            <Avatar className="h-11 w-11 shrink-0 border border-white/20 sm:h-12 sm:w-12">
               <AvatarImage
                 src={author?.avatarUrl || ""}
                 alt={author?.name || "Author"}
@@ -166,14 +215,24 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
               )}
 
               {author?.bio && (
-                <p className="mt-1 line-clamp-2 text-[11px] leading-4 text-zinc-500">
+                <p
+                  className="
+                    mt-1
+                    line-clamp-2
+                    text-[11px]
+                    leading-4
+                    text-zinc-500
+                  "
+                >
                   {author.bio}
                 </p>
               )}
             </div>
           </div>
 
-          {/* Location + Social */}
+          {/* =====================================
+              Location + Social
+          ===================================== */}
 
           <div className="mt-4 flex min-h-5 items-center gap-3">
             {author?.location && (
@@ -185,6 +244,8 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
             )}
 
             <div className="ml-auto flex shrink-0 items-center gap-3">
+              {/* X */}
+
               {author?.socialLinks?.x && (
                 <a
                   href={author.socialLinks.x}
@@ -192,11 +253,17 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   rel="noreferrer"
                   aria-label="X"
                   onClick={(event) => event.stopPropagation()}
-                  className="text-zinc-500 transition hover:text-white"
+                  className="
+                    text-zinc-500
+                    transition
+                    hover:text-white
+                  "
                 >
                   <FaXTwitter className="h-4 w-4" />
                 </a>
               )}
+
+              {/* GitHub */}
 
               {author?.socialLinks?.github && (
                 <a
@@ -205,11 +272,17 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   rel="noreferrer"
                   aria-label="GitHub"
                   onClick={(event) => event.stopPropagation()}
-                  className="text-zinc-500 transition hover:text-white"
+                  className="
+                    text-zinc-500
+                    transition
+                    hover:text-white
+                  "
                 >
                   <FaGithub className="h-4 w-4" />
                 </a>
               )}
+
+              {/* LinkedIn */}
 
               {author?.socialLinks?.linkedin && (
                 <a
@@ -218,11 +291,17 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   rel="noreferrer"
                   aria-label="LinkedIn"
                   onClick={(event) => event.stopPropagation()}
-                  className="text-zinc-500 transition hover:text-white"
+                  className="
+                    text-zinc-500
+                    transition
+                    hover:text-white
+                  "
                 >
                   <FaLinkedinIn className="h-4 w-4" />
                 </a>
               )}
+
+              {/* Website */}
 
               {author?.socialLinks?.website && (
                 <a
@@ -231,7 +310,11 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   rel="noreferrer"
                   aria-label="Website"
                   onClick={(event) => event.stopPropagation()}
-                  className="text-zinc-500 transition hover:text-white"
+                  className="
+                    text-zinc-500
+                    transition
+                    hover:text-white
+                  "
                 >
                   <FaGlobe className="h-4 w-4" />
                 </a>
@@ -239,7 +322,9 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
             </div>
           </div>
 
-          {/* View Profile */}
+          {/* =====================================
+              View Profile
+          ===================================== */}
 
           {author?._id && (
             <a
@@ -277,29 +362,33 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
 ========================================================= */
 
 const RightSidebar = () => {
+  // =====================================
+  // Sidebar Data
+  // =====================================
+
   const [trendingTags, setTrendingTags] = useState([]);
+
   const [authors, setAuthors] = useState([]);
 
   const [tagsLoading, setTagsLoading] = useState(true);
+
   const [authorsLoading, setAuthorsLoading] = useState(true);
 
-  /*
-    IMPORTANT:
+  // =====================================
+  // Popup State
+  // =====================================
 
-    We store a unique popup key instead of only author._id.
-
-    This prevents the same author appearing in multiple tags
-    from opening multiple popups.
-  */
   const [activePopupKey, setActivePopupKey] = useState(null);
 
   const [selectedAuthor, setSelectedAuthor] = useState(null);
+
   const [authorLoading, setAuthorLoading] = useState(false);
+
   const [popupPosition, setPopupPosition] = useState(null);
 
-  /* =====================================================
-     FETCH SIDEBAR DATA
-  ===================================================== */
+  // =====================================
+  // Fetch Sidebar Data
+  // =====================================
 
   useEffect(() => {
     const fetchSidebarData = async () => {
@@ -312,7 +401,9 @@ const RightSidebar = () => {
           api.get("/users/authors/trending"),
         ]);
 
-        /* Trending Tags */
+        // =====================================
+        // Trending Tags
+        // =====================================
 
         const tags = tagsResponse?.data?.tags || [];
 
@@ -322,7 +413,9 @@ const RightSidebar = () => {
 
         setTrendingTags(sortedTags);
 
-        /* Trending Authors */
+        // =====================================
+        // Authors
+        // =====================================
 
         const authorsData = authorsResponse?.data?.authors || [];
 
@@ -341,9 +434,9 @@ const RightSidebar = () => {
     fetchSidebarData();
   }, []);
 
-  /* =====================================================
-     HELPERS
-  ===================================================== */
+  // =====================================
+  // Initials
+  // =====================================
 
   const getInitials = (name = "") => {
     return name
@@ -355,9 +448,9 @@ const RightSidebar = () => {
       .toUpperCase();
   };
 
-  /* =====================================================
-     CLOSE POPUP
-  ===================================================== */
+  // =====================================
+  // Close Popup
+  // =====================================
 
   const closeAuthorPopup = () => {
     setActivePopupKey(null);
@@ -366,16 +459,16 @@ const RightSidebar = () => {
     setPopupPosition(null);
   };
 
-  /* =====================================================
-     OPEN AUTHOR POPUP
-  ===================================================== */
+  // =====================================
+  // Open Popup
+  // =====================================
 
   const handleAuthorOpen = async (author, popupKey, element) => {
     if (!author?._id) {
       return;
     }
 
-    /* Click same avatar -> close */
+    // Same avatar -> close
 
     if (activePopupKey === popupKey) {
       closeAuthorPopup();
@@ -384,23 +477,17 @@ const RightSidebar = () => {
 
     const rect = element.getBoundingClientRect();
 
-    /*
-      Fixed popup position.
-
-      The popup is positioned relative to viewport,
-      not relative to avatar wrapper.
-    */
+    const popupWidth = Math.min(290, window.innerWidth - 24);
 
     setPopupPosition({
-      left: rect.right - 290,
+      left: rect.right - Math.min(popupWidth, rect.width + 278),
+
       top: rect.bottom + 10,
     });
 
     setActivePopupKey(popupKey);
 
-    /*
-      Show existing author information immediately.
-    */
+    // Show existing data immediately
 
     setSelectedAuthor({
       _id: author._id,
@@ -424,18 +511,14 @@ const RightSidebar = () => {
       }
     } catch (error) {
       console.error("Failed to load author profile:", error);
-
-      /*
-        Keep the existing author data if API fails.
-      */
     } finally {
       setAuthorLoading(false);
     }
   };
 
-  /* =====================================================
-     CLOSE ON RESIZE
-  ===================================================== */
+  // =====================================
+  // Close On Resize
+  // =====================================
 
   useEffect(() => {
     if (!activePopupKey) {
@@ -453,18 +536,39 @@ const RightSidebar = () => {
     };
   }, [activePopupKey]);
 
-  /* =====================================================
-     RENDER
-  ===================================================== */
+  // =====================================
+  // Render
+  // =====================================
 
   return (
-    <aside className="hidden border-l border-white/[0.06] xl:block">
-      <div className="sticky top-16 space-y-5 p-5">
+    <aside
+      className="
+        block
+        w-full
+        min-w-0
+        border-t
+        border-white/[0.06]
+        xl:border-l
+        xl:border-t-0
+      "
+    >
+      <div
+        className="
+          w-full
+          min-w-0
+          space-y-5
+          p-3
+          sm:p-4
+          md:p-5
+          xl:sticky
+          xl:top-16
+        "
+      >
         {/* =================================================
             TRENDING TAGS
         ================================================= */}
 
-        <Card className="border-white/[0.07] bg-white/[0.025]">
+        <Card className="w-full min-w-0 border-white/[0.07] bg-white/[0.025]">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
               <CardTitle className="text-sm font-semibold text-amber-50">
@@ -482,7 +586,13 @@ const RightSidebar = () => {
               [1, 2, 3, 4, 5].map((item) => (
                 <div
                   key={item}
-                  className="flex items-center justify-between px-2 py-2.5"
+                  className="
+                      flex
+                      items-center
+                      justify-between
+                      px-2
+                      py-2.5
+                    "
                 >
                   <div className="h-3.5 w-28 animate-pulse rounded bg-white/[0.06]" />
 
@@ -497,48 +607,43 @@ const RightSidebar = () => {
                 <div
                   key={tag._id}
                   className="
-                    group
-                    flex
-                    cursor-pointer
-                    items-center
-                    justify-between
-                    rounded-lg
-                    px-2
-                    py-2.5
-                    transition
-                    hover:bg-white/[0.05]
-                  "
+                      group
+                      flex
+                      min-w-0
+                      items-center
+                      justify-between
+                      rounded-lg
+                      px-2
+                      py-2.5
+                      transition
+                      hover:bg-white/[0.05]
+                    "
                 >
-                  <span className="truncate text-xs font-medium text-zinc-400 transition group-hover:text-white">
+                  <span className="min-w-0 truncate text-xs font-medium text-zinc-400 transition group-hover:text-white">
                     #{tag.name}
                   </span>
 
                   <div className="ml-2 flex shrink-0 items-center">
+                    {/* Author avatars */}
+
                     {tag.authors?.length > 0 && (
                       <div className="flex -space-x-2">
                         {tag.authors.slice(0, 3).map((author) => {
-                          /*
-                              UNIQUE KEY FOR EACH AVATAR
-
-                              Same author in different tags
-                              will have different popup keys.
-                            */
-
                           const popupKey = `tag-${tag._id}-author-${author._id}`;
 
                           const isActive = activePopupKey === popupKey;
 
                           return (
-                            <div key={author._id} className="relative">
+                            <div key={author._id}>
                               <button
                                 type="button"
-                                onMouseEnter={(event) => {
+                                onMouseEnter={(event) =>
                                   handleAuthorOpen(
                                     author,
                                     popupKey,
                                     event.currentTarget,
-                                  );
-                                }}
+                                  )
+                                }
                                 onClick={(event) => {
                                   event.stopPropagation();
 
@@ -555,17 +660,17 @@ const RightSidebar = () => {
                               >
                                 <Avatar
                                   className={`
-                                      h-6
-                                      w-6
-                                      border-2
-                                      border-[#16171c]
-                                      transition
-                                      ${
-                                        isActive
-                                          ? "scale-110 ring-2 ring-white/20"
-                                          : "hover:scale-110"
-                                      }
-                                    `}
+                                          h-6
+                                          w-6
+                                          border-2
+                                          border-[#16171c]
+                                          transition
+                                          ${
+                                            isActive
+                                              ? "scale-110 ring-2 ring-white/20"
+                                              : "hover:scale-110"
+                                          }
+                                        `}
                                 >
                                   <AvatarImage
                                     src={author.avatarUrl || ""}
@@ -590,7 +695,7 @@ const RightSidebar = () => {
                 </div>
               ))}
 
-            {/* Empty State */}
+            {/* Empty */}
 
             {!tagsLoading && trendingTags.length === 0 && (
               <p className="px-2 py-3 text-xs text-zinc-600">
@@ -604,7 +709,7 @@ const RightSidebar = () => {
             THE FOREWORD
         ================================================= */}
 
-        <Card className="border-white/[0.07] bg-white/[0.025]">
+        <Card className="w-full min-w-0 border-white/[0.07] bg-white/[0.025]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold text-amber-50">
               The foreword
@@ -648,7 +753,7 @@ const RightSidebar = () => {
             AUTHORS WORTH FOLLOWING
         ================================================= */}
 
-        <Card className="border-white/[0.07] bg-white/[0.025]">
+        <Card className="w-full min-w-0 border-white/[0.07] bg-white/[0.025]">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-semibold text-amber-50">
               Authors worth following
@@ -682,15 +787,22 @@ const RightSidebar = () => {
                 return (
                   <div
                     key={author._id}
-                    className="group relative flex items-center gap-3"
+                    className="
+                        group
+                        relative
+                        flex
+                        min-w-0
+                        items-center
+                        gap-3
+                      "
                   >
                     {/* Avatar */}
 
                     <button
                       type="button"
-                      onMouseEnter={(event) => {
-                        handleAuthorOpen(author, popupKey, event.currentTarget);
-                      }}
+                      onMouseEnter={(event) =>
+                        handleAuthorOpen(author, popupKey, event.currentTarget)
+                      }
                       onClick={(event) => {
                         event.stopPropagation();
 
@@ -701,16 +813,16 @@ const RightSidebar = () => {
                     >
                       <Avatar
                         className={`
-                          h-9
-                          w-9
-                          shrink-0
-                          transition
-                          ${
-                            isActive
-                              ? "scale-105 ring-2 ring-white/20"
-                              : "hover:scale-105"
-                          }
-                        `}
+                            h-9
+                            w-9
+                            shrink-0
+                            transition
+                            ${
+                              isActive
+                                ? "scale-105 ring-2 ring-white/20"
+                                : "hover:scale-105"
+                            }
+                          `}
                       >
                         <AvatarImage
                           src={author.avatarUrl || ""}
@@ -745,7 +857,7 @@ const RightSidebar = () => {
                 );
               })}
 
-            {/* Empty State */}
+            {/* Empty */}
 
             {!authorsLoading && authors.length === 0 && (
               <p className="py-2 text-xs text-zinc-600">
@@ -783,9 +895,7 @@ const RightSidebar = () => {
       </div>
 
       {/* =================================================
-          SINGLE GLOBAL POPUP
-
-          Only ONE popup is rendered at a time.
+          GLOBAL AUTHOR POPUP
       ================================================= */}
 
       {activePopupKey && selectedAuthor && popupPosition && (

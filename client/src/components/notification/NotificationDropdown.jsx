@@ -141,75 +141,138 @@ const NotificationDropdown = ({ onClose }) => {
     useNotifications();
 
   return (
-    <div
-      className="absolute right-0 top-full z-50 mt-3 w-[380px] overflow-hidden rounded-xl border border-white/10 bg-[#101014] shadow-2xl"
-      onClick={(event) => event.stopPropagation()}
-    >
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
-        <div>
-          <h2 className="font-semibold text-white">Notifications</h2>
+    <>
+      {/* =====================================================
+          MOBILE OVERLAY
+      ===================================================== */}
+      <div
+        className="
+          fixed
+          inset-0
+          z-[190]
+          bg-black/60
+          backdrop-blur-sm
+          md:hidden
+        "
+        onClick={onClose}
+      />
 
-          {unreadCount > 0 && (
-            <p className="mt-0.5 text-xs text-gray-500">{unreadCount} unread</p>
-          )}
-        </div>
+      {/* =====================================================
+          NOTIFICATION PANEL
+      ===================================================== */}
+      <div
+        onClick={(event) => event.stopPropagation()}
+        className="
+          fixed
+          left-1/2
+          top-20
+          z-[200]
+          w-[calc(100vw-24px)]
+          max-w-[380px]
+          -translate-x-1/2
+          overflow-hidden
+          rounded-xl
+          border
+          border-white/10
+          bg-[#101014]
+          shadow-2xl
 
-        <div className="flex items-center gap-1">
-          {unreadCount > 0 && (
+          md:absolute
+          md:left-auto
+          md:right-0
+          md:top-full
+          md:mt-3
+          md:w-[380px]
+          md:max-w-none
+          md:translate-x-0
+        "
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+          <div>
+            <h3 className="text-sm font-semibold text-white">Notifications</h3>
+
+            {unreadCount > 0 && (
+              <p className="mt-0.5 text-xs text-gray-500">
+                {unreadCount} unread
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1">
+            {unreadCount > 0 && (
+              <button
+                type="button"
+                onClick={markAllAsRead}
+                className="
+                  rounded-md
+                  px-2
+                  py-1.5
+                  text-xs
+                  text-gray-400
+                  transition
+                  hover:bg-white/10
+                  hover:text-white
+                "
+              >
+                Mark all read
+              </button>
+            )}
+
             <button
               type="button"
-              onClick={markAllAsRead}
-              className="rounded-md px-2 py-1.5 text-xs text-gray-400 transition hover:bg-white/10 hover:text-white"
+              onClick={onClose}
+              className="
+                rounded-md
+                p-1.5
+                text-gray-500
+                transition
+                hover:bg-white/10
+                hover:text-white
+              "
+              aria-label="Close notifications"
             >
-              Mark all read
+              <X className="h-4 w-4" />
             </button>
+          </div>
+        </div>
+
+        {/* Body */}
+        <div className="max-h-[calc(100vh-120px)] overflow-y-auto md:max-h-[480px]">
+          {loading && (
+            <div className="px-4 py-12 text-center">
+              <p className="text-sm text-gray-500">Loading notifications...</p>
+            </div>
           )}
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md p-1.5 text-gray-500 transition hover:bg-white/10 hover:text-white"
-            aria-label="Close notifications"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          {!loading && notifications.length === 0 && (
+            <div className="px-4 py-14 text-center">
+              <Bell className="mx-auto h-9 w-9 text-gray-600" />
+
+              <p className="mt-3 text-sm font-medium text-gray-300">
+                No notifications
+              </p>
+
+              <p className="mt-1 text-xs text-gray-600">
+                You're all caught up.
+              </p>
+            </div>
+          )}
+
+          {!loading && notifications.length > 0 && (
+            <div>
+              {notifications.map((notification) => (
+                <NotificationItem
+                  key={notification._id}
+                  notification={notification}
+                  onClose={onClose}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
-
-      {/* Body */}
-      <div className="max-h-[480px] overflow-y-auto">
-        {loading && (
-          <div className="px-4 py-12 text-center">
-            <p className="text-sm text-gray-500">Loading notifications...</p>
-          </div>
-        )}
-
-        {!loading && notifications.length === 0 && (
-          <div className="px-4 py-14 text-center">
-            <Bell className="mx-auto h-9 w-9 text-gray-600" />
-
-            <p className="mt-3 text-sm font-medium text-gray-300">
-              No notifications
-            </p>
-
-            <p className="mt-1 text-xs text-gray-600">You're all caught up.</p>
-          </div>
-        )}
-
-        {!loading && notifications.length > 0 && (
-          <div>
-            {notifications.map((notification) => (
-              <NotificationItem
-                key={notification._id}
-                notification={notification}
-                onClose={onClose}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 
