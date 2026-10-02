@@ -19,14 +19,22 @@ import commentRoutes from "./routes/commentRoutes.js";
 import followRoutes from "./routes/followRoutes.js";
 
 import errorMiddleware from "./middleware/errorMiddleware.js";
-
 import initializeSocket from "./socket/index.js";
 
 dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://hashnode-clone-developer-blogging-p-snowy.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -35,7 +43,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Existing routes
+// API routes
 app.use("/api/auth", authRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/tags", tagRoutes);
@@ -53,16 +61,29 @@ app.use("/api/follows", followRoutes);
 // Error middleware
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 5000;
-
-connectDB();
-
-// HTTP server
+// Create HTTP server
 const server = http.createServer(app);
 
-// Socket.IO
+// Initialize Socket.IO on the same HTTP server
 const io = initializeSocket(server);
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+app.set("io", io);
+
+const PORT = process.env.PORT || 5000;
+
+// Connect database and start server
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    server.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+      console.log("Socket.IO server initialized");
+    });
+  } catch (error) {
+    console.error("Server startup failed:", error);
+    process.exit(1);
+  }
+};
+
+startServer();
