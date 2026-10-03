@@ -1,18 +1,27 @@
-# -Hashnode-Clone-Developer-Blogging-Publishing-Platform
-
-Developed a full-stack developer blogging platform inspired by Hashnode using the MERN Stack (MongoDB, Express.js, React.js, and Node.js).
-
 # Hashnode Clone — Developer Blogging & Publishing Platform
 
 A full-stack developer blogging and publishing platform inspired by Hashnode, built with the MERN stack. The application provides developer-focused publishing workflows including authentication, Markdown-based post creation, drafts and publishing, tags, search, social interactions, comments, bookmarks, notifications, real-time updates, media handling, and AI-assisted content generation.
 
-> **Internship Project:** Internmo Pvt. Ltd.
+> **Internship Project:** Internmo
+> **Organization:** Internmo (Ed-Tech brand of F6 IT Services Private Limited)
+> **Role:** Full Stack Development Intern
+> **Project Type:** Internship Project
 
 ---
 
 ## Home Page Preview
 
 ![Hashnode Clone Home Page](https://res.cloudinary.com/dktslqq9e/image/upload/v1791036480/hashnode-clone-developer-blogging-p-vercel-app-2026-10-02-09_26_14_riliw3.png)
+
+---
+
+## Internship Context
+
+This project was developed during a Full Stack Development internship at **Internmo**. The work provides practical exposure to building an end-to-end web application using React, Node.js, Express, MongoDB, REST APIs, authentication, cloud services, AI integrations, and real-time communication.
+
+Internmo describes its internship programs as practical, project-based experiences designed to provide hands-on exposure through real-world projects. Its Full Stack Development internship track covers technologies including React/Next.js, Node.js, REST APIs, databases, and deployment pipelines.
+
+**Internmo website:** https://internmo.com/
 
 ---
 
@@ -1166,9 +1175,17 @@ For production deployment:
 
 ## Internship Project
 
-**Company:** Internmo Pvt. Ltd.
+**Organization:** Internmo
 
-This project demonstrates practical full-stack development across:
+**Legal Entity / Brand:** Internmo is an Ed-Tech brand of F6 IT Services Private Limited.
+
+**Role:** Full Stack Development Intern
+
+**Project:** Hashnode Clone — Developer Blogging & Publishing Platform
+
+**Project Type:** Internship Project
+
+This project was developed as part of a Full Stack Development internship at Internmo. The project demonstrates practical full-stack development across:
 
 - React frontend development
 - Responsive UI implementation
