@@ -28,31 +28,19 @@ const PostDetail = () => {
   // =========================================================
 
   const [post, setPost] = useState(null);
-
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
 
   // =========================================================
-  // NEW COMMENT STATE
+  // COMMENT STATE
   // =========================================================
 
   const [commentText, setCommentText] = useState("");
 
-  // =========================================================
-  // REPLY STATE
-  // =========================================================
-
   const [replyingToId, setReplyingToId] = useState(null);
-
   const [replyText, setReplyText] = useState("");
 
-  // =========================================================
-  // EDIT STATE
-  // =========================================================
-
   const [editingCommentId, setEditingCommentId] = useState(null);
-
   const [editingCommentText, setEditingCommentText] = useState("");
 
   // =========================================================
@@ -68,6 +56,10 @@ const PostDetail = () => {
     deleteComment,
   } = useComments(post?._id);
 
+  // =========================================================
+  // BOOKMARK HOOK
+  // =========================================================
+
   const {
     bookmarked,
     bookmarkCount,
@@ -76,7 +68,7 @@ const PostDetail = () => {
   } = useBookmark(post?._id);
 
   // =========================================================
-  // LOAD POST
+  // FETCH POST
   // =========================================================
 
   useEffect(() => {
@@ -87,21 +79,23 @@ const PostDetail = () => {
 
         const response = await api.get(`/posts/${slug}`);
 
-        setPost(response.data.post);
+        setPost(response.data?.post || null);
       } catch (error) {
         console.error("Fetch post error:", error);
 
-        setError(error.response?.data?.message || "Failed to load post");
+        setError(error.response?.data?.message || "Failed to load post.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPost();
+    if (slug) {
+      fetchPost();
+    }
   }, [slug]);
 
   // =========================================================
-  // COMMENT TREE
+  // COMMENT TREE HELPERS
   // =========================================================
 
   const getParentCommentId = (comment) => {
@@ -127,7 +121,7 @@ const PostDetail = () => {
   };
 
   // =========================================================
-  // CREATE MAIN COMMENT
+  // CREATE COMMENT
   // =========================================================
 
   const handleCreateComment = async (event) => {
@@ -139,7 +133,6 @@ const PostDetail = () => {
 
     try {
       await createComment(commentText);
-
       setCommentText("");
     } catch (error) {
       console.error("Comment submit failed:", error);
@@ -189,7 +182,7 @@ const PostDetail = () => {
   };
 
   // =========================================================
-  // START EDIT
+  // START EDIT COMMENT
   // =========================================================
 
   const handleStartEdit = (comment) => {
@@ -259,7 +252,7 @@ const PostDetail = () => {
   };
 
   // =========================================================
-  // COMMENT USER
+  // GET COMMENT USER
   // =========================================================
 
   const getCommentUser = (comment) => {
@@ -267,7 +260,7 @@ const PostDetail = () => {
   };
 
   // =========================================================
-  // COMMENT COMPONENT
+  // COMMENT RENDERER
   // =========================================================
 
   const renderComment = (comment, depth = 0) => {
@@ -276,7 +269,6 @@ const PostDetail = () => {
     const isOwner = commentUser?._id?.toString() === user?._id?.toString();
 
     const isEditing = editingCommentId === comment._id;
-
     const isReplying = replyingToId === comment._id;
 
     const replies = getReplies(comment._id);
@@ -284,16 +276,16 @@ const PostDetail = () => {
     return (
       <div
         key={comment._id}
-        className={depth > 0 ? "ml-6 border-l border-white/10 pl-4" : ""}
+        className={
+          depth > 0 ? "ml-4 border-l border-white/10 pl-4 sm:ml-6" : ""
+        }
       >
-        {/* ================================================= */}
-        {/* COMMENT CARD */}
-        {/* ================================================= */}
+        {/* =================================================
+            COMMENT CARD
+        ================================================= */}
 
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-          {/* ================================================= */}
-          {/* HEADER */}
-          {/* ================================================= */}
+          {/* COMMENT HEADER */}
 
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
@@ -311,7 +303,7 @@ const PostDetail = () => {
                 </div>
               )}
 
-              {/* User info */}
+              {/* User Info */}
 
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-white">
@@ -333,9 +325,7 @@ const PostDetail = () => {
               </div>
             </div>
 
-            {/* ================================================= */}
             {/* OWNER ACTIONS */}
-            {/* ================================================= */}
 
             {isOwner && !isEditing && (
               <div className="flex shrink-0 items-center gap-1">
@@ -362,9 +352,7 @@ const PostDetail = () => {
             )}
           </div>
 
-          {/* ================================================= */}
           {/* COMMENT CONTENT */}
-          {/* ================================================= */}
 
           {isEditing ? (
             <div className="mt-4">
@@ -406,9 +394,7 @@ const PostDetail = () => {
             </p>
           )}
 
-          {/* ================================================= */}
           {/* COMMENT ACTIONS */}
-          {/* ================================================= */}
 
           {!isEditing && (
             <div className="mt-4 flex items-center gap-4">
@@ -430,9 +416,7 @@ const PostDetail = () => {
             </div>
           )}
 
-          {/* ================================================= */}
           {/* REPLY FORM */}
-          {/* ================================================= */}
 
           {isReplying && (
             <form
@@ -440,7 +424,7 @@ const PostDetail = () => {
               className="mt-4 border-t border-white/10 pt-4"
             >
               <div className="flex gap-3">
-                {/* Current user avatar */}
+                {/* Current User Avatar */}
 
                 {user?.avatarUrl ? (
                   <img
@@ -490,9 +474,7 @@ const PostDetail = () => {
           )}
         </div>
 
-        {/* ================================================= */}
         {/* NESTED REPLIES */}
-        {/* ================================================= */}
 
         {replies.length > 0 && (
           <div className="mt-3 space-y-3">
@@ -509,9 +491,11 @@ const PostDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b0b0f]">
-        <div className="mx-auto max-w-4xl px-6 py-10">
-          <p className="text-center text-gray-400">Loading post...</p>
+      <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+          <div className="flex min-h-[40vh] items-center justify-center">
+            <p className="text-sm text-gray-500">Loading post...</p>
+          </div>
         </div>
       </div>
     );
@@ -523,9 +507,11 @@ const PostDetail = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0b0b0f]">
-        <div className="mx-auto max-w-4xl px-6 py-10">
-          <p className="text-center text-red-400">{error}</p>
+      <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-5 py-8 text-center">
+            <p className="text-sm text-red-400">{error}</p>
+          </div>
         </div>
       </div>
     );
@@ -536,7 +522,13 @@ const PostDetail = () => {
   // =========================================================
 
   if (!post) {
-    return null;
+    return (
+      <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
+          <p className="text-center text-sm text-gray-500">Post not found.</p>
+        </div>
+      </div>
+    );
   }
 
   // =========================================================
@@ -546,34 +538,48 @@ const PostDetail = () => {
   return (
     <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
-        {/* ================================================= */}
-        {/* POST CARD */}
-        {/* ================================================= */}
+        {/* =================================================
+            POST CARD
+        ================================================= */}
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#101014]">
-          {/* ================================================= */}
-          {/* POST HEADER */}
-          {/* ================================================= */}
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#101014] shadow-2xl shadow-black/20">
+          {/* =================================================
+              POST HEADER
+          ================================================= */}
 
-          <div className="px-6 pt-8 text-center sm:px-8 sm:pt-10">
-            <h1 className="text-2xl font-bold leading-snug text-white sm:text-3xl">
+          <header className="px-6 pt-8 sm:px-8 sm:pt-10">
+            {/* TITLE */}
+
+            <h1 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
               {post.title}
             </h1>
 
-            <p className="mt-3 text-sm text-gray-500">
-              {new Date(post.createdAt).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
+            {/* EXCERPT */}
+
+            {post.excerpt?.trim() && (
+              <p className="mt-5 max-w-3xl text-base leading-7 text-gray-400 sm:text-lg">
+                {post.excerpt}
+              </p>
+            )}
+
+            {/* DATE */}
+
+            <p className="mt-5 text-sm text-gray-500">
+              {post.createdAt
+                ? new Date(post.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })
+                : ""}
             </p>
-          </div>
+          </header>
 
-          {/* ================================================= */}
-          {/* HERO */}
-          {/* ================================================= */}
+          {/* =================================================
+              HERO
+          ================================================= */}
 
-          <div className="relative mt-8 overflow-hidden">
+          <section className="relative mt-8 overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_30%,rgba(120,80,255,0.25),transparent_60%),radial-gradient(circle_at_20%_80%,rgba(0,255,180,0.12),transparent_55%)] bg-[#08080b]" />
 
             {post.coverImage && (
@@ -585,41 +591,49 @@ const PostDetail = () => {
             )}
 
             <div className="relative flex min-h-[280px] flex-col justify-center gap-4 px-8 py-16 sm:min-h-[360px] sm:px-10">
-              <span className="inline-block w-fit rounded-full bg-fuchsia-500/20 px-3 py-1 text-xs font-semibold tracking-wide text-fuchsia-300">
-                {post.tags?.[0]?.name?.toUpperCase() || "INSIGHTS"}
+              <span className="inline-block w-fit rounded-full bg-fuchsia-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-fuchsia-300">
+                {post.tags?.[0]?.name || "Insights"}
               </span>
 
-              <h2 className="max-w-xl text-3xl font-extrabold leading-tight text-white sm:text-5xl">
+              <h2 className="max-w-2xl text-3xl font-extrabold leading-tight text-white sm:text-5xl">
                 {post.title}
               </h2>
             </div>
-          </div>
+          </section>
 
-          {/* ================================================= */}
-          {/* AUTHOR */}
-          {/* ================================================= */}
+          {/* =================================================
+              AUTHOR
+          ================================================= */}
 
           <div className="flex items-center gap-3 px-6 pt-8 sm:px-8">
             {post.author?.avatarUrl ? (
               <img
                 src={post.author.avatarUrl}
-                alt={post.author.name}
-                className="h-9 w-9 rounded-full object-cover ring-2 ring-white/10"
+                alt={post.author.name || "Author"}
+                className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10"
               />
             ) : (
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-gray-300">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-gray-300">
                 {post.author?.name?.charAt(0)?.toUpperCase() || "A"}
               </div>
             )}
 
-            <p className="font-medium text-gray-200">{post.author?.name}</p>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-gray-200">
+                {post.author?.name || "Unknown author"}
+              </p>
+
+              {post.author?.username && (
+                <p className="text-xs text-gray-500">@{post.author.username}</p>
+              )}
+            </div>
           </div>
 
-          {/* ================================================= */}
-          {/* MARKDOWN CONTENT */}
-          {/* ================================================= */}
+          {/* =================================================
+              MARKDOWN CONTENT
+          ================================================= */}
 
-          <article className="prose prose-invert prose-lg mt-8 max-w-none px-6 prose-headings:font-bold prose-a:text-fuchsia-400 sm:px-8">
+          <article className="prose prose-invert prose-lg mt-8 max-w-none px-6 pb-2 prose-headings:font-bold prose-a:text-fuchsia-400 sm:px-8">
             <ReactMarkdown
               components={{
                 code({ inline, className, children, ...props }) {
@@ -652,23 +666,29 @@ const PostDetail = () => {
             </ReactMarkdown>
           </article>
 
-          {/* ================================================= */}
-          {/* TAGS */}
-          {/* ================================================= */}
-          {/* ================================================= */}
-          {/* POST ACTIONS */}
-          {/* ================================================= */}
+          {/* =================================================
+              POST ACTIONS
+          ================================================= */}
 
-          <div className="mt-6 flex items-center justify-between border-t border-white/10 px-6 pt-5 sm:px-8">
-            <div className="text-xs text-gray-500">
-              Save this article for later
+          <div className="mt-8 flex flex-col gap-4 border-t border-white/10 px-6 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+            <div>
+              <p className="text-sm font-medium text-gray-300">
+                Save this article for later
+              </p>
+
+              {bookmarkCount > 0 && (
+                <p className="mt-1 text-xs text-gray-600">
+                  {bookmarkCount} {bookmarkCount === 1 ? "person" : "people"}{" "}
+                  saved this article
+                </p>
+              )}
             </div>
 
             <button
               type="button"
               onClick={toggleBookmark}
               disabled={bookmarkLoading}
-              className={`flex items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition ${
+              className={`flex w-fit items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition ${
                 bookmarked
                   ? "border-white/20 bg-white/10 text-white"
                   : "border-white/10 bg-white/[0.03] text-gray-400 hover:bg-white/[0.08] hover:text-white"
@@ -683,27 +703,31 @@ const PostDetail = () => {
             </button>
           </div>
 
-          <div className="mt-8 flex flex-wrap gap-2 px-6 pb-10 sm:px-8">
-            {post.tags?.map((tag) => (
-              <Link
-                key={tag._id}
-                to={`/tag/${tag.slug}`}
-                className="rounded-full bg-white/5 px-3 py-1 text-sm text-gray-400 transition hover:bg-white/10 hover:text-white"
-              >
-                #{tag.name}
-              </Link>
-            ))}
-          </div>
+          {/* =================================================
+              TAGS
+          ================================================= */}
+
+          {post.tags?.length > 0 && (
+            <div className="mt-8 flex flex-wrap gap-2 px-6 pb-10 sm:px-8">
+              {post.tags.map((tag) => (
+                <Link
+                  key={tag._id}
+                  to={`/tag/${tag.slug}`}
+                  className="rounded-full bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition hover:bg-white/10 hover:text-white"
+                >
+                  #{tag.name}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
-        {/* ================================================= */}
-        {/* COMMENTS */}
-        {/* ================================================= */}
+        {/* =================================================
+            DISCUSSION
+        ================================================= */}
 
         <section className="mt-8">
-          {/* ================================================= */}
-          {/* COMMENTS HEADER */}
-          {/* ================================================= */}
+          {/* DISCUSSION HEADER */}
 
           <div className="mb-5 flex items-center gap-2">
             <MessageCircle className="h-5 w-5 text-gray-400" />
@@ -717,16 +741,16 @@ const PostDetail = () => {
             )}
           </div>
 
-          {/* ================================================= */}
-          {/* NEW COMMENT FORM */}
-          {/* ================================================= */}
+          {/* =================================================
+              NEW COMMENT
+          ================================================= */}
 
           <form
             onSubmit={handleCreateComment}
             className="mb-6 rounded-xl border border-white/10 bg-[#101014] p-4"
           >
             <div className="flex gap-3">
-              {/* Current user */}
+              {/* Current User */}
 
               {user?.avatarUrl ? (
                 <img
@@ -762,9 +786,9 @@ const PostDetail = () => {
             </div>
           </form>
 
-          {/* ================================================= */}
-          {/* COMMENTS LIST */}
-          {/* ================================================= */}
+          {/* =================================================
+              COMMENTS LIST
+          ================================================= */}
 
           <div className="space-y-4">
             {commentsLoading ? (

@@ -50,6 +50,7 @@ export const createPost = async (req, res) => {
     const {
       title,
       content,
+      excerpt,
       tags,
       status,
       coverImageSource,
@@ -135,7 +136,7 @@ export const createPost = async (req, res) => {
       title: title.trim(),
       slug,
       content,
-
+      excerpt: excerpt?.trim() || "",
       coverImage: finalCoverImage,
       coverImageUrl: finalCoverImageUrl,
       coverImageAuthor: finalCoverImageAuthor,
@@ -343,6 +344,7 @@ export const updatePost = async (req, res) => {
     const {
       title,
       content,
+      excerpt,
       tags,
       status,
       coverImageSource,
@@ -393,6 +395,10 @@ export const updatePost = async (req, res) => {
       }
 
       post.content = content;
+      post.excerpt = excerpt?.trim() || "";
+    }
+    if (excerpt !== undefined) {
+      post.excerpt = excerpt.trim();
     }
 
     /* Update tags */
