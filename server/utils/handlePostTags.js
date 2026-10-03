@@ -7,7 +7,6 @@ const handlePostTags = async (tags) => {
 
   let tagList = tags;
 
-  // FormData থেকে tags string হিসেবে এলে
   if (typeof tags === "string") {
     try {
       tagList = JSON.parse(tags);

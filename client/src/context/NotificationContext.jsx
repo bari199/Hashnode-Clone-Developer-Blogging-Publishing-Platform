@@ -120,8 +120,6 @@ const NotificationProvider = ({ children }) => {
         (notification) => notification._id === notificationId,
       );
 
-      // Already read হলে API call/count change
-      // করার দরকার নেই
       if (!currentNotification) {
         return;
       }
@@ -198,8 +196,6 @@ const NotificationProvider = ({ children }) => {
         ),
       );
 
-      // Unread notification delete করলে
-      // unread count-ও কমবে
       if (!currentNotification.isRead) {
         setUnreadCount((currentCount) => Math.max(0, currentCount - 1));
       }
