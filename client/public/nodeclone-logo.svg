@@ -1,0 +1,10 @@
+
+<svg xmlns="http://www.w3.org/2000/svg" width="150" height="36" viewBox="0 0 150 36" fill="none">
+  <rect width="150" height="36" rx="5" fill="#111217"></rect>
+
+  <rect x="5" y="4" width="28" height="28" rx="7" fill="#FFFFFF"></rect>
+
+  <text x="19" y="22" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" text-anchor="middle" fill="#111217">H</text>
+
+  <text x="42" y="22" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#E5E7EB">Node<tspan fill="#9CA3AF" font-weight="500">Clone</tspan></text>
+</svg>
