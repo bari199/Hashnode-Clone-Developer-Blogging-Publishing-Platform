@@ -9,7 +9,7 @@ const NotificationBell = ({ onClick }) => {
     <button
       type="button"
       onClick={onClick}
-      className="relative rounded-lg p-2 text-gray-400 transition hover:bg-white/10 hover:text-white"
+      className="relative rounded-lg p-2 text-gray-500 dark:text-gray-400 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
       aria-label="Notifications"
     >
       <Bell className="h-5 w-5" />

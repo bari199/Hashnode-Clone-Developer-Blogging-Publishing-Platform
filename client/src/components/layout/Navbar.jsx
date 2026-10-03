@@ -8,6 +8,7 @@ import NotificationDropdown from "../notification/NotificationDropdown.jsx";
 import {
   PenLine,
   Moon,
+  Sun,
   Menu,
   LogOut,
   LayoutDashboard,
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 
 import useAuth from "../../hooks/useAuth.js";
+import { useTheme } from "../../context/ThemeContext.jsx";
 
 import { Button } from "../ui/button.jsx";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar.jsx";
@@ -31,6 +33,7 @@ import {
 
 const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
   const { user, status, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   const navigate = useNavigate();
 
@@ -54,7 +57,6 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
 
   const handleLogout = () => {
     logout();
-
     navigate("/");
   };
 
@@ -127,8 +129,6 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
 
   const handleOpenMobileSearch = () => {
     setShowMobileSearch(true);
-
-    // Close notification when search opens
     setShowNotifications(false);
   };
 
@@ -139,6 +139,12 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
   const handleCloseMobileSearch = () => {
     setShowMobileSearch(false);
   };
+
+  // =====================================
+  // Theme
+  // =====================================
+
+  const isDark = theme === "dark";
 
   // =====================================
   // UI
@@ -158,10 +164,12 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
           z-[100]
           h-16
           border-b
-          border-white/[0.07]
-          bg-[#08090b]/95
-          text-white
+          border-border
+          bg-background/95
+          text-foreground
           backdrop-blur-xl
+          transition-colors
+          duration-200
           ${className}
         `}
       >
@@ -202,8 +210,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                   items-center
                   justify-center
                   rounded-lg
-                  bg-white
-                  text-black
+                  bg-primary
+                  text-primary-foreground
+                  transition-colors
                 "
               >
                 <span className="text-sm font-bold">H</span>
@@ -218,8 +227,7 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                   sm:block
                 "
               >
-                Node
-                <span className="text-zinc-400">Clone</span>
+                Node <span className="text-muted-foreground">Clone</span>
               </span>
             </Link>
           </div>
@@ -265,9 +273,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
               className="
                 h-9
                 w-9
-                text-zinc-400
-                hover:bg-white/[0.05]
-                hover:text-white
+                text-muted-foreground
+                hover:bg-accent
+                hover:text-accent-foreground
                 md:hidden
               "
               aria-label="Search"
@@ -304,9 +312,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                 variant="ghost"
                 className="
                   gap-2
-                  text-zinc-400
-                  hover:bg-white/[0.05]
-                  hover:text-white
+                  text-muted-foreground
+                  hover:bg-accent
+                  hover:text-accent-foreground
                 "
               >
                 <Tags className="h-4 w-4" />
@@ -324,9 +332,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                 variant="ghost"
                 className="
                   gap-2
-                  text-zinc-300
-                  hover:bg-white/[0.05]
-                  hover:text-white
+                  text-muted-foreground
+                  hover:bg-accent
+                  hover:text-accent-foreground
                 "
               >
                 <PenLine className="h-4 w-4" />
@@ -342,16 +350,24 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
             <Button
               variant="ghost"
               size="icon"
+              onClick={toggleTheme}
               className="
                 h-9
                 w-9
-                text-zinc-400
-                hover:bg-white/[0.05]
-                hover:text-white
+                text-muted-foreground
+                hover:bg-accent
+                hover:text-accent-foreground
               "
-              aria-label="Toggle theme"
+              aria-label={
+                isDark ? "Switch to light mode" : "Switch to dark mode"
+              }
+              title={isDark ? "Switch to light mode" : "Switch to dark mode"}
             >
-              <Moon className="h-4 w-4" />
+              {isDark ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
             </Button>
 
             {/* =================================================
@@ -367,20 +383,26 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                       ml-1
                       rounded-full
                       outline-none
-                      ring-offset-[#08090b]
+                      ring-offset-background
                       focus-visible:ring-2
-                      focus-visible:ring-white/20
+                      focus-visible:ring-ring
                       sm:ml-2
                     "
                     aria-label="User menu"
                   >
-                    <Avatar className="h-8 w-8 border border-white/10">
+                    <Avatar className="h-8 w-8 border border-border">
                       <AvatarImage
                         src={user?.avatarUrl || ""}
                         alt={user?.name || "User"}
                       />
 
-                      <AvatarFallback className="bg-zinc-800 text-xs text-white">
+                      <AvatarFallback
+                        className="
+                          bg-muted
+                          text-xs
+                          text-muted-foreground
+                        "
+                      >
                         {user?.name?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
@@ -393,9 +415,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                   className="
                     z-[200]
                     w-56
-                    border-white/[0.08]
-                    bg-[#111214]
-                    text-white
+                    border-border
+                    bg-popover
+                    text-popover-foreground
                   "
                 >
                   {/* User Information */}
@@ -403,12 +425,12 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                   <div className="px-3 py-3">
                     <p className="truncate text-sm font-medium">{user?.name}</p>
 
-                    <p className="truncate text-xs text-zinc-500">
+                    <p className="truncate text-xs text-muted-foreground">
                       {user?.email}
                     </p>
                   </div>
 
-                  <DropdownMenuSeparator className="bg-white/[0.08]" />
+                  <DropdownMenuSeparator className="bg-border" />
 
                   {/* Dashboard */}
 
@@ -416,9 +438,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                     onClick={() => navigate("/dashboard")}
                     className="
                       cursor-pointer
-                      text-zinc-300
-                      focus:bg-white/[0.06]
-                      focus:text-white
+                      text-foreground
+                      focus:bg-accent
+                      focus:text-accent-foreground
                     "
                   >
                     <LayoutDashboard className="mr-2 h-4 w-4" />
@@ -431,9 +453,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                     onClick={() => navigate(`/profile/${user?._id}`)}
                     className="
                       cursor-pointer
-                      text-zinc-300
-                      focus:bg-white/[0.06]
-                      focus:text-white
+                      text-foreground
+                      focus:bg-accent
+                      focus:text-accent-foreground
                     "
                   >
                     <Avatar className="mr-2 h-5 w-5">
@@ -442,14 +464,14 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                         alt={user?.name || "User"}
                       />
 
-                      <AvatarFallback className="bg-zinc-700 text-[9px]">
+                      <AvatarFallback className="bg-muted text-[9px] text-muted-foreground">
                         {user?.name?.charAt(0)?.toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>
                     Profile
                   </DropdownMenuItem>
 
-                  <DropdownMenuSeparator className="bg-white/[0.08]" />
+                  <DropdownMenuSeparator className="bg-border" />
 
                   {/* Logout */}
 
@@ -457,9 +479,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                     onClick={handleLogout}
                     className="
                       cursor-pointer
-                      text-red-400
+                      text-red-500
                       focus:bg-red-500/10
-                      focus:text-red-300
+                      focus:text-red-500
                     "
                   >
                     <LogOut className="mr-2 h-4 w-4" />
@@ -478,9 +500,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                     variant="ghost"
                     className="
                       px-2
-                      text-zinc-400
-                      hover:bg-white/[0.05]
-                      hover:text-white
+                      text-muted-foreground
+                      hover:bg-accent
+                      hover:text-accent-foreground
                       sm:px-3
                     "
                   >
@@ -492,9 +514,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                   <Button
                     className="
                       px-3
-                      bg-white
-                      text-black
-                      hover:bg-zinc-200
+                      bg-primary
+                      text-primary-foreground
+                      hover:bg-primary/90
                       sm:px-4
                     "
                   >
@@ -516,9 +538,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                 ml-0.5
                 h-9
                 w-9
-                text-zinc-400
-                hover:bg-white/[0.05]
-                hover:text-white
+                text-muted-foreground
+                hover:bg-accent
+                hover:text-accent-foreground
                 lg:hidden
               "
               aria-label="Open menu"
@@ -541,10 +563,9 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
             top-16
             z-[120]
             border-b
-            border-white/[0.08]
-            bg-[#08090b]
+            border-border
+            bg-background
             shadow-2xl
-            shadow-black/40
             md:hidden
           "
         >
@@ -557,15 +578,15 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                 items-center
                 justify-between
                 border-b
-                border-white/[0.07]
+                border-border
                 px-4
                 py-3
               "
             >
               <div className="flex items-center gap-2">
-                <Search className="h-4 w-4 text-zinc-500" />
+                <Search className="h-4 w-4 text-muted-foreground" />
 
-                <p className="text-sm font-medium text-zinc-300">
+                <p className="text-sm font-medium text-foreground">
                   Search people
                 </p>
               </div>
@@ -580,10 +601,10 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
                   items-center
                   justify-center
                   rounded-md
-                  text-zinc-500
+                  text-muted-foreground
                   transition
-                  hover:bg-white/[0.06]
-                  hover:text-white
+                  hover:bg-accent
+                  hover:text-accent-foreground
                 "
                 aria-label="Close search"
               >
@@ -594,8 +615,8 @@ const Navbar = ({ className = "", onMenuClick, showLogo = true }) => {
             {/* Search Component */}
 
             <div className="px-4 py-3">
-              <div className="relative z-[130] w-full">
-                <UserSearch />
+              <div className="w-full">
+                <UserSearch mobile />
               </div>
             </div>
           </div>

@@ -87,11 +87,11 @@ const PopularPostCard = ({ post }) => {
       className="
         group
         border-b
-        border-white/[0.07]
+        border-border
         px-5
         py-5
         transition
-        hover:bg-white/[0.025]
+        hover:bg-accent
       "
     >
       <div className="flex gap-5">
@@ -115,7 +115,7 @@ const PopularPostCard = ({ post }) => {
                 w-full
                 rounded-lg
                 border
-                border-white/[0.08]
+                border-border
                 object-cover
                 transition
                 group-hover:opacity-90
@@ -131,11 +131,11 @@ const PopularPostCard = ({ post }) => {
                 justify-center
                 rounded-lg
                 border
-                border-white/[0.08]
-                bg-white/[0.04]
+                border-border
+                bg-secondary
               "
             >
-              <Sparkles className="h-6 w-6 text-zinc-600" />
+              <Sparkles className="h-6 w-6 text-muted-foreground" />
             </div>
           )}
         </Link>
@@ -151,10 +151,10 @@ const PopularPostCard = ({ post }) => {
               items-center
               gap-2
               text-xs
-              text-zinc-500
+              text-muted-foreground
             "
           >
-            <span className="truncate text-zinc-400">
+            <span className="truncate text-muted-foreground">
               {getAuthorName(post)}
             </span>
 
@@ -174,9 +174,9 @@ const PopularPostCard = ({ post }) => {
                 text-base
                 font-semibold
                 leading-6
-                text-zinc-100
+                text-foreground
                 transition
-                group-hover:text-white
+                group-hover:text-foreground
               "
             >
               {post?.title}
@@ -190,7 +190,7 @@ const PopularPostCard = ({ post }) => {
               items-center
               gap-4
               text-xs
-              text-zinc-600
+              text-muted-foreground
             "
           >
             <span className="flex items-center gap-1.5">
@@ -221,7 +221,7 @@ const FeedPost = ({ post }) => {
       className="
         group
         border-b
-        border-white/[0.07]
+        border-border
         py-7
       "
     >
@@ -241,7 +241,7 @@ const FeedPost = ({ post }) => {
     items-center
     gap-2.5
     text-xs
-    text-zinc-500
+    text-muted-foreground
   "
           >
             {/* Author Avatar */}
@@ -256,7 +256,7 @@ const FeedPost = ({ post }) => {
           w-7
           rounded-full
           border
-          border-white/[0.08]
+          border-border
           object-cover
           transition
           hover:opacity-80
@@ -275,13 +275,13 @@ const FeedPost = ({ post }) => {
         justify-center
         rounded-full
         border
-        border-white/[0.08]
-        bg-zinc-800
+        border-border
+        bg-muted
         text-[10px]
         font-semibold
-        text-zinc-300
+        text-foreground
         transition
-        hover:bg-zinc-700
+        hover:bg-accent
       "
               >
                 {getAuthorInitial(post)}
@@ -290,7 +290,7 @@ const FeedPost = ({ post }) => {
 
             {/* Author Name */}
 
-            <span className="font-medium text-zinc-400">
+            <span className="font-medium text-muted-foreground">
               {getAuthorName(post)}
             </span>
 
@@ -314,9 +314,9 @@ const FeedPost = ({ post }) => {
                 font-semibold
                 leading-7
                 tracking-tight
-                text-zinc-100
+                text-foreground
                 transition
-                group-hover:text-white
+                group-hover:text-foreground
                 sm:text-[21px]
               "
             >
@@ -334,7 +334,7 @@ const FeedPost = ({ post }) => {
                 max-w-3xl
                 text-sm
                 leading-6
-                text-zinc-500
+                text-muted-foreground
               "
             >
               {post.excerpt}
@@ -358,14 +358,14 @@ const FeedPost = ({ post }) => {
                   to={`/tag/${tag?.slug}`}
                   className="
                       rounded-full
-                      bg-white/[0.045]
+                      bg-secondary
                       px-2.5
                       py-1
                       text-[11px]
-                      text-zinc-500
+                      text-muted-foreground
                       transition
-                      hover:bg-white/[0.08]
-                      hover:text-zinc-300
+                      hover:bg-accent
+                      hover:text-foreground
                     "
                 >
                   #{tag?.name}
@@ -391,10 +391,10 @@ const FeedPost = ({ post }) => {
                 items-center
                 gap-1.5
                 rounded-md
-                bg-white/[0.04]
+                bg-secondary
                 px-3
                 text-xs
-                text-zinc-500
+                text-muted-foreground
               "
             >
               <Triangle className="h-3.5 w-3.5" />
@@ -409,10 +409,10 @@ const FeedPost = ({ post }) => {
                 items-center
                 gap-1.5
                 rounded-md
-                bg-white/[0.04]
+                bg-secondary
                 px-3
                 text-xs
-                text-zinc-500
+                text-muted-foreground
               "
             >
               <MessageCircle className="h-3.5 w-3.5" />
@@ -430,10 +430,10 @@ const FeedPost = ({ post }) => {
                 items-center
                 justify-center
                 rounded-md
-                text-zinc-600
+                text-muted-foreground
                 transition
-                hover:bg-white/[0.05]
-                hover:text-zinc-300
+                hover:bg-accent
+                hover:text-foreground
               "
               aria-label="Bookmark post"
             >
@@ -465,7 +465,7 @@ const FeedPost = ({ post }) => {
                 w-full
                 rounded-xl
                 border
-                border-white/[0.08]
+                border-border
                 object-cover
                 transition
                 group-hover:opacity-90
@@ -548,7 +548,7 @@ const Feeds = () => {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#08090b] text-white">
+      <main className="min-h-screen bg-background text-foreground transition-colors duration-200">
         <div
           className="
             mx-auto
@@ -561,7 +561,7 @@ const Feeds = () => {
           {/* Main skeleton */}
 
           <div className="min-w-0 px-5 py-8 sm:px-7">
-            <div className="h-7 w-40 animate-pulse rounded bg-white/[0.06]" />
+            <div className="h-7 w-40 animate-pulse rounded bg-muted" />
 
             <div
               className="
@@ -570,8 +570,8 @@ const Feeds = () => {
                 overflow-hidden
                 rounded-xl
                 border
-                border-white/[0.07]
-                bg-white/[0.04]
+                border-border
+                bg-secondary
                 md:grid-cols-2
               "
             >
@@ -581,7 +581,7 @@ const Feeds = () => {
                   className="
                       h-[140px]
                       animate-pulse
-                      bg-[#0d0f12]
+                      bg-muted
                     "
                 />
               ))}
@@ -595,8 +595,8 @@ const Feeds = () => {
                       h-[170px]
                       animate-pulse
                       border-b
-                      border-white/[0.05]
-                      bg-white/[0.015]
+                      border-border
+                      bg-muted
                     "
                 />
               ))}
@@ -609,17 +609,17 @@ const Feeds = () => {
             className="
               hidden
               border-l
-              border-white/[0.06]
+              border-border
               p-5
               xl:block
             "
           >
             <div className="space-y-5">
-              <div className="h-48 animate-pulse rounded-xl bg-white/[0.04]" />
+              <div className="h-48 animate-pulse rounded-xl bg-secondary" />
 
-              <div className="h-72 animate-pulse rounded-xl bg-white/[0.04]" />
+              <div className="h-72 animate-pulse rounded-xl bg-secondary" />
 
-              <div className="h-64 animate-pulse rounded-xl bg-white/[0.04]" />
+              <div className="h-64 animate-pulse rounded-xl bg-secondary" />
             </div>
           </div>
         </div>
@@ -636,10 +636,12 @@ const Feeds = () => {
       <main
         className="
           min-h-screen
-          bg-[#08090b]
+          bg-background
           px-6
           py-16
-          text-white
+          text-foreground
+          transition-colors
+          duration-200
         "
       >
         <div
@@ -654,7 +656,7 @@ const Feeds = () => {
             text-center
           "
         >
-          <p className="text-sm text-red-300">{error}</p>
+          <p className="text-sm text-red-600 dark:text-red-300">{error}</p>
 
           <button
             type="button"
@@ -662,14 +664,14 @@ const Feeds = () => {
             className="
               mt-5
               rounded-md
-              bg-white
+              bg-primary
               px-5
               py-2.5
               text-sm
               font-medium
-              text-black
+              text-primary-foreground
               transition
-              hover:bg-zinc-200
+              hover:bg-primary/90
             "
           >
             Try again
@@ -687,8 +689,10 @@ const Feeds = () => {
     <main
       className="
         min-h-screen
-        bg-[#08090b]
-        text-white
+        bg-background
+        text-foreground
+        transition-colors
+        duration-200
       "
     >
       <div
@@ -724,7 +728,7 @@ const Feeds = () => {
                 items-end
                 justify-between
                 border-b
-                border-white/[0.07]
+                border-border
                 pb-4
               "
             >
@@ -734,7 +738,7 @@ const Feeds = () => {
                     text-xl
                     font-semibold
                     tracking-tight
-                    text-white
+                    text-foreground
                     sm:text-2xl
                   "
                 >
@@ -745,7 +749,7 @@ const Feeds = () => {
                   className="
                     mt-1.5
                     text-sm
-                    text-zinc-500
+                    text-muted-foreground
                   "
                 >
                   Discover what developers are reading right now.
@@ -758,7 +762,7 @@ const Feeds = () => {
                   items-center
                   gap-2
                   text-xs
-                  text-zinc-600
+                  text-muted-foreground
                   sm:flex
                 "
               >
@@ -779,7 +783,7 @@ const Feeds = () => {
                   rounded-b-xl
                   border-x
                   border-b
-                  border-white/[0.07]
+                  border-border
                   md:grid-cols-2
                 "
               >
@@ -793,7 +797,7 @@ const Feeds = () => {
                   py-12
                   text-center
                   text-sm
-                  text-zinc-600
+                  text-muted-foreground
                 "
               >
                 No popular posts available.
@@ -820,7 +824,7 @@ const Feeds = () => {
                     text-xl
                     font-semibold
                     tracking-tight
-                    text-white
+                    text-foreground
                     sm:text-2xl
                   "
                 >
@@ -831,7 +835,7 @@ const Feeds = () => {
                   className="
                     mt-1.5
                     text-sm
-                    text-zinc-500
+                    text-muted-foreground
                   "
                 >
                   Fresh articles from developers.
@@ -844,7 +848,7 @@ const Feeds = () => {
                   items-center
                   gap-1.5
                   text-xs
-                  text-zinc-600
+                  text-muted-foreground
                   sm:flex
                 "
               >
@@ -861,7 +865,7 @@ const Feeds = () => {
               </div>
             ) : (
               <div className="py-20 text-center">
-                <p className="text-sm text-zinc-500">No posts found.</p>
+                <p className="text-sm text-muted-foreground">No posts found.</p>
               </div>
             )}
 
@@ -874,16 +878,16 @@ const Feeds = () => {
                   className="
                     rounded-md
                     border
-                    border-white/[0.08]
-                    bg-white/[0.025]
+                    border-border
+                    bg-secondary
                     px-5
                     py-2.5
                     text-xs
                     font-medium
-                    text-zinc-500
+                    text-muted-foreground
                     transition
-                    hover:bg-white/[0.06]
-                    hover:text-white
+                    hover:bg-accent
+                    hover:text-foreground
                   "
                 >
                   Load more

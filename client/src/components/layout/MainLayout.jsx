@@ -42,10 +42,10 @@ const MainLayout = () => {
   const isCollapsed = isDesktop && collapsed;
 
   return (
-    <div className="min-h-screen bg-[#08090b] text-white">
+    <div className="min-h-screen bg-white dark:bg-[#08090b] text-gray-900 dark:text-white">
       {/* ============ SIDEBAR (full height) ============ */}
       <aside
-        className={`fixed inset-y-0 left-0 z-[120] border-r border-white/[0.06] bg-[#111317] transition-all duration-300 ${
+        className={`fixed inset-y-0 left-0 z-[120] border-r border-black/10 dark:border-white/[0.06] bg-gray-50 dark:bg-[#111317] transition-all duration-300 ${
           isCollapsed ? "w-[72px]" : "w-[240px]"
         } ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"

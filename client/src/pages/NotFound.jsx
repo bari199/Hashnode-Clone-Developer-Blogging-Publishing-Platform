@@ -14,7 +14,7 @@ const NotFound = () => {
 
         <Link
           to="/"
-          className="mt-6 inline-block rounded-lg bg-black px-6 py-3 font-medium text-white"
+          className="mt-6 inline-block rounded-lg bg-black px-6 py-3 font-medium text-white dark:bg-white dark:text-black"
         >
           Go Home
         </Link>

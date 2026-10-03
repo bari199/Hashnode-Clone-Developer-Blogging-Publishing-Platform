@@ -35,7 +35,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar.jsx";
 
 const SectionLabel = ({ children, collapsed }) =>
   collapsed ? (
-    <div className="mx-2 my-3 h-px bg-white/[0.06]" />
+    <div className="mx-2 my-3 h-px bg-black/[0.06] dark:bg-white/[0.06]" />
   ) : (
     <p className="mb-1 mt-5 px-3 text-xs font-medium text-zinc-500">
       {children}
@@ -63,8 +63,8 @@ const MenuItem = ({ icon: Icon, label, onClick, danger = false }) => (
       transition
       ${
         danger
-          ? "text-red-400 hover:bg-red-500/10 hover:text-red-300"
-          : "text-zinc-300 hover:bg-white/[0.06] hover:text-white"
+          ? "text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300"
+          : "text-zinc-700 dark:text-zinc-300 hover:bg-black/[0.06] dark:hover:bg-white/[0.06] hover:text-gray-900 dark:hover:text-white"
       }
     `}
   >
@@ -161,10 +161,10 @@ const SearchModal = ({ onClose }) => {
           items-center
           justify-center
           rounded-full
-          bg-white/[0.08]
+          bg-black/[0.08] dark:bg-white/[0.08]
           text-sm
           font-semibold
-          text-white
+          text-gray-900 dark:text-white
         "
       >
         {person?.name?.charAt(0)?.toUpperCase() || "U"}
@@ -200,13 +200,13 @@ const SearchModal = ({ onClose }) => {
               px-3
               py-2.5
               transition
-              hover:bg-white/[0.05]
+              hover:bg-black/[0.05] dark:hover:bg-white/[0.05]
             "
           >
             {renderAvatar(person)}
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-white">
+              <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                 {person.name || "Unnamed user"}
               </p>
 
@@ -251,7 +251,7 @@ const SearchModal = ({ onClose }) => {
               px-3
               py-2.5
               transition
-              hover:bg-white/[0.05]
+              hover:bg-black/[0.05] dark:hover:bg-white/[0.05]
             "
           >
             {/* Cover */}
@@ -277,7 +277,7 @@ const SearchModal = ({ onClose }) => {
                   items-center
                   justify-center
                   rounded-md
-                  bg-white/[0.05]
+                  bg-black/[0.05] dark:bg-white/[0.05]
                 "
               >
                 <FileText className="h-4 w-4 text-zinc-600" />
@@ -286,7 +286,7 @@ const SearchModal = ({ onClose }) => {
 
             {/* Content */}
             <div className="min-w-0 flex-1">
-              <p className="line-clamp-2 text-sm font-medium text-white">
+              <p className="line-clamp-2 text-sm font-medium text-gray-900 dark:text-white">
                 {post.title || "Untitled post"}
               </p>
 
@@ -330,7 +330,7 @@ const SearchModal = ({ onClose }) => {
               px-3
               py-2.5
               transition
-              hover:bg-white/[0.05]
+              hover:bg-black/[0.05] dark:hover:bg-white/[0.05]
             "
           >
             <div
@@ -342,14 +342,14 @@ const SearchModal = ({ onClose }) => {
                 items-center
                 justify-center
                 rounded-lg
-                bg-white/[0.05]
+                bg-black/[0.05] dark:bg-white/[0.05]
               "
             >
-              <Hash className="h-4 w-4 text-zinc-400" />
+              <Hash className="h-4 w-4 text-zinc-500 dark:text-zinc-400" />
             </div>
 
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium text-white">
+              <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                 #{tag.name}
               </p>
 
@@ -413,9 +413,9 @@ const SearchModal = ({ onClose }) => {
           overflow-hidden
           rounded-2xl
           border
-          border-white/[0.08]
-          bg-[#111214]
-          text-white
+          border-black/10 dark:border-white/[0.08]
+          bg-white dark:bg-[#111214]
+          text-gray-900 dark:text-white
           shadow-2xl
           shadow-black/60
         "
@@ -430,7 +430,7 @@ const SearchModal = ({ onClose }) => {
             items-center
             justify-between
             border-b
-            border-white/[0.06]
+            border-black/10 dark:border-white/[0.06]
             px-4
             py-3.5
             sm:px-5
@@ -445,14 +445,16 @@ const SearchModal = ({ onClose }) => {
                 items-center
                 justify-center
                 rounded-lg
-                bg-white/[0.06]
+                bg-black/[0.06] dark:bg-white/[0.06]
               "
             >
-              <Search className="h-4 w-4 text-zinc-300" />
+              <Search className="h-4 w-4 text-zinc-700 dark:text-zinc-300" />
             </div>
 
             <div>
-              <h2 className="text-sm font-semibold text-white">Search</h2>
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+                Search
+              </h2>
 
               <p className="text-[11px] text-zinc-500">
                 Find people, posts and tags
@@ -468,8 +470,8 @@ const SearchModal = ({ onClose }) => {
               p-2
               text-zinc-500
               transition
-              hover:bg-white/[0.06]
-              hover:text-white
+              hover:bg-black/[0.06] dark:hover:bg-white/[0.06]
+              hover:text-gray-900 dark:hover:text-white
             "
             aria-label="Close search"
           >
@@ -481,7 +483,7 @@ const SearchModal = ({ onClose }) => {
             SEARCH INPUT + TABS
         =================================================== */}
 
-        <div className="border-b border-white/[0.06] p-4 sm:p-5">
+        <div className="border-b border-black/10 dark:border-white/[0.06] p-4 sm:p-5">
           {/* Search Input */}
 
           <div
@@ -491,12 +493,12 @@ const SearchModal = ({ onClose }) => {
               gap-3
               rounded-xl
               border
-              border-white/[0.08]
-              bg-white/[0.03]
+              border-black/10 dark:border-white/[0.08]
+              bg-black/[0.03] dark:bg-white/[0.03]
               px-3.5
               py-3
               transition
-              focus-within:border-white/20
+              focus-within:border-black/20 dark:focus-within:border-white/20
             "
           >
             <Search className="h-4 w-4 shrink-0 text-zinc-500" />
@@ -514,9 +516,9 @@ const SearchModal = ({ onClose }) => {
                 flex-1
                 bg-transparent
                 text-sm
-                text-white
+                text-gray-900 dark:text-white
                 outline-none
-                placeholder:text-zinc-600
+                placeholder:text-zinc-400 dark:placeholder:text-zinc-600
               "
             />
 
@@ -529,8 +531,8 @@ const SearchModal = ({ onClose }) => {
                   p-1
                   text-zinc-500
                   transition
-                  hover:bg-white/[0.06]
-                  hover:text-white
+                  hover:bg-black/[0.06] dark:hover:bg-white/[0.06]
+                  hover:text-gray-900 dark:hover:text-white
                 "
                 aria-label="Clear search"
               >
@@ -559,8 +561,8 @@ const SearchModal = ({ onClose }) => {
                   transition
                   ${
                     activeTab === tab.id
-                      ? "bg-white text-black"
-                      : "text-zinc-500 hover:bg-white/[0.05] hover:text-white"
+                      ? "bg-gray-900 dark:bg-white text-white dark:text-black"
+                      : "text-zinc-500 hover:bg-black/[0.05] dark:hover:bg-white/[0.05] hover:text-gray-900 dark:hover:text-white"
                   }
                 `}
               >
@@ -601,7 +603,7 @@ const SearchModal = ({ onClose }) => {
             >
               <Search className="h-8 w-8 text-zinc-700" />
 
-              <p className="mt-3 text-sm font-medium text-zinc-400">
+              <p className="mt-3 text-sm font-medium text-zinc-500 dark:text-zinc-400">
                 Start searching
               </p>
 
@@ -647,7 +649,9 @@ const SearchModal = ({ onClose }) => {
               "
             >
               <div>
-                <p className="text-sm text-red-400">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  {error}
+                </p>
 
                 <p className="mt-1 text-xs text-zinc-600">
                   Please try another search.
@@ -754,7 +758,7 @@ const SearchModal = ({ onClose }) => {
                       <div className="py-12 text-center">
                         <Search className="mx-auto h-8 w-8 text-zinc-700" />
 
-                        <p className="mt-3 text-sm text-zinc-400">
+                        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
                           No results found
                         </p>
 
@@ -1009,8 +1013,8 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
                   items-center
                   justify-center
                   rounded-lg
-                  bg-white
-                  text-black
+                  bg-gray-900 dark:bg-white
+                  text-white dark:text-black
                 "
               >
                 <span className="text-sm font-bold">H</span>
@@ -1018,7 +1022,7 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
 
               <span className="text-lg font-bold tracking-tight">
                 Node
-                <span className="text-zinc-400">Clone</span>
+                <span className="text-zinc-500 dark:text-zinc-400">Clone</span>
               </span>
             </Link>
           )}
@@ -1037,10 +1041,10 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
               items-center
               justify-center
               rounded-md
-              text-zinc-400
+              text-zinc-500 dark:text-zinc-400
               transition
-              hover:bg-white/[0.06]
-              hover:text-white
+              hover:bg-black/[0.06] dark:hover:bg-white/[0.06]
+              hover:text-gray-900 dark:hover:text-white
             "
           >
             <PanelLeft className="h-4 w-4" />
@@ -1085,11 +1089,11 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
                   <kbd
                     className="
                       rounded
-                      bg-white/[0.06]
+                      bg-black/[0.06] dark:bg-white/[0.06]
                       px-1.5
                       py-0.5
                       text-[10px]
-                      text-zinc-400
+                      text-zinc-500 dark:text-zinc-400
                     "
                   >
                     Ctrl
@@ -1098,11 +1102,11 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
                   <kbd
                     className="
                       rounded
-                      bg-white/[0.06]
+                      bg-black/[0.06] dark:bg-white/[0.06]
                       px-1.5
                       py-0.5
                       text-[10px]
-                      text-zinc-400
+                      text-zinc-500 dark:text-zinc-400
                     "
                   >
                     K
@@ -1160,7 +1164,7 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
             shrink-0
             space-y-1
             border-t
-            border-white/[0.06]
+            border-black/10 dark:border-white/[0.06]
             p-3
           "
         >
@@ -1178,10 +1182,10 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
                     z-50
                     rounded-xl
                     border
-                    border-white/[0.08]
-                    bg-[#1a1d23]
+                    border-black/10 dark:border-white/[0.08]
+                    bg-white dark:bg-[#1a1d23]
                     p-1.5
-                    text-white
+                    text-gray-900 dark:text-white
                     shadow-2xl
                     shadow-black/50
                     animate-in
@@ -1215,7 +1219,7 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
                         alt={user?.name}
                       />
 
-                      <AvatarFallback className="bg-zinc-800 text-xs">
+                      <AvatarFallback className="bg-zinc-200 dark:bg-zinc-800 text-xs">
                         {initial}
                       </AvatarFallback>
                     </Avatar>
@@ -1257,7 +1261,7 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
 
                   {/* Divider */}
 
-                  <div className="my-1.5 h-px bg-white/[0.08]" />
+                  <div className="my-1.5 h-px bg-black/[0.08] dark:bg-white/[0.08]" />
 
                   {/* Logout */}
 
@@ -1286,11 +1290,11 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
                   items-center
                   rounded-lg
                   text-sm
-                  text-zinc-200
+                  text-zinc-800 dark:text-zinc-200
                   outline-none
                   transition
-                  hover:bg-white/[0.05]
-                  ${menuOpen ? "bg-white/[0.05]" : ""}
+                  hover:bg-black/[0.05] dark:hover:bg-white/[0.05]
+                  ${menuOpen ? "bg-black/[0.05] dark:bg-white/[0.05]" : ""}
                   ${collapsed ? "h-10 justify-center" : "gap-3 px-3 py-2"}
                 `}
               >
@@ -1299,9 +1303,9 @@ const LeftSidebar = ({ collapsed = false, onToggle, onNavigate }) => {
 
                   <AvatarFallback
                     className="
-                      bg-zinc-800
+                      bg-zinc-200 dark:bg-zinc-800
                       text-[10px]
-                      text-white
+                      text-gray-900 dark:text-white
                     "
                   >
                     {initial}

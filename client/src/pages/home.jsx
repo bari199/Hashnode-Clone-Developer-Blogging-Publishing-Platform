@@ -98,7 +98,7 @@ const home = () => {
   // =====================================
 
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#08090b] text-white">
+    <div className="min-h-screen w-full overflow-x-hidden bg-white text-gray-900 transition-colors duration-200 dark:bg-[#08090b] dark:text-white">
       <div
         className="
           mx-auto
@@ -139,11 +139,7 @@ const home = () => {
               overflow-hidden
               rounded-xl
               border
-              border-white/[0.08]
-              bg-gradient-to-br
-              from-white/[0.07]
-              via-white/[0.025]
-              to-transparent
+              border-gray-200 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:border-white/[0.08] dark:from-white/[0.07] dark:via-white/[0.025] dark:to-transparent
               p-5
               sm:mb-10
               sm:rounded-2xl
@@ -163,8 +159,7 @@ const home = () => {
                 h-48
                 w-48
                 rounded-full
-                bg-white/[0.04]
-                blur-3xl
+                bg-gray-200/60 blur-3xl dark:bg-white/[0.04]
                 sm:-right-24
                 sm:-top-24
                 sm:h-64
@@ -183,13 +178,11 @@ const home = () => {
                   mb-4
                   max-w-full
                   border
-                  border-white/10
-                  bg-white/[0.06]
+                  border-gray-200 bg-gray-50 dark:border-white/10 dark:bg-white/[0.06]
                   px-2.5
                   py-1
                   text-[11px]
-                  text-zinc-300
-                  sm:mb-5
+                  text-gray-900 sm:mb-5 dark:text-white
                   sm:text-xs
                 "
               >
@@ -207,14 +200,16 @@ const home = () => {
                   font-bold
                   leading-[1.12]
                   tracking-tight
-                  text-white
+                  text-foreground
                   sm:text-4xl
                   md:text-5xl
                 "
               >
                 Write to think.
                 <br />
-                <span className="text-zinc-500">Publish to connect.</span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  Publish to connect.
+                </span>
               </h1>
 
               {/* Description */}
@@ -225,7 +220,7 @@ const home = () => {
                   max-w-xl
                   text-sm
                   leading-6
-                  text-zinc-400
+                  text-gray-500 dark:text-gray-400
                   sm:mt-5
                   sm:text-base
                 "
@@ -252,9 +247,7 @@ const home = () => {
                 <Button
                   className="
                     w-full
-                    bg-white
-                    text-black
-                    hover:bg-zinc-200
+                    bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200
                     sm:w-auto
                   "
                 >
@@ -266,10 +259,7 @@ const home = () => {
                   variant="outline"
                   className="
                     w-full
-                    border-white/10
-                    bg-white/[0.03]
-                    text-white
-                    hover:bg-white/[0.08]
+                    border-gray-300 bg-white text-gray-900 hover:bg-gray-100 dark:border-white/10 dark:bg-white/[0.03] dark:text-white dark:hover:bg-white/[0.08]
                     sm:w-auto
                   "
                 >
@@ -285,21 +275,20 @@ const home = () => {
 
           <section
             className="
-              mb-8
-              grid
-              min-w-0
-              grid-cols-1
-              gap-px
-              overflow-hidden
-              rounded-xl
-              border
-              border-white/[0.07]
-              bg-white/[0.07]
-              sm:mb-10
-              sm:grid-cols-3
-            "
+    mb-8
+    grid
+    min-w-0
+    grid-cols-1
+    gap-px
+    overflow-hidden
+    rounded-xl
+    border
+    border-gray-200 bg-gray-200 dark:border-white/[0.07] dark:bg-white/[0.07]
+    sm:mb-10
+    sm:grid-cols-3
+  "
           >
-            <div className="min-w-0">
+            <div className="min-w-0 bg-white dark:bg-[#111214]">
               <FeatureCard
                 icon={<Search />}
                 title="You got found"
@@ -307,7 +296,7 @@ const home = () => {
               />
             </div>
 
-            <div className="min-w-0">
+            <div className="min-w-0 bg-white dark:bg-[#111214]">
               <FeatureCard
                 icon={<Code2 />}
                 title="Built for developers"
@@ -315,7 +304,7 @@ const home = () => {
               />
             </div>
 
-            <div className="min-w-0">
+            <div className="min-w-0 bg-white dark:bg-[#111214]">
               <FeatureCard
                 icon={<Users />}
                 title="Build your audience"
@@ -323,7 +312,6 @@ const home = () => {
               />
             </div>
           </section>
-
           {/* =====================================================
               FEED HEADING
           ===================================================== */}
@@ -344,7 +332,7 @@ const home = () => {
 
             <div className="min-w-0">
               <div className="mb-2 flex items-center gap-2">
-                <TrendingUp className="h-4 w-4 shrink-0 text-zinc-400" />
+                <TrendingUp className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
 
                 <span
                   className="
@@ -352,7 +340,7 @@ const home = () => {
                     font-medium
                     uppercase
                     tracking-[0.18em]
-                    text-zinc-500
+                    text-gray-500 dark:text-gray-400
                     sm:text-xs
                     sm:tracking-widest
                   "
@@ -387,9 +375,9 @@ const home = () => {
                     w-full
                     justify-center
                     px-3
-                    text-zinc-400
-                    hover:bg-white/[0.05]
-                    hover:text-white
+                    text-gray-500 dark:text-gray-400
+                    hover:bg-accent
+                    hover:text-foreground
                     sm:w-auto
                   "
                 >
@@ -423,8 +411,8 @@ const home = () => {
               className="
                 min-w-0
                 flex-1
-                border-white/10
-                bg-white/[0.04]
+                border-border
+                bg-secondary
               "
             />
 
@@ -435,9 +423,7 @@ const home = () => {
                 h-10
                 w-10
                 shrink-0
-                bg-white
-                text-black
-                hover:bg-zinc-200
+                bg-gray-900 text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200
               "
             >
               <Search className="h-4 w-4" />
@@ -466,7 +452,7 @@ const home = () => {
                 w-full
                 min-w-0
                 border-red-500/20
-                bg-red-500/[0.04]
+                bg-red-50 dark:bg-red-500/[0.04]
               "
             >
               <CardContent
@@ -488,7 +474,7 @@ const home = () => {
                   "
                 />
 
-                <h3 className="font-semibold text-red-300">
+                <h3 className="font-semibold text-red-600 dark:text-red-300">
                   Unable to load posts
                 </h3>
 
@@ -500,7 +486,7 @@ const home = () => {
                     break-words
                     text-sm
                     leading-6
-                    text-zinc-500
+                    text-gray-500 dark:text-gray-400
                   "
                 >
                   {error}
@@ -512,7 +498,7 @@ const home = () => {
                   className="
                     mt-5
                     w-full
-                    border-white/10
+                    border-border
                     sm:w-auto
                   "
                 >
@@ -541,10 +527,10 @@ const home = () => {
                     onClick={() => setShowAll(true)}
                     className="
                         w-full
-                        border-white/10
-                        bg-white/[0.03]
-                        text-white
-                        hover:bg-white/[0.08]
+                        border-border
+                        bg-muted
+                        text-foreground
+                        hover:bg-accent
                         sm:w-auto
                       "
                   >
@@ -564,8 +550,8 @@ const home = () => {
               className="
                   w-full
                   min-w-0
-                  border-white/[0.08]
-                  bg-white/[0.02]
+                  border-border
+                  bg-muted
                 "
             >
               <CardContent
@@ -583,7 +569,7 @@ const home = () => {
                       mb-4
                       h-8
                       w-8
-                      text-zinc-600
+                      text-gray-500 dark:text-gray-400
                     "
                 />
 
@@ -596,7 +582,7 @@ const home = () => {
                       max-w-sm
                       text-sm
                       leading-6
-                      text-zinc-500
+                      text-gray-500 dark:text-gray-400
                     "
                 >
                   Try searching for another topic or keyword.

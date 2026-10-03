@@ -45,8 +45,8 @@ const NotificationItem = ({ notification, onClose }) => {
 
   const content = (
     <div
-      className={`group relative border-b border-white/5 px-4 py-4 transition hover:bg-white/[0.04] ${
-        !notification.isRead ? "bg-white/[0.02]" : ""
+      className={`group relative border-b border-gray-200 dark:border-white/5 px-4 py-4 transition hover:bg-black/[0.04] dark:hover:bg-white/[0.04] ${
+        !notification.isRead ? "bg-gray-50 dark:bg-white/[0.02]" : ""
       }`}
     >
       <div className="flex gap-3">
@@ -58,7 +58,7 @@ const NotificationItem = ({ notification, onClose }) => {
             className="h-9 w-9 shrink-0 rounded-full object-cover"
           />
         ) : (
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-sm font-semibold text-gray-900 dark:text-white">
             {notification.sender?.name?.charAt(0)?.toUpperCase() || "U"}
           </div>
         )}
@@ -67,7 +67,9 @@ const NotificationItem = ({ notification, onClose }) => {
         <div className="min-w-0 flex-1 pr-6">
           <p
             className={`text-sm leading-5 ${
-              notification.isRead ? "text-gray-400" : "text-gray-200"
+              notification.isRead
+                ? "text-gray-500 dark:text-gray-400"
+                : "text-gray-800 dark:text-gray-200"
             }`}
           >
             {getNotificationText(notification)}
@@ -99,7 +101,7 @@ const NotificationItem = ({ notification, onClose }) => {
             <button
               type="button"
               onClick={handleRead}
-              className="rounded-md p-1.5 text-gray-500 transition hover:bg-white/10 hover:text-white"
+              className="rounded-md p-1.5 text-gray-500 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
               title="Mark as read"
             >
               <Check className="h-3.5 w-3.5" />
@@ -109,7 +111,7 @@ const NotificationItem = ({ notification, onClose }) => {
           <button
             type="button"
             onClick={handleDelete}
-            className="rounded-md p-1.5 text-gray-500 transition hover:bg-red-500/10 hover:text-red-400"
+            className="rounded-md p-1.5 text-gray-500 transition hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400"
             title="Delete"
           >
             <Trash2 className="h-3.5 w-3.5" />
@@ -173,8 +175,8 @@ const NotificationDropdown = ({ onClose }) => {
           overflow-hidden
           rounded-xl
           border
-          border-white/10
-          bg-[#101014]
+          border-black/10 dark:border-white/10
+          bg-white dark:bg-[#101014]
           shadow-2xl
 
           md:absolute
@@ -188,9 +190,11 @@ const NotificationDropdown = ({ onClose }) => {
         "
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/5 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-white/5 px-4 py-3">
           <div>
-            <h3 className="text-sm font-semibold text-white">Notifications</h3>
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Notifications
+            </h3>
 
             {unreadCount > 0 && (
               <p className="mt-0.5 text-xs text-gray-500">
@@ -209,10 +213,10 @@ const NotificationDropdown = ({ onClose }) => {
                   px-2
                   py-1.5
                   text-xs
-                  text-gray-400
+                  text-gray-500 dark:text-gray-400
                   transition
-                  hover:bg-white/10
-                  hover:text-white
+                  hover:bg-black/10 dark:hover:bg-white/10
+                  hover:text-gray-900 dark:hover:text-white
                 "
               >
                 Mark all read
@@ -227,8 +231,8 @@ const NotificationDropdown = ({ onClose }) => {
                 p-1.5
                 text-gray-500
                 transition
-                hover:bg-white/10
-                hover:text-white
+                hover:bg-black/10 dark:hover:bg-white/10
+                hover:text-gray-900 dark:hover:text-white
               "
               aria-label="Close notifications"
             >
@@ -249,7 +253,7 @@ const NotificationDropdown = ({ onClose }) => {
             <div className="px-4 py-14 text-center">
               <Bell className="mx-auto h-9 w-9 text-gray-600" />
 
-              <p className="mt-3 text-sm font-medium text-gray-300">
+              <p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">
                 No notifications
               </p>
 

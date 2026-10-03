@@ -212,19 +212,21 @@ const Settings = () => {
   // =====================================
 
   return (
-    <main className="min-h-screen bg-[#0b0b0f] text-gray-200">
+    <main className="min-h-screen bg-white dark:bg-[#0b0b0f] text-gray-800 dark:text-gray-200">
       <div className="mx-auto max-w-4xl px-6 py-10">
         {/* =====================================
             Header
         ===================================== */}
 
-        <h1 className="text-lg font-bold text-white">Settings</h1>
+        <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+          Settings
+        </h1>
 
         {/* =====================================
             Tabs
         ===================================== */}
 
-        <div className="mt-6 flex rounded-lg bg-[#101014] p-1">
+        <div className="mt-6 flex rounded-lg bg-gray-50 dark:bg-[#101014] p-1">
           <button
             type="button"
             onClick={() => {
@@ -234,8 +236,8 @@ const Settings = () => {
             }}
             className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition ${
               activeTab === "profile"
-                ? "bg-white/10 text-white"
-                : "text-gray-500 hover:text-gray-300"
+                ? "bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white"
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Profile
@@ -250,8 +252,8 @@ const Settings = () => {
             }}
             className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition ${
               activeTab === "email"
-                ? "bg-white/10 text-white"
-                : "text-gray-500 hover:text-gray-300"
+                ? "bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white"
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Email
@@ -266,8 +268,8 @@ const Settings = () => {
             }}
             className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition ${
               activeTab === "developer"
-                ? "bg-white/10 text-white"
-                : "text-gray-500 hover:text-gray-300"
+                ? "bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white"
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Developer
@@ -283,8 +285,8 @@ const Settings = () => {
             }}
             className={`flex-1 rounded-md py-2 text-center text-sm font-medium transition ${
               activeTab === "account"
-                ? "bg-white/10 text-white"
-                : "text-gray-500 hover:text-gray-300"
+                ? "bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white"
+                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Account
@@ -299,12 +301,12 @@ const Settings = () => {
           <form onSubmit={handleSubmit}>
             {/* Profile Information */}
 
-            <div className="mt-8 grid grid-cols-1 gap-8 rounded-lg border border-white/10 bg-[#101014] p-6 sm:grid-cols-[1fr_auto]">
+            <div className="mt-8 grid grid-cols-1 gap-8 rounded-lg border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] p-6 sm:grid-cols-[1fr_auto]">
               <div className="space-y-6">
                 {/* Name */}
 
                 <div>
-                  <label className="mb-1 block font-medium text-white">
+                  <label className="mb-1 block font-medium text-gray-900 dark:text-white">
                     Full name
                   </label>
 
@@ -316,7 +318,7 @@ const Settings = () => {
                     type="text"
                     value={name}
                     onChange={(event) => setName(event.target.value)}
-                    className="w-full rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-200 outline-none focus:ring-2 focus:ring-white/30"
+                    className="w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#0b0b0f] px-4 py-3 text-gray-800 dark:text-gray-200 outline-none focus:ring-2 focus:ring-black/30 dark:focus:ring-white/30"
                     required
                   />
                 </div>
@@ -324,7 +326,7 @@ const Settings = () => {
                 {/* Email */}
 
                 <div>
-                  <label className="mb-1 block font-medium text-white">
+                  <label className="mb-1 block font-medium text-gray-900 dark:text-white">
                     Email
                   </label>
 
@@ -336,14 +338,14 @@ const Settings = () => {
                     type="email"
                     value={email}
                     onChange={(event) => setEmail(event.target.value)}
-                    className="w-full cursor-allowed rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-white outline-none"
+                    className="w-full cursor-allowed rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#0b0b0f] px-4 py-3 text-gray-900 dark:text-white outline-none"
                   />
                 </div>
 
                 {/* Location */}
 
                 <div>
-                  <label className="mb-1 block font-medium text-white">
+                  <label className="mb-1 block font-medium text-gray-900 dark:text-white">
                     Location
                   </label>
 
@@ -357,14 +359,14 @@ const Settings = () => {
                     onChange={(event) => setLocation(event.target.value)}
                     maxLength={100}
                     placeholder="Kolkata, India"
-                    className="w-full rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-200 outline-none placeholder:text-gray-600 focus:ring-2 focus:ring-white/30"
+                    className="w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#0b0b0f] px-4 py-3 text-gray-800 dark:text-gray-200 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-black/30 dark:focus:ring-white/30"
                   />
                 </div>
 
                 {/* Bio */}
 
                 <div>
-                  <label className="mb-1 block font-medium text-white">
+                  <label className="mb-1 block font-medium text-gray-900 dark:text-white">
                     About you
                   </label>
 
@@ -378,7 +380,7 @@ const Settings = () => {
                     maxLength={200}
                     rows={5}
                     placeholder="Tell readers about the topics you write on."
-                    className="w-full resize-none rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-200 outline-none placeholder:text-gray-600 focus:ring-2 focus:ring-white/30"
+                    className="w-full resize-none rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#0b0b0f] px-4 py-3 text-gray-800 dark:text-gray-200 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:ring-2 focus:ring-black/30 dark:focus:ring-white/30"
                   />
 
                   <p className="mt-1 text-right text-sm text-gray-600">
@@ -389,7 +391,7 @@ const Settings = () => {
                 {/* Profile Image */}
 
                 <div>
-                  <label className="mb-1 block font-medium text-white">
+                  <label className="mb-1 block font-medium text-gray-900 dark:text-white">
                     Profile Image
                   </label>
 
@@ -397,7 +399,7 @@ const Settings = () => {
                     type="file"
                     accept="image/jpeg,image/jpg,image/png,image/webp"
                     onChange={handleAvatarChange}
-                    className="w-full rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-400 file:mr-4 file:rounded file:border-0 file:bg-white/10 file:px-3 file:py-1.5 file:text-gray-200"
+                    className="w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#0b0b0f] px-4 py-3 text-gray-500 dark:text-gray-400 file:mr-4 file:rounded file:border-0 file:bg-black/10 dark:file:bg-white/10 file:px-3 file:py-1.5 file:text-gray-800 dark:file:text-gray-200"
                   />
 
                   <p className="mt-2 text-sm text-gray-500">
@@ -413,10 +415,10 @@ const Settings = () => {
                   <img
                     src={avatarPreview}
                     alt="Profile Preview"
-                    className="h-24 w-24 rounded-full border border-white/10 object-cover"
+                    className="h-24 w-24 rounded-full border border-black/10 dark:border-white/10 object-cover"
                   />
                 ) : (
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-white/10 text-2xl font-bold text-white">
+                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-2xl font-bold text-gray-900 dark:text-white">
                     {name?.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -425,8 +427,8 @@ const Settings = () => {
 
             {/* Social Links */}
 
-            <div className="mt-8 rounded-lg border border-white/10 bg-[#101014] p-6">
-              <h2 className="text-base font-semibold text-white">
+            <div className="mt-8 rounded-lg border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] p-6">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
                 Social links
               </h2>
 
@@ -438,7 +440,7 @@ const Settings = () => {
                 {/* X */}
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-gray-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-gray-500 dark:text-gray-400">
                     <FaXTwitter className="h-4 w-4" />
                   </div>
 
@@ -449,14 +451,14 @@ const Settings = () => {
                       handleSocialLinkChange("x", event.target.value)
                     }
                     placeholder="https://x.com/username"
-                    className="h-10 w-full rounded-md border border-white/10 bg-[#18181d] px-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                    className="h-10 w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#18181d] px-4 text-sm text-gray-800 dark:text-gray-200 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
                   />
                 </div>
 
                 {/* LinkedIn */}
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-gray-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-gray-500 dark:text-gray-400">
                     <FaLinkedinIn className="h-4 w-4" />
                   </div>
 
@@ -467,14 +469,14 @@ const Settings = () => {
                       handleSocialLinkChange("linkedin", event.target.value)
                     }
                     placeholder="https://www.linkedin.com/in/username/"
-                    className="h-10 w-full rounded-md border border-white/10 bg-[#18181d] px-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                    className="h-10 w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#18181d] px-4 text-sm text-gray-800 dark:text-gray-200 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
                   />
                 </div>
 
                 {/* GitHub */}
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-gray-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-gray-500 dark:text-gray-400">
                     <FaGithub className="h-4 w-4" />
                   </div>
 
@@ -485,14 +487,14 @@ const Settings = () => {
                       handleSocialLinkChange("github", event.target.value)
                     }
                     placeholder="https://github.com/username"
-                    className="h-10 w-full rounded-md border border-white/10 bg-[#18181d] px-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                    className="h-10 w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#18181d] px-4 text-sm text-gray-800 dark:text-gray-200 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
                   />
                 </div>
 
                 {/* Website */}
 
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/[0.04] text-gray-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-black/[0.04] dark:bg-white/[0.04] text-gray-500 dark:text-gray-400">
                     <FaGlobe className="h-4 w-4" />
                   </div>
 
@@ -503,7 +505,7 @@ const Settings = () => {
                       handleSocialLinkChange("website", event.target.value)
                     }
                     placeholder="https://example.com"
-                    className="h-10 w-full rounded-md border border-white/10 bg-[#18181d] px-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                    className="h-10 w-full rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#18181d] px-4 text-sm text-gray-800 dark:text-gray-200 outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
                   />
                 </div>
               </div>
@@ -512,13 +514,13 @@ const Settings = () => {
             {/* Messages */}
 
             {message && (
-              <p className="mt-6 rounded-md bg-green-500/10 p-3 text-green-400">
+              <p className="mt-6 rounded-md bg-green-500/10 p-3 text-green-600 dark:text-green-400">
                 {message}
               </p>
             )}
 
             {error && (
-              <p className="mt-6 rounded-md bg-red-500/10 p-3 text-red-400">
+              <p className="mt-6 rounded-md bg-red-500/10 p-3 text-red-600 dark:text-red-400">
                 {error}
               </p>
             )}
@@ -529,7 +531,7 @@ const Settings = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="rounded-md bg-white px-6 py-2.5 font-medium text-black hover:bg-gray-200 disabled:opacity-50"
+                className="rounded-md bg-gray-900 dark:bg-white px-6 py-2.5 font-medium text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50"
               >
                 {loading ? "Saving..." : "Save changes"}
               </button>
@@ -542,8 +544,8 @@ const Settings = () => {
         ===================================== */}
 
         {activeTab === "email" && (
-          <section className="mt-8 rounded-lg border border-white/10 bg-[#101014] p-6">
-            <h2 className="text-base font-semibold text-white">
+          <section className="mt-8 rounded-lg border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] p-6">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
               Email settings
             </h2>
 
@@ -552,7 +554,7 @@ const Settings = () => {
             </p>
 
             <div className="mt-6">
-              <label className="mb-2 block text-sm font-medium text-white">
+              <label className="mb-2 block text-sm font-medium text-gray-900 dark:text-white">
                 Email address
               </label>
 
@@ -560,7 +562,7 @@ const Settings = () => {
                 type="email"
                 value={email}
                 readOnly
-                className="w-full cursor-not-allowed rounded-md border border-white/10 bg-[#0b0b0f] px-4 py-3 text-gray-500 outline-none"
+                className="w-full cursor-not-allowed rounded-md border border-black/10 dark:border-white/10 bg-white dark:bg-[#0b0b0f] px-4 py-3 text-gray-500 outline-none"
               />
             </div>
           </section>
@@ -571,8 +573,8 @@ const Settings = () => {
         ===================================== */}
 
         {activeTab === "developer" && (
-          <section className="mt-8 rounded-lg border border-white/10 bg-[#101014] p-6">
-            <h2 className="text-base font-semibold text-white">
+          <section className="mt-8 rounded-lg border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] p-6">
+            <h2 className="text-base font-semibold text-gray-900 dark:text-white">
               Developer settings
             </h2>
 
@@ -590,8 +592,10 @@ const Settings = () => {
           <section className="mt-8">
             {/* Account Information */}
 
-            <div className="rounded-lg border border-white/10 bg-[#101014] p-6">
-              <h2 className="text-base font-semibold text-white">Account</h2>
+            <div className="rounded-lg border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] p-6">
+              <h2 className="text-base font-semibold text-gray-900 dark:text-white">
+                Account
+              </h2>
 
               <p className="mt-2 text-sm leading-6 text-gray-500">
                 Manage your account and security preferences.
@@ -599,7 +603,7 @@ const Settings = () => {
 
               <div className="mt-6 space-y-4">
                 <div>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
                     Account email
                   </p>
 
@@ -609,11 +613,13 @@ const Settings = () => {
                 </div>
 
                 <div>
-                  <p className="text-sm font-medium text-white">
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
                     Account status
                   </p>
 
-                  <p className="mt-1 text-sm text-green-400">Active</p>
+                  <p className="mt-1 text-sm text-green-600 dark:text-green-400">
+                    Active
+                  </p>
                 </div>
               </div>
             </div>
@@ -622,7 +628,7 @@ const Settings = () => {
 
             <section className="mt-6 rounded-lg border border-red-500/20 bg-red-500/[0.03] p-6">
               <div>
-                <h2 className="text-base font-semibold text-red-400">
+                <h2 className="text-base font-semibold text-red-600 dark:text-red-400">
                   Delete account
                 </h2>
 
@@ -633,7 +639,7 @@ const Settings = () => {
               </div>
 
               {deleteError && (
-                <p className="mt-4 rounded-md bg-red-500/10 p-3 text-sm text-red-400">
+                <p className="mt-4 rounded-md bg-red-500/10 p-3 text-sm text-red-600 dark:text-red-400">
                   {deleteError}
                 </p>
               )}
@@ -642,7 +648,7 @@ const Settings = () => {
                 type="button"
                 onClick={handleDeleteAccount}
                 disabled={deleteLoading}
-                className="mt-5 rounded-md border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-500/20 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-5 rounded-md border border-red-500/30 bg-red-500/10 px-5 py-2.5 text-sm font-medium text-red-600 dark:text-red-400 transition hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {deleteLoading ? "Deleting..." : "Delete account"}
               </button>

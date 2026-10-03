@@ -98,10 +98,10 @@ const TagPage = () => {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#08090b] text-white">
+      <main className="min-h-screen bg-white dark:bg-[#08090b] text-gray-900 dark:text-white">
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-black/20 dark:border-white/20 border-t-gray-900 dark:border-t-white" />
 
             <p className="text-sm text-zinc-500">Loading tag feed...</p>
           </div>
@@ -114,9 +114,9 @@ const TagPage = () => {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-[#08090b] px-4 py-10 text-white">
+      <main className="min-h-screen bg-white dark:bg-[#08090b] px-4 py-10 text-gray-900 dark:text-white">
         <div className="mx-auto max-w-6xl">
-          <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-300">
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm text-red-600 dark:text-red-300">
             {error}
           </div>
         </div>
@@ -127,7 +127,7 @@ const TagPage = () => {
   const tagName = tag?.name || slug;
 
   return (
-    <main className="min-h-screen bg-[#08090b] text-white">
+    <main className="min-h-screen bg-white dark:bg-[#08090b] text-gray-900 dark:text-white">
       <div className="mx-auto max-w-[1180px]">
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_260px]">
           {/* =================================================
@@ -141,13 +141,13 @@ const TagPage = () => {
               py-5
               sm:px-8
               lg:border-r
-              lg:border-white/[0.05]
+              lg:border-black/[0.05] dark:lg:border-white/[0.05]
               lg:px-6
             "
           >
             {/* ========================= PAGE HEADER ========================== */}
 
-            <div className="border-b border-white/[0.07] pb-5">
+            <div className="border-b border-black/[0.07] dark:border-white/[0.07] pb-5">
               <div className="flex items-center justify-between gap-5">
                 {/* Tag Information */}
 
@@ -189,8 +189,8 @@ const TagPage = () => {
                   disabled={followLoading || followSubmitting}
                   className={`shrink-0 rounded-md px-4 py-1.5 text-xs font-semibold transition ${
                     following
-                      ? "border border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800"
-                      : "bg-white text-black hover:bg-zinc-200"
+                      ? "border border-zinc-300 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-900 text-gray-900 dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      : "bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
                   } disabled:cursor-not-allowed disabled:opacity-60`}
                 >
                   {followSubmitting
@@ -204,8 +204,8 @@ const TagPage = () => {
 
             {/* ========================= ARTICLES LABEL ========================== */}
 
-            <div className="border-b border-white/[0.07] py-4">
-              <span className="rounded-md bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-white">
+            <div className="border-b border-black/[0.07] dark:border-white/[0.07] py-4">
+              <span className="rounded-md bg-black/[0.08] dark:bg-white/[0.08] px-3 py-1.5 text-xs font-semibold text-gray-900 dark:text-white">
                 Articles
               </span>
             </div>
@@ -223,7 +223,7 @@ const TagPage = () => {
                 {posts.map((post) => (
                   <article
                     key={post._id}
-                    className="border-b border-white/[0.07] py-5"
+                    className="border-b border-black/[0.07] dark:border-white/[0.07] py-5"
                   >
                     <div className="flex gap-4">
                       {/* ========================= ARTICLE CONTENT ========================== */}
@@ -248,7 +248,7 @@ const TagPage = () => {
                                   w-7
                                   rounded-full
                                   border
-                                  border-white/[0.08]
+                                  border-black/[0.08] dark:border-white/[0.08]
                                   object-cover
                                   transition
                                   hover:opacity-80
@@ -264,13 +264,13 @@ const TagPage = () => {
                                   justify-center
                                   rounded-full
                                   border
-                                  border-white/[0.08]
-                                  bg-zinc-800
+                                  border-black/[0.08] dark:border-white/[0.08]
+                                  bg-zinc-200 dark:bg-zinc-800
                                   text-[10px]
                                   font-semibold
-                                  text-zinc-300
+                                  text-zinc-700 dark:text-zinc-300
                                   transition
-                                  hover:bg-zinc-700
+                                  hover:bg-zinc-300 dark:hover:bg-zinc-700
                                 "
                               >
                                 {getAuthorInitial(post)}
@@ -283,7 +283,7 @@ const TagPage = () => {
                           <div className="flex min-w-0 flex-wrap items-center gap-1.5">
                             <Link
                               to={`/profile/${post?.author?._id}`}
-                              className="font-medium text-zinc-300 transition hover:text-white"
+                              className="font-medium text-zinc-700 dark:text-zinc-300 transition hover:text-gray-900 dark:hover:text-white"
                             >
                               {getAuthorName(post)}
                             </Link>
@@ -316,9 +316,9 @@ const TagPage = () => {
                               text-sm
                               font-bold
                               leading-5
-                              text-white
+                              text-gray-900 dark:text-white
                               transition
-                              hover:text-zinc-300
+                              hover:text-zinc-700 dark:hover:text-zinc-300
                               sm:text-base
                             "
                           >
@@ -374,7 +374,7 @@ const TagPage = () => {
                                     w-5
                                     rounded-full
                                     border
-                                    border-white/[0.08]
+                                    border-black/[0.08] dark:border-white/[0.08]
                                     object-cover
                                     transition
                                     hover:opacity-80
@@ -389,10 +389,10 @@ const TagPage = () => {
                                     items-center
                                     justify-center
                                     rounded-full
-                                    bg-zinc-800
+                                    bg-zinc-200 dark:bg-zinc-800
                                     text-[7px]
                                     font-semibold
-                                    text-zinc-400
+                                    text-zinc-500 dark:text-zinc-400
                                   "
                                 >
                                   {getAuthorInitial(post)}
@@ -402,7 +402,7 @@ const TagPage = () => {
 
                             <button
                               type="button"
-                              className="text-zinc-600 transition hover:text-zinc-300"
+                              className="text-zinc-600 transition hover:text-zinc-700 dark:hover:text-zinc-300"
                               aria-label="Bookmark"
                             >
                               ♧
@@ -426,7 +426,7 @@ const TagPage = () => {
                               w-[120px]
                               rounded-lg
                               border
-                              border-white/[0.08]
+                              border-black/[0.08] dark:border-white/[0.08]
                               object-cover
                             "
                           />
@@ -449,7 +449,7 @@ const TagPage = () => {
                     font-medium
                     text-zinc-500
                     transition
-                    hover:text-white
+                    hover:text-gray-900 dark:hover:text-white
                   "
                 >
                   Load more ↓

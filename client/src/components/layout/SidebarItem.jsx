@@ -13,8 +13,8 @@ const SidebarItem = ({
     collapsed ? "h-10 justify-center" : "gap-3 px-3 py-2"
   } ${
     active
-      ? "bg-white/[0.08] text-white"
-      : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"
+      ? "bg-black/[0.08] dark:bg-white/[0.08] text-gray-900 dark:text-white"
+      : "text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.04] dark:hover:bg-white/[0.04] hover:text-zinc-900 dark:hover:text-zinc-100"
   }`;
 
   const content = (

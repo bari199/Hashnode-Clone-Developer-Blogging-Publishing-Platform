@@ -50,7 +50,7 @@ const PostCard = ({ post }) => {
   };
 
   return (
-    <article className="group border-b border-white/[0.08] py-4 last:border-b-0">
+    <article className="group border-b border-black/10 dark:border-white/[0.08] py-4 last:border-b-0">
       <div className="flex gap-3 sm:gap-4">
         {/* Cover Image */}
         <div className="shrink-0">
@@ -75,7 +75,7 @@ const PostCard = ({ post }) => {
                 h-[68px]
                 w-[128px]
                 rounded-md
-                bg-white/[0.06]
+                bg-gray-200 dark:bg-white/[0.06]
                 sm:h-[82px]
                 sm:w-[128px]
               "
@@ -86,8 +86,10 @@ const PostCard = ({ post }) => {
         {/* Content */}
         <div className="min-w-0 flex-1">
           {/* Author + Time + Reading Time */}
-          <div className="mb-1 flex flex-wrap items-center gap-1.5 text-xs text-zinc-400">
-            <span className="font-medium text-sky-400">{authorName}</span>
+          <div className="mb-1 flex flex-wrap items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
+            <span className="font-medium text-sky-600 dark:text-sky-400">
+              {authorName}
+            </span>
 
             <span>·</span>
 
@@ -110,9 +112,9 @@ const PostCard = ({ post }) => {
                 text-sm
                 font-bold
                 leading-5
-                text-zinc-100
+                text-zinc-900 dark:text-zinc-100
                 transition
-                group-hover:text-white
+                group-hover:text-gray-900 dark:group-hover:text-white
                 sm:text-base
                 sm:leading-6
               "
@@ -160,7 +162,7 @@ const PostCard = ({ post }) => {
                 ${
                   upvoted
                     ? "bg-orange-500/15 text-orange-500"
-                    : "bg-white/[0.07] text-zinc-400 hover:bg-white/[0.12] hover:text-zinc-200"
+                    : "bg-black/[0.07] dark:bg-white/[0.07] text-zinc-500 dark:text-zinc-400 hover:bg-black/[0.12] dark:hover:bg-white/[0.12] hover:text-zinc-800 dark:hover:text-zinc-200"
                 }
                 ${loading ? "cursor-not-allowed opacity-60" : ""}
               `}
@@ -181,13 +183,13 @@ const PostCard = ({ post }) => {
                 justify-center
                 gap-1.5
                 rounded-md
-                bg-white/[0.07]
+                bg-black/[0.07] dark:bg-white/[0.07]
                 px-2.5
                 text-xs
-                text-zinc-400
+                text-zinc-500 dark:text-zinc-400
                 transition
-                hover:bg-white/[0.12]
-                hover:text-zinc-200
+                hover:bg-black/[0.12] dark:hover:bg-white/[0.12]
+                hover:text-zinc-800 dark:hover:text-zinc-200
               "
             >
               <MessageCircle className="h-3.5 w-3.5" />

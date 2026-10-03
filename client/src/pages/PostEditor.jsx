@@ -678,12 +678,14 @@ const PostEditor = () => {
 
   if (fetching) {
     return (
-      <main className="min-h-screen bg-[#08090b] text-white">
+      <main className="min-h-screen bg-white dark:bg-[#08090b] text-gray-900 dark:text-white">
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
-            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-white" />
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-black/20 dark:border-white/20 border-t-gray-900 dark:border-t-white" />
 
-            <p className="text-sm text-zinc-400">Loading post...</p>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Loading post...
+            </p>
           </div>
         </div>
       </main>
@@ -695,7 +697,7 @@ const PostEditor = () => {
   // =========================================================
 
   return (
-    <main className="min-h-screen bg-[#08090b] text-white">
+    <main className="min-h-screen bg-white dark:bg-[#08090b] text-gray-900 dark:text-white">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
         {/* =================================================
             HEADER
@@ -710,7 +712,7 @@ const PostEditor = () => {
             {isEditMode ? "Edit your post" : "Create a new post"}
           </h1>
 
-          <p className="mt-2 text-sm text-zinc-400">
+          <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
             {isEditMode
               ? "Update your article and publish your latest changes."
               : "Write something useful and share it with the developer community."}
@@ -722,13 +724,13 @@ const PostEditor = () => {
         ================================================= */}
 
         {error && (
-          <div className="mb-6 flex items-start justify-between gap-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-300">
+          <div className="mb-6 flex items-start justify-between gap-4 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-600 dark:text-red-300">
             <p>{error}</p>
 
             <button
               type="button"
               onClick={() => setError("")}
-              className="text-red-300/70 hover:text-red-200"
+              className="text-red-500 dark:text-red-300/70 hover:text-red-700 dark:hover:text-red-200"
             >
               <X className="h-4 w-4" />
             </button>
@@ -740,7 +742,7 @@ const PostEditor = () => {
         ================================================= */}
 
         {message && (
-          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
+          <div className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
             {message}
           </div>
         )}
@@ -755,7 +757,7 @@ const PostEditor = () => {
                 ARTICLE DETAILS
             ================================================= */}
 
-            <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
+            <Card className="border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-[#0d0f12] text-gray-900 dark:text-white shadow-2xl">
               <CardHeader>
                 <CardTitle className="text-lg">Article details</CardTitle>
               </CardHeader>
@@ -766,7 +768,7 @@ const PostEditor = () => {
                 <div className="space-y-2">
                   <label
                     htmlFor="title"
-                    className="text-sm font-medium text-zinc-200"
+                    className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
                   >
                     Title
                   </label>
@@ -778,7 +780,7 @@ const PostEditor = () => {
                     onChange={(event) => setTitle(event.target.value)}
                     placeholder="Enter an interesting title..."
                     required
-                    className="h-12 border-white/10 bg-white/[0.04] text-white placeholder:text-zinc-600 focus-visible:ring-white/20"
+                    className="h-12 border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] text-gray-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-black/20 dark:focus-visible:ring-white/20"
                   />
                 </div>
 
@@ -787,7 +789,7 @@ const PostEditor = () => {
                 <div className="space-y-2">
                   <label
                     htmlFor="tags"
-                    className="text-sm font-medium text-zinc-200"
+                    className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
                   >
                     Tags
                   </label>
@@ -798,7 +800,7 @@ const PostEditor = () => {
                     value={tags}
                     onChange={(event) => setTags(event.target.value)}
                     placeholder="react, javascript, mongodb"
-                    className="h-11 border-white/10 bg-white/[0.04] text-white placeholder:text-zinc-600 focus-visible:ring-white/20"
+                    className="h-11 border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] text-gray-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus-visible:ring-black/20 dark:focus-visible:ring-white/20"
                   />
 
                   <p className="text-xs text-zinc-500">
@@ -811,7 +813,7 @@ const PostEditor = () => {
                 <div className="space-y-2">
                   <label
                     htmlFor="excerpt"
-                    className="text-sm font-medium text-zinc-200"
+                    className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
                   >
                     Excerpt
                   </label>
@@ -822,7 +824,7 @@ const PostEditor = () => {
                     onChange={(event) => setExcerpt(event.target.value)}
                     placeholder="Write a short description of your article..."
                     rows={3}
-                    className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                    className="w-full resize-none rounded-lg border border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] px-3 py-3 text-sm text-gray-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
                   />
 
                   <p className="text-xs text-zinc-500">
@@ -836,7 +838,7 @@ const PostEditor = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-medium text-zinc-200">
+                    <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
                       Cover Image
                     </p>
 
@@ -855,12 +857,12 @@ const PostEditor = () => {
                       onClick={handleSelectLocal}
                       className={`group rounded-xl border p-4 text-left transition ${
                         coverImageSource === "local"
-                          ? "border-white/30 bg-white/[0.08]"
-                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]"
+                          ? "border-black/30 dark:border-white/30 bg-black/[0.08] dark:bg-white/[0.08]"
+                          : "border-black/[0.08] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"
                       }`}
                     >
-                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]">
-                        <Upload className="h-5 w-5 text-zinc-200" />
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-black/[0.08] dark:bg-white/[0.08]">
+                        <Upload className="h-5 w-5 text-zinc-800 dark:text-zinc-200" />
                       </div>
 
                       <p className="text-sm font-semibold">Local Image</p>
@@ -877,12 +879,12 @@ const PostEditor = () => {
                       onClick={handleOpenUnsplash}
                       className={`group rounded-xl border p-4 text-left transition ${
                         coverImageSource === "unsplash"
-                          ? "border-white/30 bg-white/[0.08]"
-                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]"
+                          ? "border-black/30 dark:border-white/30 bg-black/[0.08] dark:bg-white/[0.08]"
+                          : "border-black/[0.08] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"
                       }`}
                     >
-                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]">
-                        <ImageIcon className="h-5 w-5 text-zinc-200" />
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-black/[0.08] dark:bg-white/[0.08]">
+                        <ImageIcon className="h-5 w-5 text-zinc-800 dark:text-zinc-200" />
                       </div>
 
                       <p className="text-sm font-semibold">Unsplash</p>
@@ -899,12 +901,12 @@ const PostEditor = () => {
                       onClick={handleOpenAI}
                       className={`group rounded-xl border p-4 text-left transition ${
                         coverImageSource === "ai"
-                          ? "border-white/30 bg-white/[0.08]"
-                          : "border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.05]"
+                          ? "border-black/30 dark:border-white/30 bg-black/[0.08] dark:bg-white/[0.08]"
+                          : "border-black/[0.08] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] hover:border-black/20 dark:hover:border-white/20 hover:bg-black/[0.05] dark:hover:bg-white/[0.05]"
                       }`}
                     >
-                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-white/[0.08]">
-                        <Sparkles className="h-5 w-5 text-zinc-200" />
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-black/[0.08] dark:bg-white/[0.08]">
+                        <Sparkles className="h-5 w-5 text-zinc-800 dark:text-zinc-200" />
                       </div>
 
                       <p className="text-sm font-semibold">AI Generate</p>
@@ -918,13 +920,13 @@ const PostEditor = () => {
                   {/* LOCAL UPLOAD */}
 
                   {coverImageSource === "local" && (
-                    <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+                    <div className="rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.02] p-4">
                       <Input
                         id="coverImage"
                         type="file"
                         accept="image/jpeg,image/jpg,image/png,image/webp"
                         onChange={handleImageChange}
-                        className="h-auto cursor-pointer border-white/10 bg-white/[0.04] py-3 text-zinc-300 file:mr-4 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-black hover:bg-white/[0.06]"
+                        className="h-auto cursor-pointer border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] py-3 text-zinc-700 dark:text-zinc-300 file:mr-4 file:rounded-md file:border-0 file:bg-gray-900 dark:file:bg-white file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white dark:file:text-black hover:bg-black/[0.06] dark:hover:bg-white/[0.06]"
                       />
 
                       <p className="mt-2 text-xs text-zinc-500">
@@ -936,14 +938,14 @@ const PostEditor = () => {
                   {/* COVER PREVIEW */}
 
                   {coverPreview && (
-                    <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-black">
+                    <div className="relative overflow-hidden rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-black">
                       <img
                         src={coverPreview}
                         alt="Cover Preview"
                         className="h-72 w-full object-cover"
                       />
 
-                      <div className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 text-xs font-medium backdrop-blur">
+                      <div className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/70 px-3 py-1.5 text-xs font-medium text-white backdrop-blur">
                         {coverImageSource === "local" && "Local Image"}
 
                         {coverImageSource === "unsplash" && "Unsplash"}
@@ -973,7 +975,7 @@ const PostEditor = () => {
                         href={coverImageAuthorUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-zinc-300 underline underline-offset-2 hover:text-white"
+                        className="text-zinc-700 dark:text-zinc-300 underline underline-offset-2 hover:text-gray-900 dark:hover:text-white"
                       >
                         {coverImageAuthor}
                       </a>{" "}
@@ -982,7 +984,7 @@ const PostEditor = () => {
                         href={coverImageUnsplashUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-zinc-300 underline underline-offset-2 hover:text-white"
+                        className="text-zinc-700 dark:text-zinc-300 underline underline-offset-2 hover:text-gray-900 dark:hover:text-white"
                       >
                         Unsplash
                       </a>
@@ -996,7 +998,7 @@ const PostEditor = () => {
                 AI WRITING ASSISTANT
             ================================================= */}
 
-            <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
+            <Card className="border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-[#0d0f12] text-gray-900 dark:text-white shadow-2xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
                   <Sparkles className="h-5 w-5" />
@@ -1017,7 +1019,7 @@ const PostEditor = () => {
                     variant="outline"
                     onClick={handleGenerateTitle}
                     disabled={aiLoading.title}
-                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                    className="border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.03] text-zinc-800 dark:text-zinc-200 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
                   >
                     {aiLoading.title ? (
                       <>
@@ -1039,7 +1041,7 @@ const PostEditor = () => {
                     variant="outline"
                     onClick={handleGenerateTags}
                     disabled={aiLoading.tags}
-                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                    className="border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.03] text-zinc-800 dark:text-zinc-200 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
                   >
                     {aiLoading.tags ? (
                       <>
@@ -1058,7 +1060,7 @@ const PostEditor = () => {
                     variant="outline"
                     onClick={handleGenerateContent}
                     disabled={aiLoading.content}
-                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                    className="border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.03] text-zinc-800 dark:text-zinc-200 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
                   >
                     {aiLoading.content ? (
                       <>
@@ -1077,7 +1079,7 @@ const PostEditor = () => {
                     variant="outline"
                     onClick={handleGenerateExcerpt}
                     disabled={aiLoading.excerpt}
-                    className="border-white/10 bg-white/[0.03] text-zinc-200 hover:bg-white/[0.08] hover:text-white"
+                    className="border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.03] text-zinc-800 dark:text-zinc-200 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
                   >
                     {aiLoading.excerpt ? (
                       <>
@@ -1096,13 +1098,13 @@ const PostEditor = () => {
                 CONTENT
             ================================================= */}
 
-            <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
+            <Card className="border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-[#0d0f12] text-gray-900 dark:text-white shadow-2xl">
               <CardHeader>
                 <CardTitle className="text-lg">Content</CardTitle>
               </CardHeader>
 
               <CardContent>
-                <div className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#08090b]">
+                <div className="overflow-hidden rounded-xl border border-black/[0.08] dark:border-white/[0.08] bg-white dark:bg-[#08090b]">
                   <MarkdownEditor value={content} onChange={setContent} />
                 </div>
               </CardContent>
@@ -1112,7 +1114,7 @@ const PostEditor = () => {
                 PUBLISHING
             ================================================= */}
 
-            <Card className="border-white/[0.08] bg-[#0d0f12] text-white shadow-2xl">
+            <Card className="border-black/[0.08] dark:border-white/[0.08] bg-gray-50 dark:bg-[#0d0f12] text-gray-900 dark:text-white shadow-2xl">
               <CardHeader>
                 <CardTitle className="text-lg">Publishing</CardTitle>
               </CardHeader>
@@ -1121,7 +1123,7 @@ const PostEditor = () => {
                 <div className="space-y-2">
                   <label
                     htmlFor="status"
-                    className="text-sm font-medium text-zinc-200"
+                    className="text-sm font-medium text-zinc-800 dark:text-zinc-200"
                   >
                     Status
                   </label>
@@ -1130,13 +1132,19 @@ const PostEditor = () => {
                     id="status"
                     value={status}
                     onChange={(event) => setStatus(event.target.value)}
-                    className="h-11 w-full rounded-md border border-white/10 bg-white/[0.04] px-3 text-sm text-white outline-none transition focus:border-white/20 focus:ring-2 focus:ring-white/10 sm:w-64"
+                    className="h-11 w-full rounded-md border border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] px-3 text-sm text-gray-900 dark:text-white outline-none transition focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10 sm:w-64"
                   >
-                    <option value="draft" className="bg-[#0d0f12]">
+                    <option
+                      value="draft"
+                      className="bg-gray-50 dark:bg-[#0d0f12]"
+                    >
                       Draft
                     </option>
 
-                    <option value="published" className="bg-[#0d0f12]">
+                    <option
+                      value="published"
+                      className="bg-gray-50 dark:bg-[#0d0f12]"
+                    >
                       Published
                     </option>
                   </select>
@@ -1152,12 +1160,12 @@ const PostEditor = () => {
                 ACTIONS
             ================================================= */}
 
-            <div className="flex flex-col-reverse gap-3 border-t border-white/[0.08] pt-6 sm:flex-row sm:justify-end">
+            <div className="flex flex-col-reverse gap-3 border-t border-black/[0.08] dark:border-white/[0.08] pt-6 sm:flex-row sm:justify-end">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => navigate("/dashboard")}
-                className="border-white/10 bg-transparent text-white hover:bg-white/[0.08] hover:text-white"
+                className="border-black/10 dark:border-white/10 bg-transparent text-gray-900 dark:text-white hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
               >
                 Cancel
               </Button>
@@ -1165,7 +1173,7 @@ const PostEditor = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-white font-semibold text-black hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-gray-900 dark:bg-white font-semibold text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {loading
                   ? "Saving..."
@@ -1183,7 +1191,7 @@ const PostEditor = () => {
       ======================================================= */}
 
       <Dialog open={unsplashOpen} onOpenChange={setUnsplashOpen}>
-        <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden border-white/10 bg-[#0d0f12] text-white">
+        <DialogContent className="max-h-[90vh] max-w-5xl overflow-hidden border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#0d0f12] text-gray-900 dark:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ImageIcon className="h-5 w-5" />
@@ -1205,14 +1213,14 @@ const PostEditor = () => {
                 value={unsplashQuery}
                 onChange={(event) => setUnsplashQuery(event.target.value)}
                 placeholder="Search developer, coding, technology..."
-                className="h-11 border-white/10 bg-white/[0.04] pl-9 text-white placeholder:text-zinc-600"
+                className="h-11 border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] pl-9 text-gray-900 dark:text-white placeholder:text-zinc-400 dark:placeholder:text-zinc-600"
               />
             </div>
 
             <Button
               type="submit"
               disabled={unsplashLoading}
-              className="bg-white text-black hover:bg-zinc-200"
+              className="bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
             >
               {unsplashLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -1225,7 +1233,7 @@ const PostEditor = () => {
           {/* ERROR */}
 
           {unsplashError && (
-            <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+            <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">
               {unsplashError}
             </div>
           )}
@@ -1240,7 +1248,7 @@ const PostEditor = () => {
                     type="button"
                     key={photo.id}
                     onClick={() => handleSelectUnsplashImage(photo)}
-                    className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-white/[0.08] bg-black"
+                    className="group relative aspect-[4/3] overflow-hidden rounded-lg border border-black/[0.08] dark:border-white/[0.08] bg-black"
                   >
                     <img
                       src={photo.thumbnailUrl || photo.imageUrl}
@@ -1265,7 +1273,9 @@ const PostEditor = () => {
                 <div>
                   <Search className="mx-auto mb-3 h-8 w-8 text-zinc-700" />
 
-                  <p className="text-sm text-zinc-400">Search for an image</p>
+                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                    Search for an image
+                  </p>
 
                   <p className="mt-1 text-xs text-zinc-600">
                     Try: coding, programming, technology, developer
@@ -1282,7 +1292,7 @@ const PostEditor = () => {
       ======================================================= */}
 
       <Dialog open={aiOpen} onOpenChange={setAiOpen}>
-        <DialogContent className="max-w-xl border-white/10 bg-[#0d0f12] text-white">
+        <DialogContent className="max-w-xl border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#0d0f12] text-gray-900 dark:text-white">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
@@ -1299,7 +1309,7 @@ const PostEditor = () => {
             {/* PROMPT */}
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-zinc-200">
+              <label className="text-sm font-medium text-zinc-800 dark:text-zinc-200">
                 Image description
               </label>
 
@@ -1308,7 +1318,7 @@ const PostEditor = () => {
                 onChange={(event) => setAiPrompt(event.target.value)}
                 placeholder="A modern developer working with React and Node.js in a futuristic workspace, dark cinematic lighting, professional technology blog cover..."
                 rows={6}
-                className="w-full resize-none rounded-lg border border-white/10 bg-white/[0.04] px-3 py-3 text-sm text-white outline-none placeholder:text-zinc-600 focus:border-white/20 focus:ring-2 focus:ring-white/10"
+                className="w-full resize-none rounded-lg border border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/[0.04] px-3 py-3 text-sm text-gray-900 dark:text-white outline-none placeholder:text-zinc-400 dark:placeholder:text-zinc-600 focus:border-black/20 dark:focus:border-white/20 focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10"
               />
 
               <p className="text-xs text-zinc-600">
@@ -1319,7 +1329,7 @@ const PostEditor = () => {
             {/* ERROR */}
 
             {aiError && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+              <div className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">
                 {aiError}
               </div>
             )}
@@ -1332,7 +1342,7 @@ const PostEditor = () => {
                 variant="outline"
                 onClick={() => setAiOpen(false)}
                 disabled={aiGenerating}
-                className="border-white/10 bg-transparent text-white hover:bg-white/[0.08] hover:text-white"
+                className="border-black/10 dark:border-white/10 bg-transparent text-gray-900 dark:text-white hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
               >
                 Cancel
               </Button>
@@ -1341,7 +1351,7 @@ const PostEditor = () => {
                 type="button"
                 onClick={handleGenerateAIImage}
                 disabled={aiGenerating}
-                className="bg-white text-black hover:bg-zinc-200"
+                className="bg-gray-900 dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200"
               >
                 {aiGenerating ? (
                   <>

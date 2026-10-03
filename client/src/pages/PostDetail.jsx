@@ -277,14 +277,16 @@ const PostDetail = () => {
       <div
         key={comment._id}
         className={
-          depth > 0 ? "ml-4 border-l border-white/10 pl-4 sm:ml-6" : ""
+          depth > 0
+            ? "ml-4 border-l border-black/10 dark:border-white/10 pl-4 sm:ml-6"
+            : ""
         }
       >
         {/* =================================================
             COMMENT CARD
         ================================================= */}
 
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-black/10 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.02] p-4">
           {/* COMMENT HEADER */}
 
           <div className="flex items-start justify-between gap-4">
@@ -295,10 +297,10 @@ const PostDetail = () => {
                 <img
                   src={commentUser.avatarUrl}
                   alt={commentUser.name || "User"}
-                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-white/10"
+                  className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-black/10 dark:ring-white/10"
                 />
               ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-gray-300">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {commentUser?.name?.charAt(0)?.toUpperCase() || "U"}
                 </div>
               )}
@@ -306,7 +308,7 @@ const PostDetail = () => {
               {/* User Info */}
 
               <div className="min-w-0">
-                <p className="truncate text-sm font-medium text-white">
+                <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
                   {commentUser?.name || "User"}
                 </p>
 
@@ -333,7 +335,7 @@ const PostDetail = () => {
                   type="button"
                   onClick={() => handleStartEdit(comment)}
                   disabled={submitting}
-                  className="rounded-md p-2 text-gray-500 transition hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md p-2 text-gray-500 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                   title="Edit comment"
                 >
                   <Pencil className="h-4 w-4" />
@@ -343,7 +345,7 @@ const PostDetail = () => {
                   type="button"
                   onClick={() => handleDeleteComment(comment._id)}
                   disabled={submitting}
-                  className="rounded-md p-2 text-gray-500 transition hover:bg-red-500/10 hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-md p-2 text-gray-500 transition hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                   title="Delete comment"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -361,7 +363,7 @@ const PostDetail = () => {
                 onChange={(event) => setEditingCommentText(event.target.value)}
                 rows={4}
                 autoFocus
-                className="w-full resize-none rounded-lg border border-white/10 bg-black/20 p-3 text-sm leading-6 text-white outline-none placeholder:text-gray-600 focus:border-white/20"
+                className="w-full resize-none rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-black/20 p-3 text-sm leading-6 text-gray-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20"
                 placeholder="Edit your comment..."
               />
 
@@ -370,7 +372,7 @@ const PostDetail = () => {
                   type="button"
                   onClick={handleCancelEdit}
                   disabled={submitting}
-                  className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs text-gray-400 transition hover:bg-white/10 hover:text-white"
+                  className="flex items-center gap-1 rounded-md px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
                 >
                   <X className="h-3.5 w-3.5" />
                   Cancel
@@ -380,7 +382,7 @@ const PostDetail = () => {
                   type="button"
                   onClick={() => handleUpdateComment(comment._id)}
                   disabled={submitting || !editingCommentText.trim()}
-                  className="flex items-center gap-1 rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex items-center gap-1 rounded-md bg-gray-900 dark:bg-white px-3 py-1.5 text-xs font-medium text-white dark:text-black transition hover:bg-gray-800 dark:hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <Check className="h-3.5 w-3.5" />
 
@@ -389,7 +391,7 @@ const PostDetail = () => {
               </div>
             </div>
           ) : (
-            <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-gray-300">
+            <p className="mt-4 whitespace-pre-wrap text-sm leading-6 text-gray-700 dark:text-gray-300">
               {comment.content}
             </p>
           )}
@@ -402,7 +404,7 @@ const PostDetail = () => {
                 type="button"
                 onClick={() => handleStartReply(comment._id)}
                 disabled={submitting}
-                className="flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex items-center gap-1.5 text-xs font-medium text-gray-500 transition hover:text-gray-900 dark:hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Reply className="h-3.5 w-3.5" />
                 Reply
@@ -421,7 +423,7 @@ const PostDetail = () => {
           {isReplying && (
             <form
               onSubmit={(event) => handleCreateReply(event, comment._id)}
-              className="mt-4 border-t border-white/10 pt-4"
+              className="mt-4 border-t border-black/10 dark:border-white/10 pt-4"
             >
               <div className="flex gap-3">
                 {/* Current User Avatar */}
@@ -433,7 +435,7 @@ const PostDetail = () => {
                     className="h-8 w-8 shrink-0 rounded-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/10 text-xs font-semibold text-gray-300">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-xs font-semibold text-gray-700 dark:text-gray-300">
                     {user?.name?.charAt(0)?.toUpperCase() || "Y"}
                   </div>
                 )}
@@ -447,7 +449,7 @@ const PostDetail = () => {
                     placeholder={`Reply to ${
                       commentUser?.name || "this comment"
                     }...`}
-                    className="w-full resize-none rounded-lg border border-white/10 bg-black/20 p-3 text-sm leading-6 text-white outline-none placeholder:text-gray-600 focus:border-white/20"
+                    className="w-full resize-none rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-black/20 p-3 text-sm leading-6 text-gray-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20"
                   />
 
                   <div className="mt-2 flex justify-end gap-2">
@@ -455,7 +457,7 @@ const PostDetail = () => {
                       type="button"
                       onClick={handleCancelReply}
                       disabled={submitting}
-                      className="rounded-md px-3 py-1.5 text-xs text-gray-400 transition hover:bg-white/10 hover:text-white"
+                      className="rounded-md px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
                     >
                       Cancel
                     </button>
@@ -463,7 +465,7 @@ const PostDetail = () => {
                     <button
                       type="submit"
                       disabled={submitting || !replyText.trim()}
-                      className="rounded-md bg-white px-3 py-1.5 text-xs font-medium text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="rounded-md bg-gray-900 dark:bg-white px-3 py-1.5 text-xs font-medium text-white dark:text-black transition hover:bg-gray-800 dark:hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {submitting ? "Replying..." : "Reply"}
                     </button>
@@ -491,7 +493,7 @@ const PostDetail = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+      <div className="min-h-screen bg-white dark:bg-[#0b0b0f] text-gray-800 dark:text-gray-200">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <div className="flex min-h-[40vh] items-center justify-center">
             <p className="text-sm text-gray-500">Loading post...</p>
@@ -507,10 +509,10 @@ const PostDetail = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+      <div className="min-h-screen bg-white dark:bg-[#0b0b0f] text-gray-800 dark:text-gray-200">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <div className="rounded-xl border border-red-500/20 bg-red-500/5 px-5 py-8 text-center">
-            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
           </div>
         </div>
       </div>
@@ -523,7 +525,7 @@ const PostDetail = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+      <div className="min-h-screen bg-white dark:bg-[#0b0b0f] text-gray-800 dark:text-gray-200">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6">
           <p className="text-center text-sm text-gray-500">Post not found.</p>
         </div>
@@ -536,13 +538,13 @@ const PostDetail = () => {
   // =========================================================
 
   return (
-    <div className="min-h-screen bg-[#0b0b0f] text-gray-200">
+    <div className="min-h-screen bg-white dark:bg-[#0b0b0f] text-gray-800 dark:text-gray-200">
       <main className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-10">
         {/* =================================================
             POST CARD
         ================================================= */}
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#101014] shadow-2xl shadow-black/20">
+        <div className="overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] shadow-2xl shadow-black/20">
           {/* =================================================
               POST HEADER
           ================================================= */}
@@ -550,14 +552,14 @@ const PostDetail = () => {
           <header className="px-6 pt-8 sm:px-8 sm:pt-10">
             {/* TITLE */}
 
-            <h1 className="text-2xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
+            <h1 className="text-2xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white sm:text-4xl">
               {post.title}
             </h1>
 
             {/* EXCERPT */}
 
             {post.excerpt?.trim() && (
-              <p className="mt-5 max-w-3xl text-base leading-7 text-gray-400 sm:text-lg">
+              <p className="mt-5 max-w-3xl text-base leading-7 text-gray-500 dark:text-gray-400 sm:text-lg">
                 {post.excerpt}
               </p>
             )}
@@ -610,16 +612,16 @@ const PostDetail = () => {
               <img
                 src={post.author.avatarUrl}
                 alt={post.author.name || "Author"}
-                className="h-10 w-10 rounded-full object-cover ring-2 ring-white/10"
+                className="h-10 w-10 rounded-full object-cover ring-2 ring-black/10 dark:ring-white/10"
               />
             ) : (
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-gray-300">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-sm font-semibold text-gray-700 dark:text-gray-300">
                 {post.author?.name?.charAt(0)?.toUpperCase() || "A"}
               </div>
             )}
 
             <div className="min-w-0">
-              <p className="text-sm font-medium text-gray-200">
+              <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
                 {post.author?.name || "Unknown author"}
               </p>
 
@@ -633,7 +635,7 @@ const PostDetail = () => {
               MARKDOWN CONTENT
           ================================================= */}
 
-          <article className="prose prose-invert prose-lg mt-8 max-w-none px-6 pb-2 prose-headings:font-bold prose-a:text-fuchsia-400 sm:px-8">
+          <article className="prose dark:prose-invert prose-lg mt-8 max-w-none px-6 pb-2 prose-headings:font-bold prose-a:text-fuchsia-600 dark:prose-a:text-fuchsia-400 sm:px-8">
             <ReactMarkdown
               components={{
                 code({ inline, className, children, ...props }) {
@@ -653,7 +655,7 @@ const PostDetail = () => {
 
                   return (
                     <code
-                      className="rounded bg-white/10 px-1 py-0.5 text-gray-100"
+                      className="rounded bg-black/10 dark:bg-white/10 px-1 py-0.5 text-gray-900 dark:text-gray-100"
                       {...props}
                     >
                       {children}
@@ -670,9 +672,9 @@ const PostDetail = () => {
               POST ACTIONS
           ================================================= */}
 
-          <div className="mt-8 flex flex-col gap-4 border-t border-white/10 px-6 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
+          <div className="mt-8 flex flex-col gap-4 border-t border-black/10 dark:border-white/10 px-6 pt-5 sm:flex-row sm:items-center sm:justify-between sm:px-8">
             <div>
-              <p className="text-sm font-medium text-gray-300">
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 Save this article for later
               </p>
 
@@ -690,8 +692,8 @@ const PostDetail = () => {
               disabled={bookmarkLoading}
               className={`flex w-fit items-center gap-2 rounded-lg border px-3.5 py-2 text-sm font-medium transition ${
                 bookmarked
-                  ? "border-white/20 bg-white/10 text-white"
-                  : "border-white/10 bg-white/[0.03] text-gray-400 hover:bg-white/[0.08] hover:text-white"
+                  ? "border-black/20 dark:border-white/20 bg-black/10 dark:bg-white/10 text-gray-900 dark:text-white"
+                  : "border-black/10 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.03] text-gray-500 dark:text-gray-400 hover:bg-black/[0.08] dark:hover:bg-white/[0.08] hover:text-gray-900 dark:hover:text-white"
               } disabled:cursor-not-allowed disabled:opacity-50`}
               title={bookmarked ? "Remove bookmark" : "Bookmark this post"}
             >
@@ -713,7 +715,7 @@ const PostDetail = () => {
                 <Link
                   key={tag._id}
                   to={`/tag/${tag.slug}`}
-                  className="rounded-full bg-white/5 px-3 py-1.5 text-sm text-gray-400 transition hover:bg-white/10 hover:text-white"
+                  className="rounded-full bg-black/5 dark:bg-white/5 px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
                 >
                   #{tag.name}
                 </Link>
@@ -730,12 +732,14 @@ const PostDetail = () => {
           {/* DISCUSSION HEADER */}
 
           <div className="mb-5 flex items-center gap-2">
-            <MessageCircle className="h-5 w-5 text-gray-400" />
+            <MessageCircle className="h-5 w-5 text-gray-500 dark:text-gray-400" />
 
-            <h2 className="text-lg font-semibold text-white">Discussion</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Discussion
+            </h2>
 
             {!commentsLoading && (
-              <span className="rounded-full bg-white/5 px-2 py-0.5 text-xs text-gray-500">
+              <span className="rounded-full bg-black/5 dark:bg-white/5 px-2 py-0.5 text-xs text-gray-500">
                 {comments.length}
               </span>
             )}
@@ -747,7 +751,7 @@ const PostDetail = () => {
 
           <form
             onSubmit={handleCreateComment}
-            className="mb-6 rounded-xl border border-white/10 bg-[#101014] p-4"
+            className="mb-6 rounded-xl border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] p-4"
           >
             <div className="flex gap-3">
               {/* Current User */}
@@ -759,7 +763,7 @@ const PostDetail = () => {
                   className="h-9 w-9 shrink-0 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-gray-300">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-sm font-semibold text-gray-700 dark:text-gray-300">
                   {user?.name?.charAt(0)?.toUpperCase() || "Y"}
                 </div>
               )}
@@ -770,14 +774,14 @@ const PostDetail = () => {
                   onChange={(event) => setCommentText(event.target.value)}
                   rows={4}
                   placeholder="Join the discussion..."
-                  className="w-full resize-none rounded-lg border border-white/10 bg-black/20 p-3 text-sm leading-6 text-white outline-none placeholder:text-gray-600 focus:border-white/20"
+                  className="w-full resize-none rounded-lg border border-black/10 dark:border-white/10 bg-white dark:bg-black/20 p-3 text-sm leading-6 text-gray-900 dark:text-white outline-none placeholder:text-gray-400 dark:placeholder:text-gray-600 focus:border-black/20 dark:focus:border-white/20"
                 />
 
                 <div className="mt-3 flex justify-end">
                   <button
                     type="submit"
                     disabled={submitting || !commentText.trim()}
-                    className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-lg bg-gray-900 dark:bg-white px-4 py-2 text-sm font-medium text-white dark:text-black transition hover:bg-gray-800 dark:hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {submitting ? "Posting..." : "Post comment"}
                   </button>
@@ -792,11 +796,11 @@ const PostDetail = () => {
 
           <div className="space-y-4">
             {commentsLoading ? (
-              <div className="rounded-xl border border-white/10 bg-[#101014] px-5 py-8 text-center">
+              <div className="rounded-xl border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] px-5 py-8 text-center">
                 <p className="text-sm text-gray-500">Loading comments...</p>
               </div>
             ) : rootComments.length === 0 ? (
-              <div className="rounded-xl border border-white/10 bg-[#101014] px-5 py-10 text-center">
+              <div className="rounded-xl border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] px-5 py-10 text-center">
                 <MessageCircle className="mx-auto h-8 w-8 text-gray-700" />
 
                 <p className="mt-3 text-sm text-gray-500">No comments yet.</p>

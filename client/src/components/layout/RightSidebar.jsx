@@ -125,8 +125,8 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
         overflow-hidden
         rounded-xl
         border
-        border-white/[0.08]
-        bg-[#1b1d21]
+        border-black/10 dark:border-white/[0.08]
+        bg-white dark:bg-[#1b1d21]
         p-4
         shadow-2xl
         shadow-black/60
@@ -157,8 +157,8 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
           rounded-md
           text-zinc-600
           transition
-          hover:bg-white/[0.06]
-          hover:text-zinc-300
+          hover:bg-black/[0.06] dark:hover:bg-white/[0.06]
+          hover:text-zinc-700 dark:hover:text-zinc-300
         "
         aria-label="Close"
       >
@@ -180,8 +180,8 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
               animate-spin
               rounded-full
               border-2
-              border-zinc-700
-              border-t-zinc-300
+              border-zinc-300 dark:border-zinc-700
+              border-t-zinc-600 dark:border-t-zinc-300
             "
           />
 
@@ -194,19 +194,19 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
           ===================================== */}
 
           <div className="flex items-center gap-3 pr-5">
-            <Avatar className="h-11 w-11 shrink-0 border border-white/20 sm:h-12 sm:w-12">
+            <Avatar className="h-11 w-11 shrink-0 border border-black/20 dark:border-white/20 sm:h-12 sm:w-12">
               <AvatarImage
                 src={author?.avatarUrl || ""}
                 alt={author?.name || "Author"}
               />
 
-              <AvatarFallback className="bg-zinc-700 text-sm font-semibold text-white">
+              <AvatarFallback className="bg-zinc-200 dark:bg-zinc-700 text-sm font-semibold text-gray-900 dark:text-white">
                 {getInitials(author?.name)}
               </AvatarFallback>
             </Avatar>
 
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold text-white">
+              <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
                 {author?.name || "Unknown author"}
               </p>
 
@@ -256,7 +256,7 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   className="
                     text-zinc-500
                     transition
-                    hover:text-white
+                    hover:text-gray-900 dark:hover:text-white
                   "
                 >
                   <FaXTwitter className="h-4 w-4" />
@@ -275,7 +275,7 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   className="
                     text-zinc-500
                     transition
-                    hover:text-white
+                    hover:text-gray-900 dark:hover:text-white
                   "
                 >
                   <FaGithub className="h-4 w-4" />
@@ -294,7 +294,7 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   className="
                     text-zinc-500
                     transition
-                    hover:text-white
+                    hover:text-gray-900 dark:hover:text-white
                   "
                 >
                   <FaLinkedinIn className="h-4 w-4" />
@@ -313,7 +313,7 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                   className="
                     text-zinc-500
                     transition
-                    hover:text-white
+                    hover:text-gray-900 dark:hover:text-white
                   "
                 >
                   <FaGlobe className="h-4 w-4" />
@@ -339,12 +339,12 @@ const AuthorPopup = ({ author, loading, position, onClose }) => {
                 justify-center
                 gap-2
                 rounded-md
-                bg-[#e4e5e7]
+                bg-gray-900 dark:bg-[#e4e5e7]
                 text-sm
                 font-medium
-                text-[#16181c]
+                text-white dark:text-[#16181c]
                 transition
-                hover:bg-white
+                hover:bg-gray-800 dark:hover:bg-white
               "
             >
               <FaUser className="h-3.5 w-3.5" />
@@ -547,7 +547,7 @@ const RightSidebar = () => {
         w-full
         min-w-0
         border-t
-        border-white/[0.06]
+        border-black/10 dark:border-white/[0.06]
         xl:border-l
         xl:border-t-0
       "
@@ -568,10 +568,10 @@ const RightSidebar = () => {
             TRENDING TAGS
         ================================================= */}
 
-        <Card className="w-full min-w-0 border-white/[0.07] bg-white/[0.025]">
+        <Card className="w-full min-w-0 border-black/10 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.025]">
           <CardHeader className="pb-3">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-semibold text-amber-50">
+              <CardTitle className="text-sm font-semibold text-gray-900 dark:text-amber-50">
                 Trending tags
               </CardTitle>
 
@@ -594,9 +594,9 @@ const RightSidebar = () => {
                       py-2.5
                     "
                 >
-                  <div className="h-3.5 w-28 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-3.5 w-28 animate-pulse rounded bg-black/[0.06] dark:bg-white/[0.06]" />
 
-                  <div className="h-3.5 w-6 animate-pulse rounded bg-white/[0.06]" />
+                  <div className="h-3.5 w-6 animate-pulse rounded bg-black/[0.06] dark:bg-white/[0.06]" />
                 </div>
               ))}
 
@@ -616,10 +616,10 @@ const RightSidebar = () => {
                       px-2
                       py-2.5
                       transition
-                      hover:bg-white/[0.05]
+                      hover:bg-black/[0.05] dark:hover:bg-white/[0.05]
                     "
                 >
-                  <span className="min-w-0 truncate text-xs font-medium text-zinc-400 transition group-hover:text-white">
+                  <span className="min-w-0 truncate text-xs font-medium text-zinc-500 dark:text-zinc-400 transition group-hover:text-gray-900 dark:group-hover:text-white">
                     #{tag.name}
                   </span>
 
@@ -663,11 +663,11 @@ const RightSidebar = () => {
                                           h-6
                                           w-6
                                           border-2
-                                          border-[#16171c]
+                                          border-white dark:border-[#16171c]
                                           transition
                                           ${
                                             isActive
-                                              ? "scale-110 ring-2 ring-white/20"
+                                              ? "scale-110 ring-2 ring-black/20 dark:ring-white/20"
                                               : "hover:scale-110"
                                           }
                                         `}
@@ -677,7 +677,7 @@ const RightSidebar = () => {
                                     alt={author.name || "Author"}
                                   />
 
-                                  <AvatarFallback className="bg-zinc-700 text-[8px] font-medium text-zinc-200">
+                                  <AvatarFallback className="bg-zinc-200 dark:bg-zinc-700 text-[8px] font-medium text-zinc-800 dark:text-zinc-200">
                                     {getInitials(author.name)}
                                   </AvatarFallback>
                                 </Avatar>
@@ -709,9 +709,9 @@ const RightSidebar = () => {
             THE FOREWORD
         ================================================= */}
 
-        <Card className="w-full min-w-0 border-white/[0.07] bg-white/[0.025]">
+        <Card className="w-full min-w-0 border-black/10 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.025]">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-amber-50">
+            <CardTitle className="text-sm font-semibold text-gray-900 dark:text-amber-50">
               The foreword
             </CardTitle>
 
@@ -721,17 +721,17 @@ const RightSidebar = () => {
           </CardHeader>
 
           <CardContent>
-            <div className="overflow-hidden rounded-lg border border-white/[0.06] bg-black/30">
+            <div className="overflow-hidden rounded-lg border border-black/10 dark:border-white/[0.06] bg-gray-100 dark:bg-black/30">
               <div className="flex h-20 items-center justify-center gap-2 px-3">
-                <div className="h-8 w-8 rounded bg-white/[0.05]" />
+                <div className="h-8 w-8 rounded bg-black/[0.05] dark:bg-white/[0.05]" />
 
-                <div className="h-8 w-16 rounded bg-white/[0.05]" />
+                <div className="h-8 w-16 rounded bg-black/[0.05] dark:bg-white/[0.05]" />
 
-                <div className="h-8 w-8 rounded bg-white/[0.05]" />
+                <div className="h-8 w-8 rounded bg-black/[0.05] dark:bg-white/[0.05]" />
               </div>
             </div>
 
-            <p className="mt-3 text-xs font-medium leading-5 text-zinc-300">
+            <p className="mt-3 text-xs font-medium leading-5 text-zinc-700 dark:text-zinc-300">
               Engineering, AI and modern web development.
             </p>
 
@@ -741,7 +741,7 @@ const RightSidebar = () => {
 
             <Button
               variant="link"
-              className="mt-2 h-auto px-0 text-xs text-zinc-300"
+              className="mt-2 h-auto px-0 text-xs text-zinc-700 dark:text-zinc-300"
             >
               View all posts
               <ChevronRight className="ml-1 h-3.5 w-3.5" />
@@ -753,9 +753,9 @@ const RightSidebar = () => {
             AUTHORS WORTH FOLLOWING
         ================================================= */}
 
-        <Card className="w-full min-w-0 border-white/[0.07] bg-white/[0.025]">
+        <Card className="w-full min-w-0 border-black/10 dark:border-white/[0.07] bg-gray-50 dark:bg-white/[0.025]">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-amber-50">
+            <CardTitle className="text-sm font-semibold text-gray-900 dark:text-amber-50">
               Authors worth following
             </CardTitle>
           </CardHeader>
@@ -766,12 +766,12 @@ const RightSidebar = () => {
             {authorsLoading &&
               [1, 2, 3, 4, 5].map((item) => (
                 <div key={item} className="flex items-center gap-3">
-                  <div className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-white/[0.06]" />
+                  <div className="h-9 w-9 shrink-0 animate-pulse rounded-full bg-black/[0.06] dark:bg-white/[0.06]" />
 
                   <div className="min-w-0 flex-1 space-y-1.5">
-                    <div className="h-3 w-24 animate-pulse rounded bg-white/[0.06]" />
+                    <div className="h-3 w-24 animate-pulse rounded bg-black/[0.06] dark:bg-white/[0.06]" />
 
-                    <div className="h-2.5 w-20 animate-pulse rounded bg-white/[0.06]" />
+                    <div className="h-2.5 w-20 animate-pulse rounded bg-black/[0.06] dark:bg-white/[0.06]" />
                   </div>
                 </div>
               ))}
@@ -819,7 +819,7 @@ const RightSidebar = () => {
                             transition
                             ${
                               isActive
-                                ? "scale-105 ring-2 ring-white/20"
+                                ? "scale-105 ring-2 ring-black/20 dark:ring-white/20"
                                 : "hover:scale-105"
                             }
                           `}
@@ -829,7 +829,7 @@ const RightSidebar = () => {
                           alt={author.name || "Author"}
                         />
 
-                        <AvatarFallback className="bg-zinc-800 text-[10px] font-medium text-zinc-300">
+                        <AvatarFallback className="bg-zinc-200 dark:bg-zinc-800 text-[10px] font-medium text-zinc-700 dark:text-zinc-300">
                           {getInitials(author.name)}
                         </AvatarFallback>
                       </Avatar>
@@ -838,7 +838,7 @@ const RightSidebar = () => {
                     {/* Author Info */}
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-xs font-semibold text-zinc-300 transition group-hover:text-white">
+                      <p className="truncate text-xs font-semibold text-zinc-700 dark:text-zinc-300 transition group-hover:text-gray-900 dark:group-hover:text-white">
                         {author.name}
                       </p>
 
@@ -873,19 +873,19 @@ const RightSidebar = () => {
 
         <div className="px-2 py-3">
           <div className="flex flex-wrap gap-x-3 gap-y-2 text-[11px] text-zinc-600">
-            <span className="cursor-pointer transition hover:text-zinc-300">
+            <span className="cursor-pointer transition hover:text-zinc-700 dark:hover:text-zinc-300">
               About
             </span>
 
-            <span className="cursor-pointer transition hover:text-zinc-300">
+            <span className="cursor-pointer transition hover:text-zinc-700 dark:hover:text-zinc-300">
               Terms
             </span>
 
-            <span className="cursor-pointer transition hover:text-zinc-300">
+            <span className="cursor-pointer transition hover:text-zinc-700 dark:hover:text-zinc-300">
               Privacy
             </span>
 
-            <span className="cursor-pointer transition hover:text-zinc-300">
+            <span className="cursor-pointer transition hover:text-zinc-700 dark:hover:text-zinc-300">
               Sitemap
             </span>
           </div>

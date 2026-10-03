@@ -11,12 +11,12 @@ const MarkdownEditor = ({ value, onChange }) => {
           value={value}
           onChange={(event) => onChange(event.target.value)}
           placeholder="Write your post in Markdown..."
-          className="min-h-[500px] w-full rounded-lg border border-gray-300 p-4 font-mono outline-none focus:border-black"
+          className="min-h-[500px] w-full rounded-lg border border-gray-300 bg-white p-4 font-mono text-gray-900 outline-none placeholder:text-gray-400 focus:border-black dark:border-white/10 dark:bg-transparent dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white/20"
         />
       </div>
 
       {/* Preview */}
-      <div className="min-h-[500px] rounded-lg border border-gray-300 p-4">
+      <div className="min-h-[500px] rounded-lg border border-gray-300 p-4 text-gray-900 dark:border-white/10 dark:text-white">
         <ReactMarkdown
           components={{
             code({ inline, className, children, ...props }) {
@@ -32,7 +32,10 @@ const MarkdownEditor = ({ value, onChange }) => {
                   {String(children).replace(/\n$/, "")}
                 </SyntaxHighlighter>
               ) : (
-                <code className="rounded bg-gray-100 px-1 py-0.5" {...props}>
+                <code
+                  className="rounded bg-gray-100 px-1 py-0.5 dark:bg-white/10"
+                  {...props}
+                >
                   {children}
                 </code>
               );

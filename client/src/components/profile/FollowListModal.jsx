@@ -55,13 +55,13 @@ const FollowListModal = ({ userId, type, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-[#101014] shadow-2xl"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-black/10 dark:border-white/10 bg-gray-50 dark:bg-[#101014] shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-black/10 dark:border-white/10 px-6 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-white">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
               {isFollowers ? "Followers" : "Following"}
             </h2>
 
@@ -80,7 +80,7 @@ const FollowListModal = ({ userId, type, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-gray-400 transition hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-2 text-gray-500 dark:text-gray-400 transition hover:bg-black/10 dark:hover:bg-white/10 hover:text-gray-900 dark:hover:text-white"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -96,7 +96,7 @@ const FollowListModal = ({ userId, type, onClose }) => {
           )}
 
           {!loading && error && (
-            <div className="px-6 py-12 text-center text-sm text-red-400">
+            <div className="px-6 py-12 text-center text-sm text-red-600 dark:text-red-400">
               {error}
             </div>
           )}
@@ -105,7 +105,7 @@ const FollowListModal = ({ userId, type, onClose }) => {
             <div className="px-6 py-12 text-center">
               <UserRound className="mx-auto h-10 w-10 text-gray-600" />
 
-              <p className="mt-3 text-sm text-gray-400">
+              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
                 {isFollowers
                   ? "No followers yet."
                   : "Not following anyone yet."}
@@ -114,7 +114,7 @@ const FollowListModal = ({ userId, type, onClose }) => {
           )}
 
           {!loading && !error && users.length > 0 && (
-            <div className="divide-y divide-white/5">
+            <div className="divide-y divide-gray-200 dark:divide-white/5">
               {users.map((user) => {
                 const userData = isFollowers ? user.follower : user.following;
 
@@ -127,7 +127,7 @@ const FollowListModal = ({ userId, type, onClose }) => {
                     key={user._id}
                     to={`/profile/${userData._id}`}
                     onClick={onClose}
-                    className="flex items-center gap-4 px-6 py-4 transition hover:bg-white/[0.04]"
+                    className="flex items-center gap-4 px-6 py-4 transition hover:bg-black/[0.04] dark:hover:bg-white/[0.04]"
                   >
                     {/* Avatar */}
                     {userData.avatarUrl ? (
@@ -137,14 +137,14 @@ const FollowListModal = ({ userId, type, onClose }) => {
                         className="h-11 w-11 rounded-full object-cover"
                       />
                     ) : (
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-black/10 dark:bg-white/10 text-sm font-semibold text-gray-900 dark:text-white">
                         {userData.name?.charAt(0)?.toUpperCase() || "U"}
                       </div>
                     )}
 
                     {/* User information */}
                     <div className="min-w-0">
-                      <p className="truncate font-medium text-white">
+                      <p className="truncate font-medium text-gray-900 dark:text-white">
                         {userData.name || "Unnamed user"}
                       </p>
 
