@@ -196,6 +196,56 @@ export const createPost = async (req, res) => {
   }
 };
 
+// =========================================================
+// SEARCH PUBLISHED POSTS
+// =========================================================
+
+export const searchPosts = async (req, res) => {
+  try {
+    const query = req.query.q?.trim();
+
+    if (!query) {
+      return res.status(200).json({
+        posts: [],
+      });
+    }
+
+    const posts = await Post.find({
+      status: "published",
+      $or: [
+        {
+          title: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+        {
+          content: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+      ],
+    })
+      .populate("author", "name username avatarUrl")
+      .populate("tags", "name slug")
+      .select("title slug content coverImage author tags createdAt readTime")
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+
+    return res.status(200).json({
+      posts,
+    });
+  } catch (error) {
+    console.error("Search posts error:", error);
+
+    return res.status(500).json({
+      message: "Failed to search posts",
+    });
+  }
+};
+
 /* =========================================================
    GET PUBLISHED POSTS
 ========================================================= */

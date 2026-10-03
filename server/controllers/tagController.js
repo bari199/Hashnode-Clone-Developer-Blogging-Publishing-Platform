@@ -143,3 +143,46 @@ export const createTag = async (req, res) => {
     });
   }
 };
+
+export const searchTags = async (req, res) => {
+  try {
+    const query = req.query.q?.trim();
+
+    if (!query) {
+      return res.status(200).json({
+        tags: [],
+      });
+    }
+
+    const tags = await Tag.find({
+      $or: [
+        {
+          name: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+        {
+          slug: {
+            $regex: query,
+            $options: "i",
+          },
+        },
+      ],
+    })
+      .select("_id name slug")
+      .sort({ name: 1 })
+      .limit(10)
+      .lean();
+
+    return res.status(200).json({
+      tags,
+    });
+  } catch (error) {
+    console.error("Search tags error:", error);
+
+    return res.status(500).json({
+      message: "Failed to search tags",
+    });
+  }
+};
