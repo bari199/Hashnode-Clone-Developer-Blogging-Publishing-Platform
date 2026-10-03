@@ -1,11 +1,23 @@
-# Hashnode Clone — Developer Blogging & Publishing Platform
+# Hashnode Clone — Developer Blogging & Publishing Platform Using AI
 
 A full-stack developer blogging and publishing platform inspired by Hashnode, built with the MERN stack. The application provides developer-focused publishing workflows including authentication, Markdown-based post creation, drafts and publishing, tags, search, social interactions, comments, bookmarks, notifications, real-time updates, media handling, and AI-assisted content generation.
 
-> **Internship Project:** Internmo
-> **Organization:** Internmo (Ed-Tech brand of F6 IT Services Private Limited)
-> **Role:** Full Stack Development Intern
-> **Project Type:** Internship Project
+> 🚀 A full-stack developer blogging and publishing platform built during my Full Stack Development Internship at Internmo Pvt. Ltd.
+
+[![Live Demo](https://img.shields.io/badge/Live-Demo-success?style=for-the-badge)](https://hashnode-clone-developer-blogging-p.vercel.app)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2019-blue?style=for-the-badge&logo=react)](https://react.dev/)
+[![Backend](https://img.shields.io/badge/Backend-Node.js-green?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![Database](https://img.shields.io/badge/Database-MongoDB-green?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+[![Real-Time](https://img.shields.io/badge/Real--Time-Socket.IO-black?style=for-the-badge&logo=socket.io)](https://socket.io/)
+[![AI](https://img.shields.io/badge/AI-Cloudflare%20Workers%20AI-orange?style=for-the-badge)](https://developers.cloudflare.com/workers-ai/)
+
+### 🌐 Live Demo
+
+**Frontend:**  
+https://hashnode-clone-developer-blogging-p.vercel.app
+
+**Backend:**  
+https://hashnode-clone-developer-blogging-p-snowy.vercel.app
 
 ---
 
